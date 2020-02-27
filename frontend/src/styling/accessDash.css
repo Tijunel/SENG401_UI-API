@@ -1,0 +1,37 @@
+#accessDash {
+    text-align: center;
+}
+#accessDash .feedback .control{
+    display: inline-block;
+    width: 50%;
+    max-width: 900px;
+    border-radius: 2rem;
+    font-size: 17px;
+    padding: 0.374rem 1rem;
+}
+#accessDash .feedback .control {
+    border: 1px solid #000;
+    background: transparent;
+    color: #000;
+}
+#accessDash .feedback .control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(59, 190, 255, 0.5) !important;
+}
+#accessDash .createForumButton {
+    border-radius: 2rem;
+    font-style: bold;
+    font-size: 20px;
+    padding-right: 2.39rem;
+    padding-left: 2.39rem;
+    margin-top: 20px;
+    width: 50%;
+    max-width: 900px;
+    vertical-align: top;
+    display: inline-block;
+    border: 0px solid transparent;
+    background-color: #3ABEFF;
+    margin-bottom: 10px;
+}
+#accessDash .createForumButton:focus {
+    box-shadow: 0 0 0 0.2rem rgba(59, 190, 255, 0.5) !important;
+}
