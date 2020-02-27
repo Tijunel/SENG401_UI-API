@@ -1,0 +1,31 @@
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: "Helvetica";
+  height: 100%;
+}
+html {
+  height: 100%;
+}
+#root {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+::-webkit-scrollbar{
+  width: 0px;
+  background: transparent;
+}
+:invalid {
+  box-shadow: none;
+}
+:-moz-submit-invalid {
+  box-shadow: none;
+}
+:-moz-ui-invalid {
+  box-shadow:none;
+}
