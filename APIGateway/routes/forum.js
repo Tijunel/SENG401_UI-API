@@ -1,14 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const forumServiceIP = require("../config/connections")
+const IP = require("../config/connections")
 
-module.exports = router;
-
+options = {
+    host: IP.forumServiceIP,
+    port: IP.forumServicePort,
+    path: '/',
+    method: 'GET',
+};
 
 router.get('/', async (req, res) => {
-    fetch(forumServiceIP)
-        .then(res => res.json())
-        .then(data => res.json({ message: data }))
+    http.request(options, (httpResp) => {
+        httpResp.on('data', (data) => {
+            res.send(JSON.parse(data));
+        });
+    }).end();
 })
 
 

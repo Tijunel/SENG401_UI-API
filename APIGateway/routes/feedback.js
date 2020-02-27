@@ -1,11 +1,23 @@
 const express = require("express");
 const router = express.Router();
+const http = require("http");
+const IP = require("../config/connections");
+
+options = {
+    host: IP.feedbackServiceIP,
+    port: IP.feedbackServicePort,
+    path: '/feedback/test',
+    method: 'GET',
+};
+
 
 router.get("/test", async (req, res) => {
     try {
-        fetch('10.13.110.106:4000/feedback/test')
-            .then(res => res.json())
-            .then(body => console.log(body));
+        http.request(options, (httpResp) => {
+            httpResp.on('data', (data) => {
+                res.send(JSON.parse(data));
+            });
+        }).end();
     }
     catch (e) {
 
