@@ -4,8 +4,9 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 const auth = require('../middleware/auth');
-
+const Forum = require('../model/Forum');
 const User = require("../model/User");
+const randomize = require("randomatic")
 
 router.post(
     "/signup",
@@ -61,7 +62,7 @@ router.post(
 
             jwt.sign(
                 payload,
-                "randomString",
+                "secret",
                 {
                     expiresIn: 10000
                 },
@@ -145,6 +146,29 @@ router.post(
     }
 );
 
+router.post("/subcompany",
+    auth,
+    async (req, res) => {
+        try {
+            await User.findOneAndUpdate({ _id: req.user.id }, {
+                $push: {
+                    forums: {
+                        name: req.body.name,
+                        accessCode: randomize('A0', 8)
+                    }
+                }
+            });
+            res.status(200).json({
+                message: "Success"
+            })
+        }
+        catch (e) {
+            console.log(e);
+            res.send({ message: "Error in Adding Forum" })
+        }
+
+    }
+);
 
 router.get("/me", auth, async (req, res) => {
     try {
