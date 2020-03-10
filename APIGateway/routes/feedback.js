@@ -25,7 +25,7 @@ router.get("/test", async (req, res) => {
     }
 });
 
-router.get("/feedback", auth, async (req, res) => {
+router.get("/", auth, async (req, res) => {
     try {
 
         let options = {
@@ -47,7 +47,7 @@ router.get("/feedback", auth, async (req, res) => {
 
 })
 
-router.post("/feedback", authAccessCode, async (req, res) => {
+router.post("/", authAccessCode, async (req, res) => {
     try {
 
         let args = JSON.stringify({
