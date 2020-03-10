@@ -31,7 +31,7 @@ router.post('/topic', auth, async (req, res) => {
 
         let options = {
             host: IP.forumServiceIP,
-            port: IP.feedbackServicePort,
+            port: IP.forumServicePort,
             path: '/command/topic',
             method: 'POST',
             headers: {
@@ -40,14 +40,14 @@ router.post('/topic', auth, async (req, res) => {
             }
         };
 
-        let newReq = http.request(options, (res) => {
-            res.on('data', (data) => {
+        let newReq = http.request(options, (newRes) => {
+            newRes.on('data', (data) => {
                 res.json(data);
             });
         })
 
-        req.write(args)
-        req.end()
+        newReq.write(args)
+        newReq.end()
 
     } catch (e) {
         res.status(401).send("Error creating topic.")
@@ -55,7 +55,7 @@ router.post('/topic', auth, async (req, res) => {
 })
 
 
-router.post('/comment', authAccessCode, async (req, res) => {
+router.post('/comment', async (req, res) => { //TODO: add access code auth
     try {
 
         let args = JSON.stringify({
@@ -65,8 +65,8 @@ router.post('/comment', authAccessCode, async (req, res) => {
 
         let options = {
             host: IP.forumServiceIP,
-            port: IP.feedbackServicePort,
-            path: '/forum/comment',
+            port: IP.forumServicePort,
+            path: '/command/comment',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -74,16 +74,17 @@ router.post('/comment', authAccessCode, async (req, res) => {
             }
         };
 
-        let newReq = http.request(options, (res) => {
-            res.on('data', (data) => {
+        let newReq = http.request(options, (newRes) => {
+            newRes.on('data', (data) => {
                 res.json(data);
             });
         })
 
-        req.write(args)
-        req.end()
+        newReq.write(args)
+        newReq.end()
 
     } catch (e) {
+        console.log(e)
         res.status(401).send("Error creating comment.")
     }
 })

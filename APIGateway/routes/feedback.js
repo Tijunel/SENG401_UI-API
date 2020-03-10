@@ -35,8 +35,8 @@ router.get("/", auth, async (req, res) => {
             method: 'GET',
         };
 
-        http.request(options, (res) => {
-            res.on('data', (data) => {
+        http.request(options, (newRes) => {
+            newRes.on('data', (data) => {
                 res.json(data);
             });
         }).end();
@@ -68,14 +68,14 @@ router.post("/", authAccessCode, async (req, res) => {
             }
         };
 
-        let newReq = http.request(options, (res) => {
-            res.on('data', (data) => {
+        let newReq = http.request(options, (newRes) => {
+            newRes.on('data', (data) => {
                 res.json(data);
             });
         })
 
-        req.write(args)
-        req.end()
+        newReq.write(args)
+        newReq.end()
 
     } catch (e) {
         res.status(401).send("Error posting feedback.")
