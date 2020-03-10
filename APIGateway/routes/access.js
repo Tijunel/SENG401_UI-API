@@ -88,7 +88,7 @@ router.get("/me", authAccessCode, async (req, res) => {
         });
 
     } catch (e) {
-        res.send({ message: "Error in Fetching user" });
+        res.send({ message: "Error in Fetching Forum" });
     }
 });
 
