@@ -6,16 +6,16 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const Forum = require('../model/Forum');
 const User = require("../model/User");
+const authAccessCode = require("../middleware/authAccessCode");
 
 router.post(
-    "/login",
+    "/authAccess",
     [
-        check("username", "Please Enter a Valid Username")
+        check("accessCode", "Please Enter a Valid accessCode")
             .not()
             .isEmpty(),
-        check("email", "Please enter a valid email").isEmail(),
-        check("password", "Please enter a valid password").isLength({
-            min: 6
+        check("accessCode", "Please enter a valid password").isLength({
+            min: 8
         })
     ],
 
@@ -31,29 +31,27 @@ router.post(
             accessCode
         } = req.body;
         try {
+            let forum = await User.aggregate([
+                { $unwind: "$forums" },
+                { $match: { "forums.accessCode": accessCode } },
+                {
+                    $project: {
+                        _id: 0,
+                        id: "$forums._id",
+                        name: "$forums.name",
+                        accessCode: "$forums.accessCode"
+                    }
+                }
+
+            ])
             let user = await User.findOne({
-                email
+                "forums.accessCode": accessCode
             })
-            if (user) {
-                return res.status(400).json({
-                    msg: "User Already Exists"
-                });
-            }
-
-            user = new User({
-                username,
-                email,
-                password
-            });
-
-            const salt = await bcrypt.genSalt(10);
-            user.password = await bcrypt.hash(password, salt);
-
-            await user.save();
-
             const payload = {
-                user: {
-                    id: user.id
+                forum: {
+                    fid: forum[0].id,
+                    fname: forum[0].name,
+                    uid: user.id
                 }
             };
 
@@ -79,4 +77,19 @@ router.post(
             res.status(500).send("Error in Saving");
         }
     }
-)
+);
+
+router.get("/me", authAccessCode, async (req, res) => {
+    try {
+        res.json({
+            fid: req.forum.fid,
+            fname: req.forum.fname,
+            uid: req.forum.uid
+        });
+
+    } catch (e) {
+        res.send({ message: "Error in Fetching user" });
+    }
+});
+
+module.exports = router;

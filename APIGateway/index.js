@@ -1,6 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const user = require("./routes/user");
+const access = require("./routes/access");
 const forum = require("./routes/forum");
 const feedback = require("./routes/feedback");
 const InitiateMongoServer = require("./config/db")
@@ -16,6 +17,8 @@ app.use(bodyParser.json());
 app.get("/", (req, res) => {
     res.json({ message: "API Working" });
 });
+
+app.use("/access", access);
 
 app.use("/user", user);
 
