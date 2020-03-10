@@ -1,6 +1,6 @@
 import React from 'react';
 import TopNav from '../components/topNav';
-import { Jumbotron, Row, Col, Image, Button} from 'react-bootstrap';
+import { Jumbotron, Row, Col, Image } from 'react-bootstrap';
 import '../styling/home.css';
 
 export default class HomePage extends React.Component {
@@ -33,7 +33,7 @@ export default class HomePage extends React.Component {
                             <b style={{ fontSize: 'calc(2.2vw + 0.6rem)' }}>Looking To Give Feedback?<br /></b>
                             <p style={{ fontSize: 'calc(0.6vw + 0.8rem)', width: '100%', margin: 'auto', marginTop: 'calc(1vw + 33.33px)', textAlign: 'left', lineHeight: '1.2', maxWidth: '600px', marginBottom: '20px', height: '16vw'}}>
                                 Your organization will provide you with an access code, which will take you to a dashboard where you can share your ideas.<br/><br/>
-                                You will be able to send private feedback, or join the discussion in one of the forums created by you organization. <br/><br/>
+                                You will be able to send private feedback, or join the discussion in one of the forums created by your organization. <br/><br/>
                                 Already have an access code? Enter it <a href='/access'>here</a>
                             </p>
                         </Col>

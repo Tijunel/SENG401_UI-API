@@ -1,6 +1,7 @@
 import React from 'react';
 import TopNav from '../components/topNav';
 import { Image, Form, Button } from 'react-bootstrap';
+import { Redirect } from 'react-router-dom';
 import '../styling/signIn.css';
 
 export default class SignInDashboard extends React.Component {
@@ -17,12 +18,37 @@ export default class SignInDashboard extends React.Component {
         //Then provide JWT and send to dashboard
     }
 
-    submitAccessCode = () => {
-        //Interact with the auth database and authenticate
-        //Then provide JWT and send to dashboard
+    submitInfo = () => {
+        //Check that info is in proper format and not empty
+        fetch('/api/authenticate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                email: this.emailForm.current.value,
+                password: this.passForm.current.value,
+                name: this.nameForm.current.value
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === '200') {
+                sessionStorage.setItem('name', res.name)
+                sessionStorage.setItem('email', res.email)
+                this.setState({ redirect: true })
+            }
+            //else handle errors for status 500 and 401
+            console.log(res.status)
+        })
+        .catch(err => {
+            //Handle error
+            console.log('Caught Error')
+        })
     }
 
     render = () => {
+        if (this.state.redirect) return <Redirect to='/dashboard' />
         return (
             <div id='signIn'>
                 <TopNav />
@@ -40,7 +66,7 @@ export default class SignInDashboard extends React.Component {
                         <Form.Control ref={this.passForm} className='control' placeholder='Password' type='password' required onKeyPress={this.handleKeyPress} />
                     </Form.Group>
                 </Form>
-                <Button className='submitButton' href='/dashboard' onClick={this.submitAccessCode}><b>Submit</b></Button>
+                <Button className='submitButton' onClick={this.submitInfo}><b>Submit</b></Button>
             </div>
         )
     }

@@ -1,10 +1,10 @@
 import React from 'react';
 import AccessDashTopNav from '../components/accessDashTopNav';
 import { Image, Form, Button } from 'react-bootstrap';
+import WithAuthAccess from '../components/withAuthAccess';
 import '../styling/accessDash.css';
-//Display this page when a company signs in
 
-export default class AccessDashboard extends React.Component {
+class AccessDashboard extends React.Component {
     constructor(props) {
         super(props);
         this.feedbackForm = React.createRef();
@@ -40,7 +40,7 @@ export default class AccessDashboard extends React.Component {
                     <b style={{ fontSize: 'calc(3.8vw + 0.6rem)' }}><br />Welcome!<br /></b>
                     <div>
                         <p style={{ fontSize: 'calc(0.6vw + 0.8rem)', width: '50%', margin: 'auto', marginTop: 'calc(1vw + 33.33px)', textAlign: 'left', lineHeight: '1.2', maxWidth: '900px', marginBottom: '40px' }}>
-                            You are now able to comment, respond to comments, and submit private feedback. Remember, all of your feedback is completely anonymous, so provide tell your organization what you really think!
+                            You are now able to comment, respond to comments, and submit private feedback. Remember, all of your feedback is completely anonymous, so tell your organization what you really think!
                             Just remember, keep it professional, civil, and respectful.
                         </p>
                     </div>
@@ -69,3 +69,5 @@ export default class AccessDashboard extends React.Component {
         }
     }
 }
+
+export default WithAuthAccess(AccessDashboard);

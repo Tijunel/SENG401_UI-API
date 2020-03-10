@@ -1,9 +1,10 @@
 import React from 'react';
 import DashTopNav from '../components/dashTopNav';
 import { Image, Form, Button } from 'react-bootstrap';
+import WithAuthCompany from '../components/withAuthCompany';
 import '../styling/corporateDash.css';
 
-export default class CorporateDashboard extends React.Component {
+class CorporateDashboard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -55,3 +56,5 @@ export default class CorporateDashboard extends React.Component {
         }
     }
 }
+
+export default WithAuthCompany(CorporateDashboard)
