@@ -16,18 +16,40 @@ export default class SignUpPage extends React.Component {
         }
     }
 
-    handleKeyPress = () => {
-        //Handle pressing enter key
-        //If there are still empty forms, move cursor to them
-        //Otherwise, interact with auth service and create a new account
-        //Then serve JWT and send to dashboard
+    componentDidMount = () => {
+        this.emailForm.current.focus();
+    }
 
-        //Also handle non-matching passwords and emails that are not valid emails
+    handleKeyPress = (event) => {
+        if(event.key === 'Enter') {
+            event.preventDefault();
+            if(this.emailForm.current.value === '') this.emailForm.current.focus();
+            else if(this.nameForm.current.value === '') this.nameForm.current.focus();
+            else if(this.passForm.current.value === '') this.passForm.current.focus();
+            else if(this.rePassForm.current.value === '') this.passForm.current.focus();
+            else if(this.rePassForm.current.value !== this.passForm.current.value) return; //Show error saying passwords don't match
+            else this.submitInfo();
+        }
     }
 
     submitInfo = () => {
-        //Check that info is in proper format and not empty
-        fetch('/api/createAccount', {
+        let email = this.emailForm.current.value === '';
+        let name = this.nameForm.current.value === '';
+        let pass = this.passForm.current.value === '';
+        let rePass = this.rePassForm.current.value === '';
+        if (email && name && pass && rePass) {
+            //Show modal saying all fields are empty
+            return;
+        }
+        else if (email || name || pass || rePass) {
+            //Show modal saying that there are empty fields
+            return;
+        }
+        if (this.passForm.current.value !== this.rePassForm.current.value) {
+            //Show error saying that passwords do not match
+            return
+        }
+        fetch('/api/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -35,18 +57,15 @@ export default class SignUpPage extends React.Component {
             body: JSON.stringify({
                 email: this.emailForm.current.value,
                 password: this.passForm.current.value,
-                name: this.nameForm.current.value
+                username: this.nameForm.current.value
             })
         })
         .then(res => res.json())
         .then(res => {
-            if (res.status === '200') {
-                sessionStorage.setItem('name', res.name)
-                sessionStorage.setItem('email', res.email)
-                this.setState({ redirect: true })
-            }
+            sessionStorage.setItem('name', res.name)
+            sessionStorage.setItem('email', res.email)
+            this.setState({ redirect: true })
             //else handle errors for status 500 and 401
-            console.log(res.status)
         })
         .catch(err => {
             //Handle error

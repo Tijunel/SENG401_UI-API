@@ -9,18 +9,28 @@ export default class SignInDashboard extends React.Component {
         super(props);
         this.emailForm = React.createRef();
         this.passForm = React.createRef();
+        this.state = {
+            redirect: false
+        }
     }
 
-    handleKeyPress = () => {
-        //If there is still a form that is not filled, move the cursor to it (Only handle enter key)
-        //Also check if there is a valid email
-        //Otherwise, interact with the auth database and authenticate
-        //Then provide JWT and send to dashboard
+    componentDidMount = () => {
+        this.emailForm.current.focus();
+    }
+
+    handleKeyPress = (event) => {
+        if(event.key === 'Enter') {
+            event.preventDefault();
+            if(this.passForm.current.value === '') this.passwordForm.current.focus();
+            else if(this.emailForm.current.value === '') this.emailForm.current.focus();
+            else this.submitInfo();
+        }
     }
 
     submitInfo = () => {
-        //Check that info is in proper format and not empty
-        fetch('/api/authenticate', {
+        if(this.passForm.current.value === '') return; //Show error saying password is empty
+        else if(this.emailForm.current.value === '') return; //Show error saying email is empty
+        fetch('/api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -28,22 +38,18 @@ export default class SignInDashboard extends React.Component {
             body: JSON.stringify({
                 email: this.emailForm.current.value,
                 password: this.passForm.current.value,
-                name: this.nameForm.current.value
             })
         })
         .then(res => res.json())
         .then(res => {
-            if (res.status === '200') {
-                sessionStorage.setItem('name', res.name)
-                sessionStorage.setItem('email', res.email)
-                this.setState({ redirect: true })
-            }
+            sessionStorage.setItem('name', res.name)
+            sessionStorage.setItem('email', res.email)
+            this.setState({ redirect: true })
             //else handle errors for status 500 and 401
-            console.log(res.status)
         })
         .catch(err => {
             //Handle error
-            console.log('Caught Error')
+            console.log(err)
         })
     }
 
