@@ -19,17 +19,17 @@ export default class SignInDashboard extends React.Component {
     }
 
     handleKeyPress = (event) => {
-        if(event.key === 'Enter') {
+        if (event.key === 'Enter') {
             event.preventDefault();
-            if(this.passForm.current.value === '') this.passwordForm.current.focus();
-            else if(this.emailForm.current.value === '') this.emailForm.current.focus();
+            if (this.passForm.current.value === '') this.passwordForm.current.focus();
+            else if (this.emailForm.current.value === '') this.emailForm.current.focus();
             else this.submitInfo();
         }
     }
 
     submitInfo = () => {
-        if(this.passForm.current.value === '') return; //Show error saying password is empty
-        else if(this.emailForm.current.value === '') return; //Show error saying email is empty
+        if (this.passForm.current.value === '') return; //Show error saying password is empty
+        else if (this.emailForm.current.value === '') return; //Show error saying email is empty
         fetch('/api/login', {
             method: 'POST',
             headers: {
@@ -40,17 +40,17 @@ export default class SignInDashboard extends React.Component {
                 password: this.passForm.current.value,
             })
         })
-        .then(res => res.json())
-        .then(res => {
-            sessionStorage.setItem('name', res.name)
-            sessionStorage.setItem('email', res.email)
-            this.setState({ redirect: true })
-            //else handle errors for status 500 and 401
-        })
-        .catch(err => {
-            //Handle error
-            console.log(err)
-        })
+            .then(res => res.json())
+            .then(res => {
+                sessionStorage.setItem('name', res.name)
+                sessionStorage.setItem('email', res.email)
+                this.setState({ redirect: true })
+                //else handle errors for status 500 and 401
+            })
+            .catch(err => {
+                //Handle error
+                console.log(err)
+            })
     }
 
     render = () => {
@@ -59,8 +59,8 @@ export default class SignInDashboard extends React.Component {
             <div id='signIn'>
                 <TopNav />
                 <Image src={require('../assets/signIn.svg')} style={{ width: '70vw', minWidth: '150px', maxWidth: '600px', textAlign: 'center', marginTop: '80px' }} />
-                <p style={{ fontSize: 'calc(0.6vw + 0.8rem)', width: '50%', margin: 'auto', marginTop: 'calc(1vw + 33.33px)', textAlign: 'left', lineHeight: '1.2', maxWidth: '700px', marginBottom: '40px'}}>
-                    Your feedback is waiting! We just need some information first. 
+                <p style={{ fontSize: 'calc(0.6vw + 0.8rem)', width: '50%', margin: 'auto', marginTop: 'calc(1vw + 33.33px)', textAlign: 'left', lineHeight: '1.2', maxWidth: '700px', marginBottom: '40px' }}>
+                    Your feedback is waiting! We just need some information first.
                 </p>
                 <Form className="form">
                     <Form.Group controlId="email">

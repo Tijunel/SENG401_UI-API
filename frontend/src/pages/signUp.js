@@ -21,13 +21,13 @@ export default class SignUpPage extends React.Component {
     }
 
     handleKeyPress = (event) => {
-        if(event.key === 'Enter') {
+        if (event.key === 'Enter') {
             event.preventDefault();
-            if(this.emailForm.current.value === '') this.emailForm.current.focus();
-            else if(this.nameForm.current.value === '') this.nameForm.current.focus();
-            else if(this.passForm.current.value === '') this.passForm.current.focus();
-            else if(this.rePassForm.current.value === '') this.passForm.current.focus();
-            else if(this.rePassForm.current.value !== this.passForm.current.value) return; //Show error saying passwords don't match
+            if (this.emailForm.current.value === '') this.emailForm.current.focus();
+            else if (this.nameForm.current.value === '') this.nameForm.current.focus();
+            else if (this.passForm.current.value === '') this.passForm.current.focus();
+            else if (this.rePassForm.current.value === '') this.passForm.current.focus();
+            else if (this.rePassForm.current.value !== this.passForm.current.value) return; //Show error saying passwords don't match
             else this.submitInfo();
         }
     }
@@ -60,26 +60,26 @@ export default class SignUpPage extends React.Component {
                 username: this.nameForm.current.value
             })
         })
-        .then(res => res.json())
-        .then(res => {
-            sessionStorage.setItem('name', res.name)
-            sessionStorage.setItem('email', res.email)
-            this.setState({ redirect: true })
-            //else handle errors for status 500 and 401
-        })
-        .catch(err => {
-            //Handle error
-            console.log('Caught Error')
-        })
+            .then(res => res.json())
+            .then(res => {
+                sessionStorage.setItem('name', res.name)
+                sessionStorage.setItem('email', res.email)
+                this.setState({ redirect: true })
+                //else handle errors for status 500 and 401
+            })
+            .catch(err => {
+                //Handle error
+                console.log('Caught Error')
+            })
     }
 
     render = () => {
         if (this.state.redirect) return <Redirect to='/dashboard' />
         return (
             <div id='signUp'>
-                <TopNav/>
-                <Image src={require('../assets/signUp.svg')} style={{ width: '70vw', minWidth: '150px', maxWidth: '600px', textAlign: 'center', marginTop: '80px'}} />
-                <p style={{ fontSize: 'calc(0.6vw + 0.8rem)', width: '50%', margin: 'auto', marginTop: 'calc(1vw + 33.33px)', textAlign: 'left', lineHeight: '1.2', maxWidth: '700px', marginBottom: '40px'}}>
+                <TopNav />
+                <Image src={require('../assets/signUp.svg')} style={{ width: '70vw', minWidth: '150px', maxWidth: '600px', textAlign: 'center', marginTop: '80px' }} />
+                <p style={{ fontSize: 'calc(0.6vw + 0.8rem)', width: '50%', margin: 'auto', marginTop: 'calc(1vw + 33.33px)', textAlign: 'left', lineHeight: '1.2', maxWidth: '700px', marginBottom: '40px' }}>
                     We're excited to bring you onboard! We just need some information to get you started, your feedback is on its way!
                 </p>
                 <Form className="form">
@@ -89,17 +89,17 @@ export default class SignUpPage extends React.Component {
                 </Form>
                 <Form className="form">
                     <Form.Group controlId="name">
-                        <Form.Control ref={this.nameForm} className='control' placeholder='Organization Name' type='text' required onKeyPress={this.handleKeyPress}/>
+                        <Form.Control ref={this.nameForm} className='control' placeholder='Organization Name' type='text' required onKeyPress={this.handleKeyPress} />
                     </Form.Group>
                 </Form>
                 <Form className="form">
                     <Form.Group controlId="password">
-                        <Form.Control ref={this.passForm} className='control' placeholder='Password' type='password' required onKeyPress={this.handleKeyPress}/>
+                        <Form.Control ref={this.passForm} className='control' placeholder='Password' type='password' required onKeyPress={this.handleKeyPress} />
                     </Form.Group>
                 </Form>
                 <Form className="form">
                     <Form.Group controlId="password">
-                        <Form.Control ref={this.rePassForm} className='control' placeholder='Re-Enter Password' type='password' required onKeyPress={this.handleKeyPress}/>
+                        <Form.Control ref={this.rePassForm} className='control' placeholder='Re-Enter Password' type='password' required onKeyPress={this.handleKeyPress} />
                     </Form.Group>
                 </Form>
                 <Button className='submitButton' onClick={this.submitInfo}><b>Submit</b></Button>

@@ -39,10 +39,10 @@ router.post("/signup", async (req, res) => {
 
         const payload = { password };
 
-        jwt.sign(payload, "CompanySecret", { expiresIn: '10m'}, (err, token) => {
+        jwt.sign(payload, "CompanySecret", { expiresIn: '10m' }, (err, token) => {
             if (err) throw err;
             res.cookie('token', token, { httpOnly: true });
-            res.status(200).json({ 
+            res.status(200).json({
                 name: user.name,
                 email: user.email
             });
@@ -68,10 +68,10 @@ router.post("/login", async (req, res) => {
 
         const payload = { password };
 
-        jwt.sign(payload, "CompanySecret", { expiresIn: '30m'}, (err, token) => {
+        jwt.sign(payload, "CompanySecret", { expiresIn: '30m' }, (err, token) => {
             if (err) throw err;
             res.cookie('token', token, { httpOnly: true });
-            res.status(200).json({ 
+            res.status(200).json({
                 email: user.email,
                 name: user.name
             });
@@ -81,9 +81,9 @@ router.post("/login", async (req, res) => {
     }
 });
 
-// router.post("/checkAccessToken", withAccessAuth, (req, res) => {
-//     res.sendStatus(200);
-// });
+router.post("/checkAccessToken", withAccessAuth, (req, res) => {
+    res.sendStatus(200);
+});
 
 router.post("/checkCompanyToken", withCompanyAuth, (req, res) => {
     res.sendStatus(200);
@@ -93,23 +93,5 @@ router.post("/checkCompanyToken", withCompanyAuth, (req, res) => {
 router.post('/stopSession', (req, res) => {
 
 })
-
-// router.get("/me", auth, async (req, res) => {
-//     try {
-//         // request.user is getting fetched from Middleware after token authentication
-//         const user = await User.findById(req.user.id);
-//         res.json(user);
-//     } catch (e) {
-//         res.send({ message: "Error in Fetching user" });
-//     }
-// });
-
-// router.get("/robots", auth, async (req, res) => {
-//     try {
-//         res.json({ message: "beepboop" });
-//     } catch (e) {
-//         res.send({ message: "Error Beep Boop" });
-//     }
-// });
 
 module.exports = router;
