@@ -3,7 +3,10 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const router = express.Router();
+const auth = require('../middleware/auth');
+const Forum = require('../model/Forum');
 const User = require("../model/User");
+const randomize = require("randomatic")
 
 const withAccessAuth = require('../middleware/auth')[0];
 const withCompanyAuth = require('../middleware/auth')[1];
@@ -32,9 +35,58 @@ router.post("/signup", async (req, res) => {
             password
         });
 
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(password, salt);
-        await user.save();
+            const salt = await bcrypt.genSalt(10);
+            user.password = await bcrypt.hash(password, salt);
+
+            await user.save();
+
+            const payload = {
+                user: {
+                    id: user.id
+                }
+            };
+
+            jwt.sign(
+                payload,
+                "secret",
+                {
+                    expiresIn: 10000
+                },
+                (err, token) => {
+                    if (err) {
+                        throw err;
+                    }
+                    res.status(200).json({
+                        token
+                    });
+                }
+            );
+
+
+        } catch (err) {
+            console.log(err.message);
+            res.status(500).send("Error in Saving");
+        }
+    }
+)
+
+
+router.post(
+    "/login",
+    [
+        check("email", "Please enter a valid email").isEmail(),
+        check("password", "Please enter a valid password").isLength({
+            min: 6
+        })
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(400).json({
+                errors: errors.array()
+            });
+        }
 
         const payload = { password };
 
@@ -50,6 +102,31 @@ router.post("/signup", async (req, res) => {
         res.status(500).send("Error in Saving");
     }
 });
+);
+
+router.post("/subcompany",
+    auth,
+    async (req, res) => {
+        try {
+            await User.findOneAndUpdate({ _id: req.user.id }, {
+                $push: {
+                    forums: {
+                        name: req.body.name,
+                        accessCode: randomize('A0', 8)
+                    }
+                }
+            });
+            res.status(200).json({
+                message: "Success"
+            })
+        }
+        catch (e) {
+            console.log(e);
+            res.send({ message: "Error in Adding Forum" })
+        }
+
+    }
+);
 
 router.post("/login", async (req, res) => {
     const errors = validationResult(req);
