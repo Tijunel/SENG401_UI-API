@@ -26,7 +26,7 @@ export default class SignUpPage extends React.Component {
             if (this.emailForm.current.value === '') this.emailForm.current.focus();
             else if (this.nameForm.current.value === '') this.nameForm.current.focus();
             else if (this.passForm.current.value === '') this.passForm.current.focus();
-            else if (this.rePassForm.current.value === '') this.passForm.current.focus();
+            else if (this.rePassForm.current.value === '') this.rePassForm.current.focus();
             else if (this.rePassForm.current.value !== this.passForm.current.value) return; //Show error saying passwords don't match
             else this.submitInfo();
         }
