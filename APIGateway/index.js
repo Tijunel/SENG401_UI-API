@@ -24,14 +24,14 @@ app.use(session({
 }));
 app.use(cookieParser());
 
-app.get("/api", (req, res) => {
+app.get("/", (req, res) => {
     res.json({ message: "API Working" });
 });
 
-app.use("/api/user", user);
-app.use("/api/access", access);
-app.use("/api/forum", forum);
-app.use("/api/feedback", feedback);
+app.use("/user", user);
+app.use("/access", access);
+app.use("/forum", forum);
+app.use("/feedback", feedback);
 
 app.listen(PORT, (req, res) => {
     console.log(`Server Listening on Port ${PORT}`)
