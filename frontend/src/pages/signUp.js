@@ -49,7 +49,7 @@ export default class SignUpPage extends React.Component {
             //Show error saying that passwords do not match
             return
         }
-        fetch('/api/signup', {
+        fetch('/api/user/signup', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -64,12 +64,13 @@ export default class SignUpPage extends React.Component {
             .then(res => {
                 sessionStorage.setItem('name', res.name)
                 sessionStorage.setItem('email', res.email)
+                sessionStorage.setItem('id', res.id)
                 this.setState({ redirect: true })
-                //else handle errors for status 500 and 401
+                //Handle errors 
             })
             .catch(err => {
                 //Handle error
-                console.log('Caught Error')
+                console.log(err)
             })
     }
 

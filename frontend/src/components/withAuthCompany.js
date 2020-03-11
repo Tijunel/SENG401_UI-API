@@ -12,7 +12,7 @@ export default function WithAuthCompany(ComponentToProtect) {
         }
 
         periodicallyCheckToken = () => {
-            fetch('/api/checkCompanyToken', {
+            fetch('/api/user/checkCompanyToken', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -29,7 +29,7 @@ export default function WithAuthCompany(ComponentToProtect) {
         }
 
         componentDidMount = () => {
-            fetch('/api/checkCompanyToken', {
+            fetch('/api/user/checkCompanyToken', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

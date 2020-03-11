@@ -28,13 +28,10 @@ app.get("/api", (req, res) => {
     res.json({ message: "API Working" });
 });
 
-app.use("/access", access);
-
-app.use("/user", user);
-
-app.use("/forum", forum);
-
-app.use("/feedback", feedback);
+app.use("/api/user", user);
+app.use("/api/access", access);
+app.use("/api/forum", forum);
+app.use("/api/feedback", feedback);
 
 app.listen(PORT, (req, res) => {
     console.log(`Server Listening on Port ${PORT}`)

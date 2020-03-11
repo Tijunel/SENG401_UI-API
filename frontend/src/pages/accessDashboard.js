@@ -9,7 +9,8 @@ class AccessDashboard extends React.Component {
         super(props);
         this.feedbackForm = React.createRef();
         this.state = {
-            showForum: true
+            showForum: true, 
+            showIntro: true
         }
     }
 

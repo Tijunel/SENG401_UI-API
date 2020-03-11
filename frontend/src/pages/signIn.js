@@ -30,7 +30,7 @@ export default class SignInDashboard extends React.Component {
     submitInfo = () => {
         if (this.passForm.current.value === '') return; //Show error saying password is empty
         else if (this.emailForm.current.value === '') return; //Show error saying email is empty
-        fetch('/api/login', {
+        fetch('/api/user/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -44,6 +44,7 @@ export default class SignInDashboard extends React.Component {
             .then(res => {
                 sessionStorage.setItem('name', res.name)
                 sessionStorage.setItem('email', res.email)
+                sessionStorage.setItem('id', res.id)
                 this.setState({ redirect: true })
                 //else handle errors for status 500 and 401
             })

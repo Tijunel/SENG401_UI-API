@@ -7,12 +7,12 @@ export default function WithAuthAccess(ComponentToProtect) {
             super();
             this.state = {
                 loading: false,
-                redirect: true
+                redirect: false
             }
         }
 
         periodicallyCheckToken = () => {
-            fetch('/api/checkAccessToken', {
+            fetch('/api/access/checkAccessToken', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -31,7 +31,7 @@ export default function WithAuthAccess(ComponentToProtect) {
         }
 
         componentDidMount = () => {
-            fetch('/api/checkAccessToken', {
+            fetch('/api/access/checkAccessToken', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
