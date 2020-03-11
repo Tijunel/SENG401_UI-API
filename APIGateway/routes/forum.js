@@ -53,7 +53,7 @@ router.post('/topic', withCompanyAuth, async (req, res) => {
 })
 
 
-router.post('/comment', withAccessAuth, async (req, res) => {
+router.post('/comment', async (req, res) => {  //TODO: add access auth
     try {
         let args = JSON.stringify({
             parentID: req.body.parentID,
