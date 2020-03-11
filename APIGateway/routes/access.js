@@ -43,7 +43,9 @@ access.post("/auth", async(req, res) => {
             if (err) throw err;
             res.cookie('token', token, { httpOnly: true })
             res.status(200).json({
-                name: forum[0].name
+                name: forum[0].name,
+                companyID: user.id,
+                forumID: forum[0].id
             });
         });
     } catch (err) {

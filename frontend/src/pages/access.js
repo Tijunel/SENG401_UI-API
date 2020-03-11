@@ -27,6 +27,8 @@ export default class AccessPage extends React.Component {
             .then(res => res.json())
             .then(res => {
                 sessionStorage.setItem('forumName', res.name)
+                sessionStorage.setItem('forumID', res.forumID)
+                sessionStorage.setItem('companyID', res.companyID)
                 this.setState({ redirect: true })
             })
             .catch(err => {

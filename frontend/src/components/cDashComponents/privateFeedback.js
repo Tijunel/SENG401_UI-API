@@ -4,7 +4,26 @@ export default class CorporatePrivateFeedback extends React.Component {
     constructor(props) {
         super(props);
     }
-    
+
+    componentWillMount = () => {
+        fetch('/api/feedback/getFeedback', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                companyID: sessionStorage.getItem('companyID'),
+            })
+        })
+            .then(res => res.json())
+            .then(res => {
+                //Show confirmation or error modal
+            })
+            .catch(err => {
+                console.log(err) //Show error modal
+            });
+    }
+
     render = () => {
         return (
             <div id='corporateDash'>

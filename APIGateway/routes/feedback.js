@@ -2,69 +2,59 @@ const express = require("express");
 const router = express.Router();
 const http = require("http");
 const IP = require("../config/connections");
-const authAccessCode = require("../middleware/authAccessCode")
-const auth = require("../middleware/auth")
+const withAccessAuth = require('../middleware/auth')[0];
+const withCompanyAuth = require('../middleware/auth')[1];
 
-router.get("/test", async (req, res) => {
-    let options = {
-        host: IP.feedbackServiceIP,
-        port: IP.feedbackServicePort,
-        path: '/feedback/test',
-        method: 'GET',
-    };
-
+router.post("/getFeedback", withCompanyAuth, async (req, res) => {
     try {
-        http.request(options, (httpResp) => {
-            httpResp.on('data', (data) => {
-                res.send(JSON.parse(data));
-            });
-        }).end();
-    }
-    catch (e) {
-
-    }
-});
-
-router.get("/", auth, async (req, res) => {
-    try {
+        let data = JSON.stringify({
+            companyID: req.body.companyID
+        });
 
         let options = {
-            host: IP.feedbackServiceIP,
-            port: IP.feedbackServicePort,
-            path: '/feedback/' + req.user.id,
-            method: 'GET',
+            host: '127.0.0.1',
+            port: 5000,
+            path: '/feedback/getFeedback',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': data.length
+            }
         };
 
-        http.request(options, (newRes) => {
+        let newReq = http.request(options, (newRes) => {
             newRes.on('data', (data) => {
                 res.json(data);
             });
-        }).end();
-
+        });
+        newReq.on('error', error => {
+            console.error(error)
+        })
+        newReq.write(data)
+        newReq.end()
     } catch (e) {
         res.status(401).send("Error fetching feedback.")
     }
 
 })
 
-router.post("/", authAccessCode, async (req, res) => {
+router.post("/submitFeedback", withAccessAuth, async (req, res) => {
     try {
-
-        let args = JSON.stringify({
-            companyID: req.forum.companyID,
-            forumID: req.forum.forumID,
-            forumName: req.forum.forumName,
-            message: req.message
+        let data = JSON.stringify({
+            companyID: req.body.companyID,
+            forumID: req.body.forumID,
+            forumName: req.body.forumName,
+            message: req.body.message
         })
 
         let options = {
-            host: IP.feedbackServiceIP,
-            port: IP.feedbackServicePort,
-            path: '/feedback',
+            host: '127.0.0.1',
+            port: 5000,
+            path: '/feedback/submitFeedback',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Content-Length': args.length
+                'Content-Length': data.length
             }
         };
 
@@ -74,12 +64,14 @@ router.post("/", authAccessCode, async (req, res) => {
             });
         })
 
-        newReq.write(args)
+        newReq.on('error', function (e) {
+            console.error(e);
+        });
+        newReq.write(data)
         newReq.end()
-
     } catch (e) {
         res.status(401).send("Error posting feedback.")
     }
-})
+});
 
 module.exports = router;

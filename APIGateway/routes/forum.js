@@ -2,10 +2,8 @@ const express = require("express");
 const router = express.Router();
 const IP = require("../config/connections")
 const http = require("http")
-const auth = require("../middleware/auth")
-const authAccessCode = require("../middleware/authAccessCode")
-
-
+const withAccessAuth = require('../middleware/auth')[0];
+const withCompanyAuth = require('../middleware/auth')[1];
 
 router.get('/test', async (req, res) => {
     let options = {
@@ -21,9 +19,8 @@ router.get('/test', async (req, res) => {
     }).end();
 })
 
-router.post('/topic', auth, async (req, res) => {
+router.post('/topic', withCompanyAuth, async (req, res) => {
     try {
-
         let args = JSON.stringify({
             forumID: req.body.forumID,
             topicName: req.body.topicName,
@@ -48,16 +45,14 @@ router.post('/topic', auth, async (req, res) => {
 
         newReq.write(args)
         newReq.end()
-
     } catch (e) {
         res.status(401).send("Error creating topic.")
     }
 })
 
 
-router.post('/comment', async (req, res) => { //TODO: add access code auth
+router.post('/comment', withAccessAuth, async (req, res) => { //TODO: add access code auth
     try {
-
         let args = JSON.stringify({
             parentID: req.body.parentID,
             message: req.body.message
@@ -82,7 +77,6 @@ router.post('/comment', async (req, res) => { //TODO: add access code auth
 
         newReq.write(args)
         newReq.end()
-
     } catch (e) {
         console.log(e)
         res.status(401).send("Error creating comment.")

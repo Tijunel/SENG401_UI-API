@@ -44,7 +44,7 @@ export default class SignInDashboard extends React.Component {
             .then(res => {
                 sessionStorage.setItem('name', res.name)
                 sessionStorage.setItem('email', res.email)
-                sessionStorage.setItem('id', res.id)
+                sessionStorage.setItem('CompanyID', res.id)
                 this.setState({ redirect: true })
                 //else handle errors for status 500 and 401
             })
