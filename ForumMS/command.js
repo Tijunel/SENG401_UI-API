@@ -1,12 +1,12 @@
-const eventHandler = require("../eventHandler");
+const eventHandler = require("./eventHandler");
 const express = require("express");
 const router = express.Router();
-const{uuidv4} = require("uuid");
+const { uuidv4 } = require("uuid");
 
 const app = express();
 
 app.post("/forum", (req, res) => {
-    if(!req.body.compID || !req.body.forumID || !req.body.Name){
+    if (!req.body.compID || !req.body.forumID || !req.body.Name) {
         res.status(400).send('Invalid forum format!');
         return;
     }
@@ -17,11 +17,11 @@ app.post("/forum", (req, res) => {
         forumID: req.body.forumID,
         forumName: req.body.Name
     };
-    eventHandler.forum(JSON.stringify(dictForum));
+    eventHandler(JSON.stringify(dictForum));
 });
 
 app.post("/topic", (req, res) => {
-    if(!req.body.forumID || !req.body.Name){
+    if (!req.body.forumID || !req.body.Name) {
         res.status(400).send('Invalid topic format!');
         return;
     }
@@ -38,7 +38,7 @@ app.post("/topic", (req, res) => {
 });
 
 app.post("/comment", (req, res) => {
-    if(!req.body.parentID || !req.body.message){
+    if (!req.body.parentID || !req.body.message) {
         res.status(400).send('Invalid comment format!');
         return;
     }
@@ -47,7 +47,7 @@ app.post("/comment", (req, res) => {
         command: "create comment",
         parentID: req.body.parentID,
         message: req.body.message
-    }; 
+    };
     eventHandler.forum(JSON.stringify(dictComment));
 });
 

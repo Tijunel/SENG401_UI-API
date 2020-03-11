@@ -4,6 +4,8 @@ const IP = require("../config/connections")
 const http = require("http")
 const withAccessAuth = require('../middleware/auth')[0];
 const withCompanyAuth = require('../middleware/auth')[1];
+const { forumServiceIP, forumServicePort } = require('../config/connections')
+
 
 router.get('/test', async (req, res) => {
     let options = {
@@ -51,7 +53,7 @@ router.post('/topic', withCompanyAuth, async (req, res) => {
 })
 
 
-router.post('/comment', withAccessAuth, async (req, res) => { //TODO: add access code auth
+router.post('/comment', withAccessAuth, async (req, res) => {
     try {
         let args = JSON.stringify({
             parentID: req.body.parentID,
@@ -69,16 +71,11 @@ router.post('/comment', withAccessAuth, async (req, res) => { //TODO: add access
             }
         };
 
-        let newReq = http.request(options, (newRes) => {
-            newRes.on('data', (data) => {
-                res.json(data);
-            });
-        })
+        let newReq = http.request(options)
 
         newReq.write(args)
         newReq.end()
     } catch (e) {
-        console.log(e)
         res.status(401).send("Error creating comment.")
     }
 })
