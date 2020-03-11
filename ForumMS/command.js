@@ -1,11 +1,9 @@
-const eventHandler = require("../eventHandler");
+const eventHandler = require("./eventHandler");
 const express = require("express");
 const router = express.Router();
 const{uuidv4} = require("uuid");
 
-const app = express();
-
-app.post("/forum", (req, res) => {
+router.post("/forum", (req, res) => {
     if(!req.body.compID || !req.body.forumID || !req.body.Name){
         res.status(400).send('Invalid forum format!');
         return;
@@ -20,7 +18,7 @@ app.post("/forum", (req, res) => {
     eventHandler.forum(JSON.stringify(dictForum));
 });
 
-app.post("/topic", (req, res) => {
+router.post("/topic", (req, res) => {
     if(!req.body.forumID || !req.body.Name){
         res.status(400).send('Invalid topic format!');
         return;
@@ -37,7 +35,7 @@ app.post("/topic", (req, res) => {
     eventHandler.forum(JSON.stringify(dictTopic));
 });
 
-app.post("/comment", (req, res) => {
+router.post("/comment", (req, res) => {
     if(!req.body.parentID || !req.body.message){
         res.status(400).send('Invalid comment format!');
         return;
