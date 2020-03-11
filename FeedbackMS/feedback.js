@@ -115,6 +115,31 @@ router.post("/postfeedback", async (req, res) => {
   }
 });
 
+router.get("/getfeedback", async (req, res) => {
+  try {
+    var companyID = req.body.companyID;
+    var forumID = req.body.forumID;
+
+    var selectForumRef = firebase
+      .database()
+      .ref("feedback")
+      .child("companies")
+      .child(companyID)
+      .child(forumID)
+      .child("messages");
+
+    selectForumRef.once("value", function(data) {
+      res.json(data);
+    });
+
+    //var name = req.body.forumName;
+  } catch (e) {
+    res.send({
+      message: "Error Beep Boop"
+    });
+  }
+});
+
 /*router.get("/test3", async (req, res) => {
   try {
     var testCodeRef = firebase
