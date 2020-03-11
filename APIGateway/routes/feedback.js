@@ -4,6 +4,7 @@ const http = require("http");
 const IP = require("../config/connections");
 const withAccessAuth = require('../middleware/auth')[0];
 const withCompanyAuth = require('../middleware/auth')[1];
+const { feedbackServiceIP, feedbackServicePort } = require('../config/connections')
 
 router.post("/getFeedback", withCompanyAuth, async (req, res) => {
     try {
@@ -12,8 +13,8 @@ router.post("/getFeedback", withCompanyAuth, async (req, res) => {
         });
 
         let options = {
-            host: '127.0.0.1',
-            port: 5000,
+            host: feedbackServiceIP,
+            port: feedbackServicePort,
             path: '/feedback/getFeedback',
             method: 'POST',
             headers: {
@@ -48,8 +49,8 @@ router.post("/submitFeedback", withAccessAuth, async (req, res) => {
         })
 
         let options = {
-            host: '127.0.0.1',
-            port: 5000,
+            host: feedbackServiceIP,
+            port: feedbackServicePort,
             path: '/feedback/submitFeedback',
             method: 'POST',
             headers: {

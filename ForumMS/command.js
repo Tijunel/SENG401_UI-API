@@ -1,7 +1,7 @@
 const eventHandler = require("./eventHandler");
 const express = require("express");
 const router = express.Router();
-const{uuidv4} = require("uuid");
+const { uuidv4 } = require("uuid");
 
 router.post("/forum", (req, res) => {
     if(!req.body.compID || !req.body.forumID || !req.body.Name){
@@ -15,7 +15,7 @@ router.post("/forum", (req, res) => {
         forumID: req.body.forumID,
         forumName: req.body.Name
     };
-    eventHandler.forum(JSON.stringify(dictForum));
+    eventHandler(JSON.stringify(dictForum));
 });
 
 router.post("/topic", (req, res) => {
@@ -45,7 +45,7 @@ router.post("/comment", (req, res) => {
         command: "create comment",
         parentID: req.body.parentID,
         message: req.body.message
-    }; 
+    };
     eventHandler.forum(JSON.stringify(dictComment));
 });
 
