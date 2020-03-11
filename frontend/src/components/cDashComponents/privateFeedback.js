@@ -14,7 +14,7 @@ export default class CorporatePrivateFeedback extends React.Component {
             body: JSON.stringify({
                 companyID: sessionStorage.getItem('companyID'),
             })
-        })
+        }) //Check status codes
             .then(res => res.json())
             .then(res => {
                 //Show confirmation or error modal

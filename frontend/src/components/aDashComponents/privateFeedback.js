@@ -20,7 +20,7 @@ export default class AccessPrivateFeedback extends React.Component {
                 forumName: sessionStorage.getItem('forumName'),
                 message: this.feedbackForm.current.value
             })
-        })
+        }) //Check status numbers
             .then(res => res.json())
             .then(res => {
                 //Show confirmation or error modal

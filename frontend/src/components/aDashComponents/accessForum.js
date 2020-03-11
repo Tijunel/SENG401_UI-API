@@ -8,6 +8,7 @@ export default class AccessForum extends React.Component {
 
     getStarted = () => {
         //Send to forum and show topics and comments
+        //Use local storage to remember if you have seen this
     }
 
     render = () => {

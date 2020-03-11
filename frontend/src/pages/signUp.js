@@ -59,14 +59,14 @@ export default class SignUpPage extends React.Component {
                 password: this.passForm.current.value,
                 username: this.nameForm.current.value
             })
-        })
+        }) //Check status codes
             .then(res => res.json())
             .then(res => {
                 sessionStorage.setItem('name', res.name)
                 sessionStorage.setItem('email', res.email)
                 sessionStorage.setItem('CompanyID', res.id)
                 this.setState({ redirect: true })
-                //Handle errors 
+                //Handle errors show modal
             })
             .catch(err => {
                 //Handle error

@@ -23,16 +23,17 @@ export default class CorporateForum extends React.Component {
             body: JSON.stringify({
                 id: sessionStorage.getItem('id')
             })
-        })
+        }) //Check status numbers
             .then(res => res.json())
             .then(res => {
                 if (res.forums.length > 0) {
                     this.setState({ showIntro: false })
                     this.generateForums(res.forums)
                 }
+                //Show confirmation or error modal
             })
             .catch(err => {
-                console.log(err)
+                console.log(err) //show error modal
             });
     }
 
