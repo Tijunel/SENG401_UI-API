@@ -1,12 +1,13 @@
-const pool = require('./eventDB')
+const getPool = require('./eventDB')
 
 function receive(data) {
-    pool.connect()
+    getPool().connect()
         .then(client => {
             client.query("INSERT INTO event (event) VALUES $1", [data])
                 .catch(error => {
                     return -1
                 })
+                client.release();
         })
         .catch(error => {
             return -1
