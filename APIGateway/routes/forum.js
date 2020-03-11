@@ -21,7 +21,7 @@ router.get('/test', async (req, res) => {
     }).end();
 })
 
-router.post('/topic', withCompanyAuth, async (req, res) => {
+router.post('/postTopic', withCompanyAuth, async (req, res) => {
     try {
         let args = JSON.stringify({
             forumID: req.body.forumID,
@@ -53,7 +53,7 @@ router.post('/topic', withCompanyAuth, async (req, res) => {
 })
 
 
-router.post('/comment', async (req, res) => {  //TODO: add access auth
+router.post('/postComment', async (req, res) => {  //TODO: add access auth
     try {
         let args = JSON.stringify({
             parentID: req.body.parentID,
@@ -78,6 +78,51 @@ router.post('/comment', async (req, res) => {  //TODO: add access auth
     } catch (e) {
         res.status(401).send("Error creating comment.")
     }
+})
+
+router.get("/getTopic/:id", async (req, res) => {
+    let options = {
+        host: IP.forumServiceIP,
+        port: IP.forumServicePort,
+        path: '/query/getTopic/' + req.params.id,
+        method: 'GET'
+    };
+
+    http.request(options, (newRes) => {
+        newRes.on('data', (data) => {
+            res.json(data);
+        });
+    })
+})
+
+router.get("/getForum/:id", withAccessAuth, async (req, res) => {
+    let options = {
+        host: IP.forumServiceIP,
+        port: IP.forumServicePort,
+        path: '/query/getForum/' + req.params.id,
+        method: 'GET'
+    };
+
+    http.request(options, (newRes) => {
+        newRes.on('data', (data) => {
+            res.json(data);
+        });
+    })
+})
+
+router.get("/getForumList/:id", withCompanyAuth, async (req, res) => {
+    let options = {
+        host: IP.forumServiceIP,
+        port: IP.forumServicePort,
+        path: '/query/getForumList/' + req.params.id,
+        method: 'GET'
+    };
+
+    http.request(options, (newRes) => {
+        newRes.on('data', (data) => {
+            res.json(data);
+        });
+    })
 })
 
 
