@@ -57,12 +57,7 @@ router.post("/getFeedback", async (req, res) => {
         i++;
       });
     });
-
-    console.log(allMessages)
-
-    selectForumRef.once("value", function (data) {
-      res.json(data);
-    });
+    res.json(allMessages)
   } catch (e) {
     res.send({
       message: "Error Beep Boop"

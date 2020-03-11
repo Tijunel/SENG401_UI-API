@@ -24,7 +24,7 @@ router.post("/getFeedback", withCompanyAuth, async (req, res) => {
 
         let newReq = http.request(options, (newRes) => {
             newRes.on('data', (data) => {
-                res.json(data);
+                res.json(JSON.parse(data));
             });
         });
         newReq.on('error', error => {

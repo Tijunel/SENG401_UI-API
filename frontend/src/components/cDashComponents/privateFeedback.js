@@ -18,6 +18,7 @@ export default class CorporatePrivateFeedback extends React.Component {
             .then(res => res.json())
             .then(res => {
                 //Show confirmation or error modal
+                console.log(res)
             })
             .catch(err => {
                 console.log(err) //Show error modal
