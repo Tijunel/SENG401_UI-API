@@ -46,7 +46,7 @@ user.post("/signup", async (req, res) => {
             if (err) throw err;
             res.cookie('token', token, { httpOnly: true })
             res.status(200).json({
-                name: user.name,
+                name: user.username,
                 email: user.email
             });
         });
@@ -81,7 +81,7 @@ user.post("/login", async (req, res) => {
             res.cookie('token', token, { httpOnly: true });
             res.status(200).json({
                 email: user.email,
-                name: user.name
+                name: user.username
             });
         });
     } catch (e) {

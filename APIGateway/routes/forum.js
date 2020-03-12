@@ -6,7 +6,6 @@ const withAccessAuth = require('../middleware/auth')[0];
 const withCompanyAuth = require('../middleware/auth')[1];
 const { forumServiceIP, forumServicePort } = require('../config/connections')
 
-
 router.get('/test', async (req, res) => {
     let options = {
         host: '10.13.60.26',
@@ -53,7 +52,7 @@ router.post('/postTopic', withCompanyAuth, async (req, res) => {
 })
 
 
-router.post('/postComment', async (req, res) => {  //TODO: add access auth
+router.post('/postComment', withAccessAuth, async (req, res) => {  //TODO: add access auth
     try {
         let args = JSON.stringify({
             parentID: req.body.parentID,
