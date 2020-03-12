@@ -19,7 +19,7 @@ router.get('/test', async (req, res) => {
             res.send(JSON.parse(data));
         });
     }).end();
-})
+});
 
 router.post('/postTopic', withCompanyAuth, async (req, res) => {
     try {

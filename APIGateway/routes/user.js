@@ -48,7 +48,7 @@ user.post("/signup", async (req, res) => {
             res.status(200).json({
                 name: user.name,
                 email: user.email,
-                id: user.id
+                // id: user.id
             });
         });
     } catch (err) {
@@ -57,6 +57,7 @@ user.post("/signup", async (req, res) => {
 });
 
 user.post("/login", async (req, res) => {
+    console.log("request made");
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
@@ -101,9 +102,9 @@ user.post("/createForum", withCompanyAuth, async (req, res) => {
                 }
             }
         });
-        res.status(200).json({ 
+        res.status(200).json({
             name: req.body.name,
-            accessCode: accessCode 
+            accessCode: accessCode
         })
     } catch (e) {
         res.send({ message: "Error in Adding Forum" })

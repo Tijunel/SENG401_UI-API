@@ -9,7 +9,7 @@ const { feedbackServiceIP, feedbackServicePort } = require('../config/connection
 router.post("/getFeedback", withCompanyAuth, async (req, res) => {
     try {
         let data = JSON.stringify({
-            companyID: req.body.companyID
+            companyID: req.forum.companyID
         });
 
         let options = {
@@ -42,9 +42,9 @@ router.post("/getFeedback", withCompanyAuth, async (req, res) => {
 router.post("/submitFeedback", withAccessAuth, async (req, res) => {
     try {
         let data = JSON.stringify({
-            companyID: req.body.companyID,
-            forumID: req.body.forumID,
-            forumName: req.body.forumName,
+            companyID: req.forum.companyID,
+            forumID: req.forum.forumID,
+            forumName: req.forum.forumName,
             message: req.body.message
         })
 
