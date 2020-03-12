@@ -7,6 +7,7 @@ const user = require("./routes/user");
 const access = require("./routes/access");
 const forum = require("./routes/forum");
 const feedback = require("./routes/feedback");
+const cors = require('cors')
 const InitiateMongoServer = require("./config/db")
 
 InitiateMongoServer();
@@ -14,6 +15,7 @@ InitiateMongoServer();
 const app = express();
 const PORT = process.env.PORT || 4000;
 
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(session({

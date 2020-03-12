@@ -21,7 +21,7 @@ export default class CorporateForum extends React.Component {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                id: sessionStorage.getItem('id')
+                // id: sessionStorage.getItem('id')
             })
         }) //Check status numbers
             .then(res => res.json())
@@ -38,9 +38,9 @@ export default class CorporateForum extends React.Component {
     }
 
     generateForums = (forums) => {
-        this.setState({forums: []})
+        this.setState({ forums: [] })
         for (const forum of forums) {
-            this.state.forums.push({name: forum.name, accessCode: forum.accessCode})
+            this.state.forums.push({ name: forum.name, accessCode: forum.accessCode })
         }
         for (const forum of this.state.forums) {
             this.forumUI.push(
@@ -53,7 +53,7 @@ export default class CorporateForum extends React.Component {
     }
 
     addForum = (name, accessCode) => {
-        this.state.forums.push({name: name, accessCode: accessCode})
+        this.state.forums.push({ name: name, accessCode: accessCode })
         this.forumUI = [];
         this.generateForums(this.state.forums)
     }
@@ -66,7 +66,7 @@ export default class CorporateForum extends React.Component {
             },
             body: JSON.stringify({
                 name: this.nameForm.current.value,
-                id: sessionStorage.getItem('id')
+                // id: sessionStorage.getItem('id')
             })
         })
             .then(res => res.json())
@@ -74,7 +74,7 @@ export default class CorporateForum extends React.Component {
                 let name = res.name
                 let accessCode = res.accessCode
                 this.addForum(name, accessCode)
-                this.setState({showIntro: false, showForumModal: false})
+                this.setState({ showIntro: false, showForumModal: false })
             })
             .catch(err => {
                 console.log(err)
@@ -87,8 +87,8 @@ export default class CorporateForum extends React.Component {
 
     render = () => {
         return (
-            <div id='corporateDash' style={{marginTop: '100px'}}>
-                <div style={{ display: (this.state.showIntro) ? '' : 'none'}}>
+            <div id='corporateDash' style={{ marginTop: '100px' }}>
+                <div style={{ display: (this.state.showIntro) ? '' : 'none' }}>
                     <Image src={require('../../assets/welcome.svg')} style={{ width: '70vw', minWidth: '150px', maxWidth: '600px', textAlign: 'center' }} />
                     <b style={{ fontSize: 'calc(3.8vw + 0.6rem)' }}><br />Welcome!<br /></b>
                     <div>
