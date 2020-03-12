@@ -14,6 +14,7 @@ export default class AccessForum extends React.Component {
             localStorage.setItem('showAccessIntro', true)
             this.setState({ showIntro: true })
         }
+        //Get comments here and generate UI
     }
 
     getStarted = () => {

@@ -34,7 +34,10 @@ export default class CorporatePrivateFeedback extends React.Component {
         this.generateFeedbackUI(res);
       })
       .catch(err => {
-        this.setState({ showModal: true });
+        this.setState({
+          showModal: true,
+          message: "Oops! Something went wrong!"
+        });
       });
   };
 
@@ -101,6 +104,7 @@ export default class CorporatePrivateFeedback extends React.Component {
         <ErrorModal
           showModal={this.state.showModal}
           message={this.state.message}
+          hideModal={this.hideModal}
         />
       </div>
     );
