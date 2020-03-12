@@ -1,11 +1,13 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
+import ErrorModal from '../errorModal';
 
 export default class CorporatePrivateFeedback extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            feedbackExists: false
+            feedbackExists: false,
+            showModal: false
         }
         this.feedback = [];
     }
@@ -16,14 +18,19 @@ export default class CorporatePrivateFeedback extends React.Component {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }) //Check status codes
+        }) 
+            .then(res => {
+                if(res.ok) {
+                    this.setState({showModal: true})
+                    return;
+                }
+            })
             .then(res => res.json())
             .then(res => {
-                //Show confirmation or error modal
                 this.generateFeedbackUI(res)
             })
             .catch(err => {
-                console.log(err) //Show error modal
+                this.setState({showModal: true})
             });
     }
 
@@ -79,6 +86,7 @@ export default class CorporatePrivateFeedback extends React.Component {
                 <div style={{ display: (this.state.feedbackExists) ? '' : 'none' }}>
                     {this.feedback}
                 </div>
+                <ErrorModal showModal={this.state.showModal}/>
             </div>
         )
     }
