@@ -64,7 +64,6 @@ export default class SignUpPage extends React.Component {
             .then(res => {
                 sessionStorage.setItem('name', res.name)
                 sessionStorage.setItem('email', res.email)
-                // sessionStorage.setItem('CompanyID', res.id)
                 this.setState({ redirect: true })
                 //Handle errors show modal
             })

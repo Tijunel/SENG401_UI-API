@@ -49,7 +49,7 @@ router.post("/getFeedback", async (req, res) => {
       var i = 0;
       snapshot.forEach((child) => {
         let forumName = child.val().name
-        allMessages.push({forumName: forumName, messages: []}) //Change to forum name
+        allMessages.push({forumName: forumName, messages: []}) 
         var messages = child.val().messages
         for (message in messages) {
           allMessages[i].messages.push(messages[message])

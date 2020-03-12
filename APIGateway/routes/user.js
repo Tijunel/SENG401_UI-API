@@ -38,7 +38,7 @@ user.post("/signup", async (req, res) => {
 
         const payload = {
             user: {
-                id: user.id
+                companyID: user.id
             }
         };
 
@@ -47,8 +47,7 @@ user.post("/signup", async (req, res) => {
             res.cookie('token', token, { httpOnly: true })
             res.status(200).json({
                 name: user.name,
-                email: user.email,
-                // id: user.id
+                email: user.email
             });
         });
     } catch (err) {
@@ -73,7 +72,7 @@ user.post("/login", async (req, res) => {
 
         const payload = {
             user: {
-                id: user.id
+                companyID: user.id
             }
         };
 
@@ -82,8 +81,7 @@ user.post("/login", async (req, res) => {
             res.cookie('token', token, { httpOnly: true });
             res.status(200).json({
                 email: user.email,
-                name: user.name,
-                id: user.id
+                name: user.name
             });
         });
     } catch (e) {
@@ -94,7 +92,7 @@ user.post("/login", async (req, res) => {
 user.post("/createForum", withCompanyAuth, async (req, res) => {
     try {
         let accessCode = randomize('A0', 8)
-        await User.findOneAndUpdate({ _id: req.body.id }, {
+        await User.findOneAndUpdate({ _id: req.user.companyID }, {
             $push: {
                 forums: {
                     name: req.body.name,
@@ -113,7 +111,7 @@ user.post("/createForum", withCompanyAuth, async (req, res) => {
 
 user.post("/getForums", withCompanyAuth, async (req, res) => {
     try {
-        let user = await User.findOne({ _id: req.body.id })
+        let user = await User.findOne({ _id: req.user.companyID })
         res.json({
             forums: user.forums
         })

@@ -19,10 +19,7 @@ export default class CorporateForum extends React.Component {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                // id: sessionStorage.getItem('id')
-            })
+            }
         }) //Check status numbers
             .then(res => res.json())
             .then(res => {
@@ -65,8 +62,7 @@ export default class CorporateForum extends React.Component {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                name: this.nameForm.current.value,
-                // id: sessionStorage.getItem('id')
+                name: this.nameForm.current.value
             })
         })
             .then(res => res.json())

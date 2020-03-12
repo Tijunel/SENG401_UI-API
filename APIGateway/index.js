@@ -3,12 +3,11 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const path = require('path');
-const cors = require('cors')
 const user = require("./routes/user");
 const access = require("./routes/access");
 const forum = require("./routes/forum");
 const feedback = require("./routes/feedback");
-const cors = require('cors')
+const cors = require('cors');
 const InitiateMongoServer = require("./config/db")
 
 InitiateMongoServer();
