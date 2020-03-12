@@ -14,5 +14,3 @@ app.use("/query", query);
 app.listen(PORT, (req, res) => {
     console.log(`Server Listening on Port ${PORT}`)
 });
-
-
