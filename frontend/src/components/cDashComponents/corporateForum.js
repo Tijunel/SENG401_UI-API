@@ -21,7 +21,7 @@ export default class CorporateForum extends React.Component {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                id: sessionStorage.getItem('id')
+                id: sessionStorage.getItem('CompanyID')
             })
         }) //Check status numbers
             .then(res => res.json())
@@ -98,8 +98,8 @@ export default class CorporateForum extends React.Component {
                         </p>
                     </div>
                 </div>
-                <div>{this.forumUI}</div>
                 <Button className='createAForumButton' onClick={this.showForumModal}><b>Create A Forum</b></Button>
+                <div>{this.forumUI}</div>
                 <Modal id='newForumModal' show={this.state.showForumModal} onHide={this.showForumModal} centered>
                     <Modal.Header closeButton>
                         <Modal.Title>
