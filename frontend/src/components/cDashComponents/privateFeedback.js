@@ -20,7 +20,7 @@ export default class CorporatePrivateFeedback extends React.Component {
             }
         }) 
             .then(res => {
-                if(res.ok) {
+                if(!res.ok) {
                     this.setState({showModal: true})
                     return;
                 }
@@ -32,6 +32,10 @@ export default class CorporatePrivateFeedback extends React.Component {
             .catch(err => {
                 this.setState({showModal: true})
             });
+    }
+
+    hideModal = () => {
+        this.setState({showModal: false})
     }
 
     renderTable = (message, index) => {
@@ -86,7 +90,7 @@ export default class CorporatePrivateFeedback extends React.Component {
                 <div style={{ display: (this.state.feedbackExists) ? '' : 'none' }}>
                     {this.feedback}
                 </div>
-                <ErrorModal showModal={this.state.showModal}/>
+                <ErrorModal showModal={this.state.showModal} message={"Oops! Something went wrong!"} hideModal={this.hideModal}/>
             </div>
         )
     }
