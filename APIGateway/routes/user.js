@@ -38,7 +38,7 @@ user.post("/signup", async (req, res) => {
 
         const payload = {
             user: {
-                id: user.id
+                companyID: user.id
             }
         };
 
@@ -46,9 +46,8 @@ user.post("/signup", async (req, res) => {
             if (err) throw err;
             res.cookie('token', token, { httpOnly: true })
             res.status(200).json({
-                name: user.name,
-                email: user.email,
-                id: user.id
+                name: user.username,
+                email: user.email
             });
         });
     } catch (err) {
@@ -57,6 +56,7 @@ user.post("/signup", async (req, res) => {
 });
 
 user.post("/login", async (req, res) => {
+    console.log("request made");
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
@@ -72,7 +72,7 @@ user.post("/login", async (req, res) => {
 
         const payload = {
             user: {
-                id: user.id
+                companyID: user.id
             }
         };
 
@@ -81,8 +81,7 @@ user.post("/login", async (req, res) => {
             res.cookie('token', token, { httpOnly: true });
             res.status(200).json({
                 email: user.email,
-                name: user.name,
-                id: user.id
+                name: user.username
             });
         });
     } catch (e) {
@@ -93,7 +92,7 @@ user.post("/login", async (req, res) => {
 user.post("/createForum", withCompanyAuth, async (req, res) => {
     try {
         let accessCode = randomize('A0', 8)
-        await User.findOneAndUpdate({ _id: req.body.id }, {
+        await User.findOneAndUpdate({ _id: req.user.companyID }, {
             $push: {
                 forums: {
                     name: req.body.name,
@@ -101,9 +100,9 @@ user.post("/createForum", withCompanyAuth, async (req, res) => {
                 }
             }
         });
-        res.status(200).json({ 
+        res.status(200).json({
             name: req.body.name,
-            accessCode: accessCode 
+            accessCode: accessCode
         })
     } catch (e) {
         res.send({ message: "Error in Adding Forum" })
@@ -112,7 +111,7 @@ user.post("/createForum", withCompanyAuth, async (req, res) => {
 
 user.post("/getForums", withCompanyAuth, async (req, res) => {
     try {
-        let user = await User.findOne({ _id: req.body.id })
+        let user = await User.findOne({ _id: req.user.companyID })
         res.json({
             forums: user.forums
         })

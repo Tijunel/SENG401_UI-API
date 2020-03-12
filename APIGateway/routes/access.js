@@ -2,11 +2,10 @@ const express = require("express");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const access = express.Router();
-const Forum = require('../model/Forum');
 const User = require("../model/User");
 const withAccessAuth = require('../middleware/auth')[0];
 
-access.post("/auth", async(req, res) => {
+access.post("/auth", async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
@@ -34,8 +33,10 @@ access.post("/auth", async(req, res) => {
 
         let user = await User.findOne({ "forums.accessCode": accessCode })
         const payload = {
-            user: {
-                id: user.id
+            forum: {
+                name: forum[0].name,
+                companyID: user.id,
+                forumID: forum[0].id
             }
         };
 

@@ -10,10 +10,7 @@ export default class CorporatePrivateFeedback extends React.Component {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                companyID: sessionStorage.getItem('companyID'),
-            })
+            }
         }) //Check status codes
             .then(res => res.json())
             .then(res => {

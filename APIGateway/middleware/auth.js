@@ -11,7 +11,10 @@ const withAccessAuth = (req, res, next) => {
     else {
         jwt.verify(token, "AccessSecret", (err, decoded) => {
             if (err) res.status(401).send('Unauthorized, Inavild token');
-            else { next(); }
+            else {
+                req.forum = decoded.forum;
+                next();
+            }
         })
     }
 };
@@ -25,7 +28,10 @@ const withCompanyAuth = (req, res, next) => {
     else {
         jwt.verify(token, "CompanySecret", (err, decoded) => {
             if (err) res.status(401).send('Unauthorized, Inavild token');
-            else { next(); }
+            else {
+                req.user = decoded.user;
+                next();
+            }
         })
     }
 };
