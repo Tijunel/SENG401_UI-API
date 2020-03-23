@@ -1,9 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const redis = require('redis')
+const { PORT, HOST } = require('./redisEnv')
+
+
 const client = redis.createClient({
-    port: 6379,
-    host: 'localhost'
+    port: PORT,
+    host: HOST
 })
 
 client.on('connect', () => {
@@ -41,8 +44,8 @@ router.get("/getForum/:id", (req, res) => {
         forumName: "",
         topics: []
     }
-    client.get("name-" + req.params.id, (err, results) => {
-        if (err) {
+    client.get("content-" + req.params.id, (err, results) => {
+        if (err || !results) {
             res.status(404).send("Could not find forum")
             return
         }
@@ -56,7 +59,7 @@ router.get("/getForum/:id", (req, res) => {
 
 
             for (topicID of results) {
-                client.get("name-" + topicID, (err, results) => {
+                client.get("content-" + topicID, (err, results) => {
                     if (err) {
                         res.status(500).send("Error finding topics in Redis")
                         return
@@ -68,24 +71,33 @@ router.get("/getForum/:id", (req, res) => {
         })
     })
 
-
-    // retirieve data using req.params.id as param to search DB
-    let readData = JSON.stringify({
-        // values will be fetched from database
-        forumName: "forum",
-        topicList: ["topic1", "topic2", "topic3"]
-    })
-    res.json(readData);
+    res.json(forum);
 });
 
 router.get("/getForumList/:id", (req, res) => {
-    // retirieve data using req.params.id as param to search DB
-    let readData = JSON.stringify({
-        // values will be fetched from database
-        companyName: "company",
-        forumList: ["forum1", "forum2"]
+    let forums = []
+
+
+    client.get(req.params.id, (err, results) => {
+        if (err) {
+            res.status(404).send("Could not find company")
+            return
+        }
+
+
+        for (topicID of results) {
+            client.get("content-" + topicID, (err, results) => {
+                if (err) {
+                    res.status(500).send("Error finding forums in Redis")
+                    return
+                }
+
+                forums.push(results)
+            })
+        }
     })
-    res.json(readData);
+
+    res.json(forum);
 });
 
 module.exports = router;

@@ -11,9 +11,9 @@ router.post("/forum", (req, res) => {
 
     var dictForum = {
         command: "create forum",
-        compID: req.body.compID,
-        forumID: req.body.forumID,
-        forumName: req.body.Name
+        parentID: req.body.compID,
+        ID: req.body.forumID,
+        content: req.body.Name
     };
     eventHandler(JSON.stringify(dictForum));
 });
@@ -28,9 +28,9 @@ router.post("/topic", (req, res) => {
 
     var dictTopic = {
         command: "create topic",
-        forumID: req.body.forumID,
-        topicID: topicIDtemp,
-        topicName: req.body.Name
+        parentID: req.body.forumID,
+        ID: topicIDtemp,
+        content: req.body.Name
     };
     eventHandler(JSON.stringify(dictTopic));
 });
@@ -41,10 +41,14 @@ router.post("/comment", (req, res) => {
         return;
     }
 
+    const commentIDtemp = uuidv4();
+
+
     var dictComment = {
         command: "create comment",
         parentID: req.body.parentID,
-        message: req.body.message
+        ID: commentIDtemp,
+        content: req.body.message
     };
     eventHandler(JSON.stringify(dictComment));
 });
