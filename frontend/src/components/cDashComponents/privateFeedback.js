@@ -13,6 +13,10 @@ export default class CorporatePrivateFeedback extends React.Component {
     this.feedback = [];
   }
 
+  hideModal = () => {
+      this.setState({showModal: false})
+  }
+
   componentWillMount = () => {
     fetch("/api/feedback/getFeedback", {
       method: "POST",
@@ -20,65 +24,69 @@ export default class CorporatePrivateFeedback extends React.Component {
         "Content-Type": "application/json"
       }
     })
-      .then(res => {
-        if (res.ok) {
-          this.setState({
-            showModal: true,
-            message: "Oops! Something went wrong!"
-          });
-          return;
-        }
-      })
+    //   .then(res => {
+    //     if (res.status !== 200) {
+    //       this.setState({
+    //         showModal: true,
+    //         message: "Oops! Something went wrong!"
+    //       });
+    //       return;
+    //     }
+    //   })
       .then(res => res.json())
       .then(res => {
         this.generateFeedbackUI(res);
       })
       .catch(err => {
+          console.log(err)
         this.setState({
           showModal: true,
           message: "Oops! Something went wrong!"
         });
       });
   };
+  
 
   renderTable = (message, index) => {
     return (
-      <tr key={index}>
-        <td>{message}</td>
-      </tr>
-    );
-  };
+        <tr key={index}>
+            <td>{message}</td>
+        </tr>
+    )
+}
 
-  generateMessageTable = messages => {
+generateMessageTable = (messages) => {
     return (
-      <div style={{ width: "50%", textAlign: "center", margin: "auto" }}>
-        <Table striped>
-          <thead>
-            <tr>
-              <th>Feedback</th>
-            </tr>
-          </thead>
-          <tbody>{messages.map(this.renderTable)}</tbody>
-        </Table>
-      </div>
-    );
-  };
-
-  generateFeedbackUI = feedbackList => {
-    for (const feedback of feedbackList) {
-      console.log(feedback);
-      this.feedback.push(
-        <div style={{ marginTop: "80px" }}>
-          <b style={{ fontSize: "calc(1vw + 0.8rem)" }}>{feedback.forumName}</b>
-          {this.generateMessageTable(feedback.messages)}
+        <div style={{ width: '50%', textAlign: 'center', margin: 'auto'}}>
+            <Table striped>
+                <thead>
+                    <tr>
+                        <th>Feedback</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {messages.map(this.renderTable)}
+                </tbody>
+            </Table>
         </div>
-      );
+    )
+}
+
+generateFeedbackUI = (feedbackList) => {
+    for (const feedback of feedbackList) {
+        console.log(feedback)
+        this.feedback.push(
+            <div style={{marginTop: '80px'}}>
+                <b style={{fontSize: 'calc(1vw + 0.8rem)'}}>{feedback.forumName}</b>
+                {this.generateMessageTable(feedback.messages)}
+            </div>
+        );
     }
-    this.setState({ feedbackExists: true });
+    this.setState({ feedbackExists: true })
     if (feedbackList.length > 0) {
-      this.setState({ feedbackExists: true });
+        this.setState({ feedbackExists: true })
     }
-  };
+}
 
   render = () => {
     return (

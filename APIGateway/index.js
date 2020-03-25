@@ -35,6 +35,4 @@ app.use("/api/access", access);
 app.use("/api/forum", forum);
 app.use("/api/feedback", feedback);
 
-app.listen(PORT, (req, res) => {
-    console.log(`Server Listening on Port ${PORT}`)
-});
+r
