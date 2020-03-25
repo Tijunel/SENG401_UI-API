@@ -39,3 +39,6 @@ function createEvent(event) {
 
 
 module.exports = playEvent
+
+// id: [children]
+// content-id: "content"
