@@ -1,15 +1,17 @@
-const pool = require('./eventDB')
+const getPool = require('./eventDB')
+const playEvent = require('./player')
 
-function receive(data) {
+function receive(event) {
     pool.connect((err, client, release) => {
         if (err) {
             console.log("error connecting to pool")
         }
-        client.query('INSERT INTO event (event) VALUES ($1)', [JSON.stringify(data)], (err) => {
+        client.query('INSERT INTO event (event) VALUES $1', [event], (err) => {
             release()
             if (err) {
                 console.log(err)
             }
+            playEvent(event)
         })
     })
 }
