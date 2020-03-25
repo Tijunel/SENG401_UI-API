@@ -9,21 +9,13 @@ const client = redis.createClient({
 });
 
 client.on('connect', () => {
-    console.log('Redis client connected');
-});
+    console.log('Query Redis client connected')
+})
 
 client.on('error', (err) => {
     console.log('Redis client could NOT connect: \n' + err);
 });
 
-client.get('test key', (err, res) => {
-    if (err) {
-        console.log("could not fetch key")
-    }
-    console.log(res)
-});
-
-//End points
 router.get("/getTopic/:id", (req, res) => {
     // retrieve data using req.params.id as param to search DB
     let readData = JSON.stringify({
@@ -46,8 +38,9 @@ router.get("/getForum/:id", (req, res) => {
             res.status(404).send("Could not find forum");
             return;
         }
-        forum.forumName = results;
-        client.get(req.params.id, (err, results) => {
+        forum.forumName = results
+
+        client.lrange(req.params.id, 0, -1, (err, results) => {
             if (err) {
                 res.status(404).send("Could not find forum");
                 return;
@@ -68,7 +61,9 @@ router.get("/getForum/:id", (req, res) => {
 
 router.get("/getForumList/:id", (req, res) => {
     let forums = []
-    client.get(req.params.id, (err, results) => {
+
+
+    client.lrange(req.params.id, 0, -1, async (err, results) => {
         if (err) {
             res.status(404).send("Could not find company");
             return;
@@ -82,8 +77,10 @@ router.get("/getForumList/:id", (req, res) => {
                 forums.push(results);
             });
         }
-    });
-    res.json(forum);
+        res.json(forums);
+
+    })
+
 });
 
 module.exports = router;

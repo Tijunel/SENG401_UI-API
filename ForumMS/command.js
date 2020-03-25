@@ -14,7 +14,8 @@ router.post("/createForum", (req, res) => {
         ID: req.body.forumID,
         content: req.body.Name
     };
-    putEvent(dictForum);
+    eventHandler(dictForum);
+    res.end()
 });
 
 router.delete("/deleteForum", (req, res) => {
@@ -42,7 +43,8 @@ router.post("/createTopic", (req, res) => {
         ID: topicIDtemp,
         content: req.body.Name
     };
-    putEvent(dictTopic);
+    eventHandler(dictTopic);
+    res.end()
 });
 
 router.delete("/deleteTopic", (req, res) => {
@@ -70,7 +72,8 @@ router.post("/createComment", (req, res) => {
         ID: commentIDtemp,
         content: req.body.message
     };
-    putEvent(dictComment);
+    eventHandler(dictComment);
+    res.end()
 });
 
 router.delete("/deleteComment", (req, res) => {

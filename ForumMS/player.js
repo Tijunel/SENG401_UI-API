@@ -7,7 +7,7 @@ const client = redis.createClient({
 });
 
 client.on('connect', () => {
-    console.log('Redis client connected');
+    console.log('Command-Side (Player) Redis client connected')
 })
 
 client.on('error', (err) => {
@@ -15,6 +15,13 @@ client.on('error', (err) => {
 });
 
 function playEvent(event) {
+    let action = event.command.split(" ")[0]
+    if(action === "create") { createEvent(event) }
+    //add other actions like delete here
+
+}
+
+function createEvent(event) {
     client.rpush(event.parentID, event.ID, (err, reply) => {
         if (err) {
             console.log("Could not play event: \n\n" + event);
@@ -25,8 +32,10 @@ function playEvent(event) {
                 console.log("Could not set content when playing event: \n\n" + event)
                 return;
             }
-        });
-    });
+        })
+
+    })
 }
 
-modules.export = playEvent;
+
+module.exports = playEvent

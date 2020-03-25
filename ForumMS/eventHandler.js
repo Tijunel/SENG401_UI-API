@@ -1,18 +1,21 @@
-const getPool = require('./eventDB')
+const pool = require('./eventDB')
 const playEvent = require('./player')
 
-//Upload an event to the Postgres database
-function putEvent(event) {
+function receive(event) {
+
+    let jsonEvent = JSON.stringify(event)
+
     pool.connect((err, client, release) => {
         if (err) {
             console.log("error connecting to pool");
             return;
         }
-        client.query('INSERT INTO event (event) VALUES $1', [event], (err) => {
-            release();
+        client.query('INSERT INTO event (event) VALUES ($1)', [jsonEvent], (err) => {
+            release()
             if (err) {
-                console.log(err);
-                return;
+                //console.log("Error storing event:")
+                console.log(err)
+                return -1
             }
             playEvent(event);
         });
@@ -37,4 +40,5 @@ function getAllEvents(){
     });
 }
 
-module.exports = [putEvent, getAllEvents];
+
+module.exports = receive;
