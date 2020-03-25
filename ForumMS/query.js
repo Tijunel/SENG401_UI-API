@@ -10,20 +10,13 @@ const client = redis.createClient({
 })
 
 client.on('connect', () => {
-    console.log('Redis client connected')
+    console.log('Query Redis client connected')
 })
 
 client.on('error', (err) => {
     console.log('Redis client could NOT connect: \n' + err)
 })
 
-
-client.get('test key', (err, res) => {
-    if (err) {
-        console.log("could not fetch key")
-    }
-    console.log(res)
-})
 
 router.get("/getTopic/:id", (req, res) => {
 
@@ -51,7 +44,7 @@ router.get("/getForum/:id", (req, res) => {
         }
         forum.forumName = results
 
-        client.get(req.params.id, (err, results) => {
+        client.lrange(req.params.id, 0, -1, (err, results) => {
             if (err) {
                 res.status(404).send("Could not find forum")
                 return
@@ -78,7 +71,7 @@ router.get("/getForumList/:id", (req, res) => {
     let forums = []
 
 
-    client.get(req.params.id, (err, results) => {
+    client.lrange(req.params.id, 0, -1, async (err, results) => {
         if (err) {
             res.status(404).send("Could not find company")
             return
@@ -95,9 +88,10 @@ router.get("/getForumList/:id", (req, res) => {
                 forums.push(results)
             })
         }
+        res.json(forums);
+
     })
 
-    res.json(forum);
 });
 
 module.exports = router;

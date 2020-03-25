@@ -15,7 +15,8 @@ router.post("/forum", (req, res) => {
         ID: req.body.forumID,
         content: req.body.Name
     };
-    eventHandler(JSON.stringify(dictForum));
+    eventHandler(dictForum);
+    res.end()
 });
 
 router.post("/topic", (req, res) => {
@@ -32,7 +33,8 @@ router.post("/topic", (req, res) => {
         ID: topicIDtemp,
         content: req.body.Name
     };
-    eventHandler(JSON.stringify(dictTopic));
+    eventHandler(dictTopic);
+    res.end()
 });
 
 router.post("/comment", (req, res) => {
@@ -50,7 +52,8 @@ router.post("/comment", (req, res) => {
         ID: commentIDtemp,
         content: req.body.message
     };
-    eventHandler(JSON.stringify(dictComment));
+    eventHandler(dictComment);
+    res.end()
 });
 
 module.exports = router;

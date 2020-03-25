@@ -6,7 +6,7 @@ function receive(event) {
         if (err) {
             return -1
         }
-        client.query('INSERT INTO event (event) VALUES $1', [event], (err) => {
+        client.query('INSERT INTO event (event) VALUES $1', [JSON.stringify(event)], (err) => {
             release()
             if (err) {
                 return -1

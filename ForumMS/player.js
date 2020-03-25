@@ -7,7 +7,7 @@ const client = redis.createClient({
 })
 
 client.on('connect', () => {
-    console.log('Redis client connected')
+    console.log('Command-Side (Player) Redis client connected')
 })
 
 client.on('error', (err) => {
@@ -33,4 +33,4 @@ function playEvent(event) {
 }
 
 
-modules.export = playEvent
+module.exports = playEvent
