@@ -23,6 +23,7 @@ client.get('test key', (err, res) => {
     console.log(res)
 });
 
+//End points
 router.get("/getTopic/:id", (req, res) => {
     // retrieve data using req.params.id as param to search DB
     let readData = JSON.stringify({

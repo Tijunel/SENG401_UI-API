@@ -1,7 +1,8 @@
 const getPool = require('./eventDB')
 const playEvent = require('./player')
 
-function receive(event) {
+//Upload an event to the Postgres database
+function putEvent(event) {
     pool.connect((err, client, release) => {
         if (err) {
             console.log("error connecting to pool");
@@ -18,6 +19,7 @@ function receive(event) {
     });
 }
 
+//Get events from the Postgres database
 function getAllEvents(){
     pool.connect((err, client, release) => {
         if (err) {
@@ -35,5 +37,4 @@ function getAllEvents(){
     });
 }
 
-module.exports = receive;
-module.exports = getAllEvents;
+module.exports = [putEvent, getAllEvents];

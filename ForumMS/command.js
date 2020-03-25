@@ -1,9 +1,9 @@
-const eventHandler = require("./eventHandler");
+const putEvent = require("./eventHandler")[0];
 const express = require("express");
 const router = express.Router();
 const { uuidv4 } = require("uuid");
 
-router.post("/forum", (req, res) => {
+router.post("/createForum", (req, res) => {
     if (!req.body.compID || !req.body.forumID || !req.body.Name) {
         res.status(400).send('Invalid forum format!');
         return;
@@ -14,10 +14,23 @@ router.post("/forum", (req, res) => {
         ID: req.body.forumID,
         content: req.body.Name
     };
-    eventHandler(dictForum);
+    putEvent(dictForum);
 });
 
-router.post("/topic", (req, res) => {
+router.delete("/deleteForum", (req, res) => {
+    if (!req.body.compID || !req.body.forumID) {
+        res.status(400).send('Invalid forum format!');
+        return;
+    }
+    var dictForum = {
+        command: "delete forum",
+        parentId: req.body.compID,
+        Id: req.body.forumID
+    };
+    putEvent(dictForum);
+})
+
+router.post("/createTopic", (req, res) => {
     if (!req.body.forumID || !req.body.Name) {
         res.status(400).send('Invalid topic format!');
         return;
@@ -29,10 +42,23 @@ router.post("/topic", (req, res) => {
         ID: topicIDtemp,
         content: req.body.Name
     };
-    eventHandler(dictTopic);
+    putEvent(dictTopic);
 });
 
-router.post("/comment", (req, res) => {
+router.delete("/deleteTopic", (req, res) => {
+    if (!req.body.forumID || !req.body.topicID) {
+        res.status(400).send('Invalid topic format!');
+        return;
+    }
+    var dictTopic = {
+        command: 'delete topic',
+        parentID: req.body.forumID,
+        ID: req.body.topicID
+    }
+    putEvent(dictTopic);
+});
+
+router.post("/createComment", (req, res) => {
     if (!req.body.parentID || !req.body.message) {
         res.status(400).send('Invalid comment format!');
         return;
@@ -44,7 +70,20 @@ router.post("/comment", (req, res) => {
         ID: commentIDtemp,
         content: req.body.message
     };
-    eventHandler(dictComment);
+    putEvent(dictComment);
 });
+
+router.delete("/deleteComment", (req, res) => {
+    if (!req.body.parentID || !req.body.commentID) {
+        res.status(400).send('Invalid comment format!');
+        return;
+    }
+    var dictComment = {
+        command: 'delete comment',
+        parentID: req.body.parentID,
+        ID: req.body.commentID
+    }
+    putEvent(dictComment);
+})
 
 module.exports = router;
