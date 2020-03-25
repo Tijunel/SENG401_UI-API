@@ -35,4 +35,7 @@ app.use("/api/access", access);
 app.use("/api/forum", forum);
 app.use("/api/feedback", feedback);
 
-r
+//Start Server
+app.listen(PORT, () => {
+    console.log(`Server Listening on Port ${PORT}`)
+});

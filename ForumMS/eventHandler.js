@@ -4,32 +4,35 @@ const playEvent = require('./player')
 function receive(event) {
     pool.connect((err, client, release) => {
         if (err) {
-            console.log("error connecting to pool")
+            console.log("error connecting to pool");
+            return;
         }
         client.query('INSERT INTO event (event) VALUES $1', [event], (err) => {
-            release()
+            release();
             if (err) {
-                console.log(err)
+                console.log(err);
+                return;
             }
-            playEvent(event)
-        })
-    })
+            playEvent(event);
+        });
+    });
 }
 
 function getAllEvents(){
     pool.connect((err, client, release) => {
         if (err) {
-            console.log("error connecting to pool")
+            console.log("error connecting to pool");
+            return;
         }
         client.query('SELECT * from event',  (err, results) => {
-            release()
+            release();
             if (err) {
-                console.log(err)
+                console.log(err);
+                return;
             }
             return results;
-        })
-    })
-
+        });
+    });
 }
 
 module.exports = receive;

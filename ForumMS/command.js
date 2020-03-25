@@ -8,7 +8,6 @@ router.post("/forum", (req, res) => {
         res.status(400).send('Invalid forum format!');
         return;
     }
-
     var dictForum = {
         command: "create forum",
         parentID: req.body.compID,
@@ -23,9 +22,7 @@ router.post("/topic", (req, res) => {
         res.status(400).send('Invalid topic format!');
         return;
     }
-
     const topicIDtemp = uuidv4();
-
     var dictTopic = {
         command: "create topic",
         parentID: req.body.forumID,
@@ -40,10 +37,7 @@ router.post("/comment", (req, res) => {
         res.status(400).send('Invalid comment format!');
         return;
     }
-
     const commentIDtemp = uuidv4();
-
-
     var dictComment = {
         command: "create comment",
         parentID: req.body.parentID,

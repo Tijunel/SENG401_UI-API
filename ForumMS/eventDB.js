@@ -7,7 +7,6 @@ const pool = new Pool({
     user: 'postgres',
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
-})
-
+});
 
 module.exports = pool
