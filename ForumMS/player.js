@@ -1,18 +1,4 @@
-const redis = require('redis')
-const { PORT, HOST } = require('./redisEnv')
-
-const client = redis.createClient({
-    port: PORT,
-    host: HOST
-});
-
-client.on('connect', () => {
-    console.log('Command-Side (Player) Redis client connected');
-});
-
-client.on('error', (err) => {
-    console.log('Redis client could NOT connect: \n' + err);
-});
+const client = require('./redisEnv')[0];
 
 function playEvent(event) {
     let action = event.command.split(" ")[0];
@@ -39,9 +25,7 @@ function deleteEvent(eventID) {
             deleteEvent(event); 
         }
         client.get('EventParent-' + eventID, (err, result) => {
-            if(!result) {
-                return;
-            }
+            if(!result) { return -1; }
             client.lrem(result.toString(), 1, eventID); 
             client.del('EventContent-' + eventID);
             client.del('EventParent-' + eventID);

@@ -1,5 +1,6 @@
-const pool = require('./eventDB')
-const playEvent = require('./player')
+const pool = require('./eventDB');
+const playEvent = require('./player');
+const redisClient = require('./redisEnv')[0];
 
 function putEvent(event) {
     let jsonEvent = JSON.stringify(event)
@@ -14,19 +15,19 @@ function putEvent(event) {
 }
 
 //Get events from the Postgres database -- This does not work
-function getAllEvents() {
+function createRedisDataInstance() {
     pool.connect((err, client, release) => {
         if (err) { return -1; }
         client.query('SELECT * from event', (err, results) => {
             release();
             if (err) { return -1; }
-            console.log(results.rows)
-            return results; //This does not actually return the results from the function, it returns for the callback
-            //Play all events
+            redisClient.flushdb( function (err, succeeded) {});
+            for(event of results.rows) {
+                playEvent(event.event)
+            }
+            console.log('Redis Database populated with events!')
         });
     });
 }
 
-console.log(getAllEvents())
-
-module.exports = [putEvent, getAllEvents];
+module.exports = [putEvent, createRedisDataInstance];

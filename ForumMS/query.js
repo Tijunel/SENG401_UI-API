@@ -1,26 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const redis = require('redis');
-const asyncRedis = require("async-redis");
-const { PORT, HOST } = require('./redisEnv');
-
-const client = redis.createClient({
-    port: PORT,
-    host: HOST
-});
-
-const asyncClient = asyncRedis.createClient({
-    port: PORT,
-    host: HOST
-});
-
-client.on('connect', () => {
-    console.log('Query Redis client connected');
-});
-
-client.on('error', (err) => {
-    console.log('Redis client could NOT connect: \n' + err);
-});
+const {client, asyncClient} = require('./redisEnv');
 
 getComments = async (commentID) => {
     let comment = {

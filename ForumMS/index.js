@@ -10,6 +10,11 @@ app.use(bodyParser.json());
 app.use("/command", command);
 app.use("/query", query);
 
+//Set up Redis
+
+const createRedisDataInstance = require("./eventHandler")[1];
+createRedisDataInstance();
+
 app.listen(PORT, (req, res) => {
     console.log(`Server Listening on Port ${PORT}`)
 });
