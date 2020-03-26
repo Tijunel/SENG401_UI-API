@@ -1,21 +1,18 @@
 const pool = require('./eventDB')
 const playEvent = require('./player')
 
-function receive(event) {
-
+function putEvent(event) {
     let jsonEvent = JSON.stringify(event)
-
     pool.connect((err, client, release) => {
         if (err) {
-            console.log("error connecting to pool");
-            return;
+            console.log("error connecting to RDS.");
+            return -1;
         }
         client.query('INSERT INTO event (event) VALUES ($1)', [jsonEvent], (err) => {
             release()
             if (err) {
-                //console.log("Error storing event:")
                 console.log(err)
-                return -1
+                return -1;
             }
             playEvent(event);
         });
@@ -26,19 +23,18 @@ function receive(event) {
 function getAllEvents(){
     pool.connect((err, client, release) => {
         if (err) {
-            console.log("error connecting to pool");
-            return;
+            console.log("Error connecting to RDS.");
+            return -1;
         }
         client.query('SELECT * from event',  (err, results) => {
             release();
             if (err) {
                 console.log(err);
-                return;
+                return -1;
             }
             return results;
         });
     });
 }
 
-
-module.exports = receive;
+module.exports = [putEvent, getAllEvents];

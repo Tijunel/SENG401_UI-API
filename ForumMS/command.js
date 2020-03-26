@@ -1,92 +1,63 @@
 const putEvent = require("./eventHandler")[0];
 const express = require("express");
 const router = express.Router();
-const { uuidv4 } = require("uuid");
+const uuid = require("uuid");
 
+//Forum Endpoints
 router.post("/createForum", (req, res) => {
-    if (!req.body.compID || !req.body.forumID || !req.body.Name) {
-        res.status(400).send('Invalid forum format!');
-        return;
+    if (!req.body.companyID || !req.body.forumID || !req.body.name) {
+        res.status(400).send('Invalid forum format!').end();
     }
     var dictForum = {
         command: "create forum",
-        parentID: req.body.compID,
+        parentID: req.body.companyID,
         ID: req.body.forumID,
-        content: req.body.Name
-    };
-    eventHandler(dictForum);
-    res.end()
-});
-
-router.delete("/deleteForum", (req, res) => {
-    if (!req.body.compID || !req.body.forumID) {
-        res.status(400).send('Invalid forum format!');
-        return;
-    }
-    var dictForum = {
-        command: "delete forum",
-        parentId: req.body.compID,
-        Id: req.body.forumID
+        content: req.body.name
     };
     putEvent(dictForum);
-})
+});
 
+//Topic Endpoints
 router.post("/createTopic", (req, res) => {
-    if (!req.body.forumID || !req.body.Name) {
-        res.status(400).send('Invalid topic format!');
-        return;
+    if (!req.body.forumID || !req.body.name) {
+        res.status(400).send('Invalid topic format!').end();
     }
-    const topicIDtemp = uuidv4();
+    const topicIDtemp = uuid.v4();
     var dictTopic = {
         command: "create topic",
         parentID: req.body.forumID,
         ID: topicIDtemp,
-        content: req.body.Name
+        content: req.body.name
     };
-    eventHandler(dictTopic);
-    res.end()
-});
-
-router.delete("/deleteTopic", (req, res) => {
-    if (!req.body.forumID || !req.body.topicID) {
-        res.status(400).send('Invalid topic format!');
-        return;
-    }
-    var dictTopic = {
-        command: 'delete topic',
-        parentID: req.body.forumID,
-        ID: req.body.topicID
-    }
     putEvent(dictTopic);
 });
 
+//Comment Endpoints
 router.post("/createComment", (req, res) => {
-    if (!req.body.parentID || !req.body.message) {
-        res.status(400).send('Invalid comment format!');
-        return;
+    if (!req.body.topicID || !req.body.message) {
+        res.status(400).send('Invalid comment format!').end();
     }
-    const commentIDtemp = uuidv4();
+    const commentIDtemp = uuid.v4();
     var dictComment = {
         command: "create comment",
-        parentID: req.body.parentID,
+        parentID: req.body.topicID,
         ID: commentIDtemp,
         content: req.body.message
     };
-    eventHandler(dictComment);
-    res.end()
+    putEvent(dictComment);
 });
 
-router.delete("/deleteComment", (req, res) => {
-    if (!req.body.parentID || !req.body.commentID) {
-        res.status(400).send('Invalid comment format!');
-        return;
+router.delete("/deleteEvent", (req, res) => {
+    if(!req.body.ID) {
+        res.status(400).send('Invalid comment format!').end();
     }
-    var dictComment = {
-        command: 'delete comment',
-        parentID: req.body.parentID,
-        ID: req.body.commentID
+    var dict = {
+        command: "delete event",
+        ID: req.body.ID
+    };
+    if (putEvent(dict) !== -1) {
+        res.status(200).send('Success!').end();
     }
-    putEvent(dictComment);
-})
+});
 
 module.exports = router;
