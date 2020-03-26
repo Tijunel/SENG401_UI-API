@@ -22,7 +22,7 @@ client.on('error', (err) => {
     console.log('Redis client could NOT connect: \n' + err);
 });
 
-getComments = (commentID) => {
+getComments = async (commentID) => {
     let comment = {
         id: "",
         message: "",
@@ -38,7 +38,7 @@ getComments = (commentID) => {
                         await getComments(event)
                             .then(newComment => {
                                 comment.replies.push(newComment);
-                            })
+                            });
                     }
                 }
             });
@@ -61,7 +61,6 @@ router.get("/getTopic/:id", (req, res) => {
         topic.topicName = result;
         client.lrange(ID, 0, -1, async (err, results) => {
             for (comment of results) {
-                //console.log(await getComments(comment))
                 topic.comments.push(await getComments(comment));
             }
             res.json(topic)

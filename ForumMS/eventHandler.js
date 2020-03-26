@@ -37,4 +37,6 @@ function getAllEvents(){
     });
 }
 
+console.log(getAllEvents)
+
 module.exports = [putEvent, getAllEvents];

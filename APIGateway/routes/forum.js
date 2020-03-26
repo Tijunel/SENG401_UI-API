@@ -1,36 +1,52 @@
 const express = require("express");
-const router = express.Router();
+const forum = express.Router();
 const IP = require("../config/connections")
 const http = require("http")
 const withAccessAuth = require('../middleware/auth')[0];
 const withCompanyAuth = require('../middleware/auth')[1];
-const { forumServiceIP, forumServicePort } = require('../config/connections')
+const { forumServiceIP, forumServicePort } = require('../config/connections');
 
-router.get('/test', async (req, res) => {
-    let options = {
-        host: '10.13.60.26',
-        port: 3000,
-        path: '/',
-        method: 'GET',
-    };
-    http.request(options, (httpResp) => {
-        httpResp.on('data', (data) => {
-            res.send(JSON.parse(data));
-        });
-    }).end();
-});
+//Command Endpoints
 
-router.post('/postTopic', withCompanyAuth, async (req, res) => {
+forum.post("/postForum", withCompanyAuth, async (req, res) => {
+    //Need to call this when creating a new forum
     try {
         let args = JSON.stringify({
+            companyID: req.user.companyID,
             forumID: req.body.forumID,
-            topicName: req.body.topicName,
+            name: req.body.name
         })
 
         let options = {
             host: IP.forumServiceIP,
             port: IP.forumServicePort,
-            path: '/command/topic',
+            path: '/command/postForum',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': args.length
+            }
+        }
+
+        let newReq = http.request(options);
+        newReq.write(args);
+        newReq.end();
+    } catch (e) {
+        res.status(401).send("Error posting forum").end();
+    }
+});
+
+forum.post('/postTopic', withCompanyAuth, async (req, res) => {
+    try {
+        let args = JSON.stringify({
+            forumID: req.body.forumID,
+            name: req.body.topicName,
+        });
+
+        let options = {
+            host: IP.forumServiceIP,
+            port: IP.forumServicePort,
+            path: '/command/postTopic',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -38,31 +54,25 @@ router.post('/postTopic', withCompanyAuth, async (req, res) => {
             }
         };
 
-        let newReq = http.request(options, (newRes) => {
-            newRes.on('data', (data) => {
-                res.json(data);
-            });
-        })
-
-        newReq.write(args)
-        newReq.end()
+        let newReq = http.request(options);
+        newReq.write(args);
+        newReq.end();
     } catch (e) {
-        res.status(401).send("Error creating topic.")
+        res.status(401).send("Error creating topic.").end();
     }
-})
+});
 
-
-router.post('/postComment', withAccessAuth, async (req, res) => {  //TODO: add access auth
+forum.post('/postComment', withAccessAuth || withCompanyAuth, async (req, res) => {  
     try {
         let args = JSON.stringify({
             parentID: req.body.parentID,
             message: req.body.message
-        })
+        });
 
         let options = {
             host: IP.forumServiceIP,
             port: IP.forumServicePort,
-            path: '/command/comment',
+            path: '/command/postComment',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -70,16 +80,43 @@ router.post('/postComment', withAccessAuth, async (req, res) => {  //TODO: add a
             }
         };
 
-        let newReq = http.request(options)
-
-        newReq.write(args)
-        newReq.end()
+        let newReq = http.request(options);
+        newReq.write(args);
+        newReq.end();
     } catch (e) {
-        res.status(401).send("Error creating comment.")
+        res.status(401).send("Error creating comment.").end();
     }
-})
+});
 
-router.get("/getTopic/:id", async (req, res) => {
+forum.delete('/deleteEvent', withCompanyAuth, async (req, res) => {
+    try {
+        let args = JSON.stringify({
+            ID: req.body.id
+        });
+
+        let options = {
+            host: IP.forumServiceIP,
+            port: IP.forumServicePort,
+            path: '/command/deleteEvent',
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Content-Length': args.length
+            }
+        }
+
+        let newReq = http.request(options);
+        newReq.write(args);
+        newReq.end();
+    } catch (e) {
+        res.status(401).send("Error deleting event.").end();
+    }
+});
+
+
+//Query Endpoints
+
+forum.get("/getTopic/:id", withAccessAuth || withCompanyAuth, async (req, res) => {
     let options = {
         host: IP.forumServiceIP,
         port: IP.forumServicePort,
@@ -91,10 +128,10 @@ router.get("/getTopic/:id", async (req, res) => {
         newRes.on('data', (data) => {
             res.json(data);
         });
-    })
-})
+    });
+});
 
-router.get("/getForum/:id", withAccessAuth, async (req, res) => {
+forum.get("/getForum/:id", withAccessAuth || withCompanyAuth, async (req, res) => {
     let options = {
         host: IP.forumServiceIP,
         port: IP.forumServicePort,
@@ -106,23 +143,7 @@ router.get("/getForum/:id", withAccessAuth, async (req, res) => {
         newRes.on('data', (data) => {
             res.json(data);
         });
-    })
-})
+    });
+});
 
-router.get("/getForumList/:id", withCompanyAuth, async (req, res) => {
-    let options = {
-        host: IP.forumServiceIP,
-        port: IP.forumServicePort,
-        path: '/query/getForumList/' + req.params.id,
-        method: 'GET'
-    };
-
-    http.request(options, (newRes) => {
-        newRes.on('data', (data) => {
-            res.json(data);
-        });
-    })
-})
-
-
-module.exports = router;
+module.exports = forum;

@@ -3,8 +3,7 @@ const express = require("express");
 const router = express.Router();
 const uuid = require("uuid");
 
-//Forum Endpoints
-router.post("/createForum", (req, res) => {
+router.post("/postForum", (req, res) => {
     if (!req.body.companyID || !req.body.forumID || !req.body.name) {
         res.status(400).send('Invalid forum format!').end();
     }
@@ -17,8 +16,7 @@ router.post("/createForum", (req, res) => {
     putEvent(dictForum);
 });
 
-//Topic Endpoints
-router.post("/createTopic", (req, res) => {
+router.post("/postTopic", (req, res) => {
     if (!req.body.forumID || !req.body.name) {
         res.status(400).send('Invalid topic format!').end();
     }
@@ -32,15 +30,14 @@ router.post("/createTopic", (req, res) => {
     putEvent(dictTopic);
 });
 
-//Comment Endpoints
-router.post("/createComment", (req, res) => {
-    if (!req.body.topicID || !req.body.message) {
+router.post("/postComment", (req, res) => {
+    if (!req.body.parentID || !req.body.message) {
         res.status(400).send('Invalid comment format!').end();
     }
     const commentIDtemp = uuid.v4();
     var dictComment = {
         command: "create comment",
-        parentID: req.body.topicID,
+        parentID: req.body.parentID,
         ID: commentIDtemp,
         content: req.body.message
     };
