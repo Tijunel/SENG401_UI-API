@@ -12,11 +12,11 @@ const client = redis.createClient({
 const asyncClient = asyncRedis.createClient({
     port: PORT,
     host: HOST
-})
+});
 
 client.on('connect', () => {
-    console.log('Query Redis client connected')
-})
+    console.log('Query Redis client connected');
+});
 
 client.on('error', (err) => {
     console.log('Redis client could NOT connect: \n' + err);
@@ -63,7 +63,7 @@ router.get("/getTopic/:id", (req, res) => {
             for (comment of results) {
                 topic.comments.push(await getComments(comment));
             }
-            res.json(topic)
+            res.status(200).json(topic).end();
         });
     });
 });

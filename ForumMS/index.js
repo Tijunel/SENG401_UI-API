@@ -1,5 +1,5 @@
-const command = require("./command")
-const query = require("./query")
+const command = require("./command");
+const query = require("./query");
 const express = require("express");
 const bodyParser = require("body-parser");
 

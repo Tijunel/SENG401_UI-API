@@ -1,9 +1,9 @@
 const putEvent = require("./eventHandler")[0];
 const express = require("express");
-const router = express.Router();
+const command = express.Router();
 const uuid = require("uuid");
 
-router.post("/postForum", (req, res) => {
+command.post("/postForum", (req, res) => {
     if (!req.body.companyID || !req.body.forumID || !req.body.name) {
         res.status(400).send('Invalid forum format!').end();
     }
@@ -13,10 +13,15 @@ router.post("/postForum", (req, res) => {
         ID: req.body.forumID,
         content: req.body.name
     };
-    putEvent(dictForum);
+    if (putEvent(dictForum) !== -1) {
+        res.status(200).send('Success!').end();
+    }
+    else {
+        res.status(500).send('Could not upload forum!').end();
+    }
 });
 
-router.post("/postTopic", (req, res) => {
+command.post("/postTopic", (req, res) => {
     if (!req.body.forumID || !req.body.name) {
         res.status(400).send('Invalid topic format!').end();
     }
@@ -27,10 +32,15 @@ router.post("/postTopic", (req, res) => {
         ID: topicIDtemp,
         content: req.body.name
     };
-    putEvent(dictTopic);
+    if (putEvent(dictTopic) !== -1) {
+        res.status(200).send('Success!').end();
+    }
+    else {
+        res.status(500).send('Could not upload topic!').end();
+    }
 });
 
-router.post("/postComment", (req, res) => {
+command.post("/postComment", (req, res) => {
     if (!req.body.parentID || !req.body.message) {
         res.status(400).send('Invalid comment format!').end();
     }
@@ -41,10 +51,15 @@ router.post("/postComment", (req, res) => {
         ID: commentIDtemp,
         content: req.body.message
     };
-    putEvent(dictComment);
+    if (putEvent(dictComment) !== -1) {
+        res.status(200).send('Success!').end();
+    }
+    else {
+        res.status(500).send('Could not upload comment!').end();
+    }
 });
 
-router.delete("/deleteEvent", (req, res) => {
+command.delete("/deleteEvent", (req, res) => {
     if(!req.body.ID) {
         res.status(400).send('Invalid comment format!').end();
     }
@@ -55,6 +70,9 @@ router.delete("/deleteEvent", (req, res) => {
     if (putEvent(dict) !== -1) {
         res.status(200).send('Success!').end();
     }
+    else {
+        res.status(500).send('Could not delete event!').end();
+    }
 });
 
-module.exports = router;
+module.exports = command;

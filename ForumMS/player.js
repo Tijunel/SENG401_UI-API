@@ -35,16 +35,17 @@ function createEvent(event) {
 function deleteEvent(eventID) {
     client.lrange(eventID, 0, -1, (err, results) => {
         if (err) { return -1; }
-        if (results.length === 0) { //base case
-            client.get('EventParent-' + eventID, (err, result) => {
-                client.lrem(result.toString(), 1, eventID); //Remove event from parent's children
-                client.del('EventContent-' + eventID);
-                client.del('EventParent-' + eventID);
-            });
-        }
         for (const event of results) {
             deleteEvent(event); 
         }
+        client.get('EventParent-' + eventID, (err, result) => {
+            if(!result) {
+                return;
+            }
+            client.lrem(result.toString(), 1, eventID); 
+            client.del('EventContent-' + eventID);
+            client.del('EventParent-' + eventID);
+        });
     });
 }
 
