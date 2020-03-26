@@ -15,8 +15,8 @@ export default class CorporateForum extends React.Component {
     }
 
     componentWillMount = () => {
-        fetch('/api/user/getForums', {
-            method: 'POST',
+        fetch('/api/forum/getForums', {
+            method: 'GET',
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -27,7 +27,7 @@ export default class CorporateForum extends React.Component {
                     this.setState({ showIntro: false })
                     this.generateForums(res.forums)
                 }
-                //Show confirmation or error modal
+                console.log(res)
             })
             .catch(err => {
                 console.log(err) //show error modal
@@ -44,9 +44,9 @@ export default class CorporateForum extends React.Component {
                 <div>
                     {forum.name}&nbsp;{forum.accessCode}
                 </div>
-            )
+            );
         }
-        this.setState({})
+        this.setState({});
     }
 
     addForum = (name, accessCode) => {
@@ -56,7 +56,7 @@ export default class CorporateForum extends React.Component {
     }
 
     createForum = () => {
-        fetch('/api/user/createForum', {
+        fetch('/api/forum/postForum', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

@@ -3,9 +3,7 @@ const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const user = express.Router();
-const Forum = require('../model/Forum');
 const User = require("../model/User");
-const randomize = require("randomatic");
 const withCompanyAuth = require('../middleware/auth')[1];
 
 user.post("/signup", async (req, res) => {
@@ -15,16 +13,14 @@ user.post("/signup", async (req, res) => {
             errors: errors.array()
         });
     }
-
     const {
         username,
         email,
         password,
     } = req.body;
-
     try {
-        let user = await User.findOne({ email })
-        if (user) return res.status(400).json({ msg: "User Already Exists" });
+        let user = await User.findOne({ email });
+        if (user) return res.status(400).json({ msg: "User Already Exists" }).end();
 
         user = new User({
             username,
@@ -48,15 +44,14 @@ user.post("/signup", async (req, res) => {
             res.status(200).json({
                 name: user.username,
                 email: user.email
-            });
+            }).end();
         });
     } catch (err) {
-        res.status(500).send("Error in Saving");
+        res.status(500).send("Error in Saving").end();
     }
 });
 
 user.post("/login", async (req, res) => {
-    console.log("request made");
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
@@ -89,37 +84,6 @@ user.post("/login", async (req, res) => {
     }
 });
 
-user.post("/createForum", withCompanyAuth, async (req, res) => {
-    try {
-        let accessCode = randomize('A0', 8)
-        await User.findOneAndUpdate({ _id: req.user.companyID }, {
-            $push: {
-                forums: {
-                    name: req.body.name,
-                    accessCode: accessCode
-                }
-            }
-        });
-        res.status(200).json({
-            name: req.body.name,
-            accessCode: accessCode
-        })
-    } catch (e) {
-        res.send({ message: "Error in Adding Forum" })
-    }
-});
-
-user.post("/getForums", withCompanyAuth, async (req, res) => {
-    try {
-        let user = await User.findOne({ _id: req.user.companyID })
-        res.json({
-            forums: user.forums
-        })
-    } catch (e) {
-        res.send({ message: "Error in Adding Forum" })
-    }
-});
-
 user.post("/checkCompanyToken", withCompanyAuth, (req, res) => {
     res.sendStatus(200);
 })
@@ -127,6 +91,6 @@ user.post("/checkCompanyToken", withCompanyAuth, (req, res) => {
 //For logging out, if needed
 user.post('/stopSession', (req, res) => {
 
-})
+});
 
 module.exports = user;

@@ -75,15 +75,14 @@ export default class SignUpPage extends React.Component {
       })
     })
       .then(res => {
-        if (!res.ok) {
+        if (res.status !== 200) {
           this.setState({
             showModal: true,
             message: "Oops! Something went wrong."
           });
-          return;
         }
+        return res.json()
       })
-      .then(res => res.json())
       .then(res => {
         sessionStorage.setItem("name", res.name);
         sessionStorage.setItem("email", res.email);

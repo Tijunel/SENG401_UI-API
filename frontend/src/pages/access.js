@@ -23,7 +23,7 @@ export default class AccessPage extends React.Component {
             body: JSON.stringify({
                 accessCode: this.accessForm.current.value
             })
-        }) //Handle different response codes
+        })
             .then(res => res.json())
             .then(res => {
                 sessionStorage.setItem('forumName', res.name)
@@ -48,7 +48,7 @@ export default class AccessPage extends React.Component {
                         <Form.Control className='control' ref={this.accessForm} placeholder='Access Code' type='text' autoComplete='on' required onKeyPress={this.handleKeyPress} />
                     </Form.Group>
                 </Form>
-                <Button className='submitButton' onClick={this.submitAccessCode}><b>Submit</b></Button>
+                <Button className='submitButton' onClick={this.submitAccessCode} ><b>Submit</b></Button>
             </div>
         );
     }

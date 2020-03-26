@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const Forum = require("./Forum")
+
 const UserSchema = mongoose.Schema({
     username: {
         type: String,
@@ -16,10 +16,7 @@ const UserSchema = mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now()
-    },
-    forums: [
-        Forum.schema
-    ]
-})
+    }
+});
 
 module.exports = mongoose.model("user", UserSchema);

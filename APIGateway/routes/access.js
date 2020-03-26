@@ -1,8 +1,9 @@
 const express = require("express");
 const { validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
+const http = require("http");
 const access = express.Router();
-const User = require("../model/User");
+const IP = require("../config/connections");
 const withAccessAuth = require('../middleware/auth')[0];
 
 access.post("/auth", async (req, res) => {
@@ -12,41 +13,31 @@ access.post("/auth", async (req, res) => {
             errors: errors.array()
         });
     }
-
-    const {
-        accessCode
-    } = req.body;
-
     try {
-        let forum = await User.aggregate([
-            { $unwind: "$forums" },
-            { $match: { "forums.accessCode": accessCode } },
-            {
-                $project: {
-                    _id: 0,
-                    id: "$forums._id",
-                    name: "$forums.name",
-                    accessCode: "$forums.accessCode"
-                }
-            }
-        ]);
-
-        let user = await User.findOne({ "forums.accessCode": accessCode })
-        const payload = {
-            forum: {
-                name: forum[0].name,
-                companyID: user.id,
-                forumID: forum[0].id
-            }
-        };
-
-        jwt.sign(payload, "AccessSecret", { expiresIn: '30m' }, (err, token) => {
-            if (err) throw err;
-            res.cookie('token', token, { httpOnly: true })
-            res.status(200).json({
-                name: forum[0].name,
-                companyID: user.id,
-                forumID: forum[0].id
+        let options = {
+            host: IP.forumServiceIP,
+            port: IP.forumServicePort,
+            path: '/query/auth/' + req.body.accessCode,
+            method: 'GET'
+        }
+        http.get(options, (newRes) => {
+            newRes.on('data', (data) => {
+                data = JSON.parse(data);
+                const payload = {
+                    forum: {
+                        name: data.name,
+                        companyID: data.companyID,
+                        forumID: data.forumID
+                    }
+                };
+                jwt.sign(payload, "AccessSecret", { expiresIn: '30m' }, (err, token) => {
+                    if (err) throw err;
+                    res.cookie('token', token, { httpOnly: true })
+                    res.status(200).json({
+                        name: data.name,
+                        forumID: data.forumID
+                    });
+                });
             });
         });
     } catch (err) {

@@ -1,22 +1,20 @@
 const express = require("express");
 const forum = express.Router();
-const IP = require("../config/connections")
-const http = require("http")
+const IP = require("../config/connections");
+const http = require("http");
+const randomize = require("randomatic");
 const withAccessAuth = require('../middleware/auth')[0];
 const withCompanyAuth = require('../middleware/auth')[1];
-const { forumServiceIP, forumServicePort } = require('../config/connections');
 
 //Command Endpoints
-
 forum.post("/postForum", withCompanyAuth, async (req, res) => {
-    //Need to call this when creating a new forum
     try {
+        let accessCode = randomize('A0', 8)
         let args = JSON.stringify({
             companyID: req.user.companyID,
-            forumID: req.body.forumID,
+            forumID: accessCode,
             name: req.body.name
-        })
-
+        });
         let options = {
             host: IP.forumServiceIP,
             port: IP.forumServicePort,
@@ -27,12 +25,16 @@ forum.post("/postForum", withCompanyAuth, async (req, res) => {
                 'Content-Length': args.length
             }
         }
-
         let newReq = http.request(options);
         newReq.write(args);
         newReq.end();
+        res.status(200).json({
+            name: req.body.name,
+            accessCode: accessCode
+        }).end();
     } catch (e) {
-        res.status(401).send("Error posting forum").end();
+        console.log(e)
+        res.send({ message: "Error in Adding Forum" })
     }
 });
 
@@ -42,7 +44,6 @@ forum.post('/postTopic', withCompanyAuth, async (req, res) => {
             forumID: req.body.forumID,
             name: req.body.topicName,
         });
-
         let options = {
             host: IP.forumServiceIP,
             port: IP.forumServicePort,
@@ -53,7 +54,6 @@ forum.post('/postTopic', withCompanyAuth, async (req, res) => {
                 'Content-Length': args.length
             }
         };
-
         let newReq = http.request(options);
         newReq.write(args);
         newReq.end();
@@ -62,13 +62,12 @@ forum.post('/postTopic', withCompanyAuth, async (req, res) => {
     }
 });
 
-forum.post('/postComment', withAccessAuth || withCompanyAuth, async (req, res) => {  
+forum.post('/postComment', withAccessAuth || withCompanyAuth, async (req, res) => {
     try {
         let args = JSON.stringify({
             parentID: req.body.parentID,
             message: req.body.message
         });
-
         let options = {
             host: IP.forumServiceIP,
             port: IP.forumServicePort,
@@ -79,7 +78,6 @@ forum.post('/postComment', withAccessAuth || withCompanyAuth, async (req, res) =
                 'Content-Length': args.length
             }
         };
-
         let newReq = http.request(options);
         newReq.write(args);
         newReq.end();
@@ -93,7 +91,6 @@ forum.delete('/deleteEvent', withCompanyAuth, async (req, res) => {
         let args = JSON.stringify({
             ID: req.body.id
         });
-
         let options = {
             host: IP.forumServiceIP,
             port: IP.forumServicePort,
@@ -104,8 +101,7 @@ forum.delete('/deleteEvent', withCompanyAuth, async (req, res) => {
                 'Content-Length': args.length
             }
         }
-
-        let newReq = http.request(options);
+        let newReq = http.delete(options);
         newReq.write(args);
         newReq.end();
     } catch (e) {
@@ -113,37 +109,68 @@ forum.delete('/deleteEvent', withCompanyAuth, async (req, res) => {
     }
 });
 
-
 //Query Endpoints
-
-forum.get("/getTopic/:id", withAccessAuth || withCompanyAuth, async (req, res) => {
-    let options = {
-        host: IP.forumServiceIP,
-        port: IP.forumServicePort,
-        path: '/query/getTopic/' + req.params.id,
-        method: 'GET'
-    };
-
-    http.request(options, (newRes) => {
-        newRes.on('data', (data) => {
-            res.json(data);
+forum.get("/getTopic", withAccessAuth || withCompanyAuth, async (req, res) => {
+    try {
+        let options = {
+            host: IP.forumServiceIP,
+            port: IP.forumServicePort,
+            path: '/query/getTopic/' + req.body.topicID,
+            method: 'GET'
+        };
+        http.get(options, (newRes) => {
+            newRes.on('data', (data) => {
+                res.json(JSON.parse(data));
+            });
         });
-    });
+    } catch (e) {
+        res.status(401).send("Error deleting event.").end();
+    }
 });
 
-forum.get("/getForum/:id", withAccessAuth || withCompanyAuth, async (req, res) => {
-    let options = {
-        host: IP.forumServiceIP,
-        port: IP.forumServicePort,
-        path: '/query/getForum/' + req.params.id,
-        method: 'GET'
-    };
-
-    http.request(options, (newRes) => {
-        newRes.on('data', (data) => {
-            res.json(data);
+forum.get("/getForums", withCompanyAuth, async (req, res) => {
+    try {
+        let options = {
+            host: IP.forumServiceIP,
+            port: IP.forumServicePort,
+            path: '/query/getForums/' + req.user.companyID,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        };
+        let newReq = http.get(options, (newRes) => {
+            newRes.on('data', (data) => {
+                res.json(JSON.parse(data));
+            });
         });
-    });
+        newReq.on('error', error => {
+            console.error(error)
+        });
+    } catch (e) {
+        res.status(401).send("Error deleting event.").end();
+    }
+});
+
+forum.get("/getForum", withAccessAuth || withCompanyAuth, async (req, res) => {
+    try {
+        let options = {
+            host: IP.forumServiceIP,
+            port: IP.forumServicePort,
+            path: '/query/getForum/' + req.params.id,
+            method: 'GET'
+        };
+        let newReq = http.get(options, (newRes) => {
+            newRes.on('data', (data) => {
+                res.json(JSON.parse(data));
+            });
+        });
+        newReq.on('error', error => {
+            console.error(error)
+        });
+    } catch (e) {
+        res.status(401).send("Error getting forum.").end();
+    }
 });
 
 module.exports = forum;

@@ -1,6 +1,7 @@
 const express = require("express");
-const router = express.Router();
-const {client, asyncClient} = require('./redisEnv');
+const query = express.Router();
+const client = require('./redisEnv')[0];
+const asyncClient = require('./redisEnv')[1];
 
 getComments = async (commentID) => {
     let comment = {
@@ -27,7 +28,7 @@ getComments = async (commentID) => {
     return comments;
 }
 
-router.get("/getTopic/:id", (req, res) => {
+query.get("/getTopic/:id", (req, res) => {
     let ID = req.params.id;
     let topic = {
         topicName: "",
@@ -48,7 +49,38 @@ router.get("/getTopic/:id", (req, res) => {
     });
 });
 
-router.get("/getForum/:id", async (req, res) => {
+query.get("/getForums/:id", (req, res) => {
+    let ID = req.params.id;
+    let forums = {
+        forums: []
+    }
+    client.lrange(ID, 0, -1, (err, results) => {
+        if (err || !results) {
+            res.status(404).send('Could not find company.').end();
+            return;
+        }
+        const forumsNum = results.length;
+        var forumsAccumulated = 0;
+        for (forumID of results) {
+            client.get('EventContent-' + forumID, (err, result) => {
+                if (err) {
+                    res.status(500).send("Error finding forums in Redis").end();
+                    return;
+                }
+                forums.forums.push({
+                    accessCode: forumID,
+                    name: result
+                });
+                forumsAccumulated += 1;
+                if (forumsAccumulated === forumsNum) {
+                    res.status(200).json(forums).end();
+                }
+            });
+        }
+    });
+});
+
+query.get("/getForum/:id", async (req, res) => {
     let ID = req.params.id
     let forum = {
         forumName: "",
@@ -87,4 +119,29 @@ router.get("/getForum/:id", async (req, res) => {
     });
 });
 
-module.exports = router;
+query.get('/auth/:id', async(req, res) => {
+    let accessCode = req.params.id;
+    let info = {
+        name: "",
+        companyID: "",
+        forumID: ""
+    }
+    client.get('EventContent-' + accessCode, (err, result) => {
+        if (err || !result) {
+            res.status(404).send('Could not find forum.').end();
+            return;
+        }
+        info.forumID = accessCode;
+        info.name = result;
+        client.get('EventParent-' + accessCode, (err, parent) => {
+            if (err) {
+                res.status(500).send("Could not find parent of forum.").end();
+                return;
+            }
+            info.companyID = parent;
+            res.status(200).json(info).end();
+        });
+    });
+});
+
+module.exports = query;

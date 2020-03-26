@@ -14,7 +14,6 @@ function putEvent(event) {
     });
 }
 
-//Get events from the Postgres database -- This does not work
 function createRedisDataInstance() {
     pool.connect((err, client, release) => {
         if (err) { return -1; }

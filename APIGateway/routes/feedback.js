@@ -1,17 +1,16 @@
 const express = require("express");
-const router = express.Router();
+const feedback = express.Router();
 const http = require("http");
 const IP = require("../config/connections");
 const withAccessAuth = require('../middleware/auth')[0];
 const withCompanyAuth = require('../middleware/auth')[1];
 const { feedbackServiceIP, feedbackServicePort } = require('../config/connections')
 
-router.post("/getFeedback", withCompanyAuth, async (req, res) => {
+feedback.post("/getFeedback", withCompanyAuth, async (req, res) => {
     try {
         let data = JSON.stringify({
             companyID: req.user.companyID
         });
-
         let options = {
             host: feedbackServiceIP,
             port: feedbackServicePort,
@@ -22,7 +21,6 @@ router.post("/getFeedback", withCompanyAuth, async (req, res) => {
                 'Content-Length': data.length
             }
         };
-
         let newReq = http.request(options, (newRes) => {
             newRes.on('data', (data) => {
                 res.json(JSON.parse(data));
@@ -30,15 +28,15 @@ router.post("/getFeedback", withCompanyAuth, async (req, res) => {
         });
         newReq.on('error', error => {
             console.error(error)
-        })
+        });
         newReq.write(data)
         newReq.end()
     } catch (e) {
         res.status(401).send("Error fetching feedback.")
     }
-})
+});
 
-router.post("/submitFeedback", withAccessAuth, async (req, res) => {
+feedback.post("/submitFeedback", withAccessAuth, async (req, res) => {
     try {
         let data = JSON.stringify({
             companyID: req.forum.companyID,
@@ -46,7 +44,6 @@ router.post("/submitFeedback", withAccessAuth, async (req, res) => {
             forumName: req.forum.forumName,
             message: req.body.message
         })
-
         let options = {
             host: feedbackServiceIP,
             port: feedbackServicePort,
@@ -57,13 +54,11 @@ router.post("/submitFeedback", withAccessAuth, async (req, res) => {
                 'Content-Length': data.length
             }
         };
-
         let newReq = http.request(options, (newRes) => {
             newRes.on('data', (data) => {
                 res.json(data);
             });
         })
-
         newReq.on('error', function (e) {
             console.error(e);
         });
@@ -74,4 +69,4 @@ router.post("/submitFeedback", withAccessAuth, async (req, res) => {
     }
 });
 
-module.exports = router;
+module.exports = feedback;

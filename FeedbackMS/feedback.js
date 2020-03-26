@@ -65,22 +65,4 @@ router.post("/getFeedback", async (req, res) => {
   }
 });
 
-/*router.get("/test3", async (req, res) => {
-  try {
-    var testCodeRef = firebase
-      .database()
-      .ref("feedback")
-      .child("accessCode");
-    //testCodeRef.push({ message: "test" });
-    testCodeRef.update({ test: "test" });
-    res.send({
-      message: "test"
-    });
-  } catch (e) {
-    res.send({
-      message: "Error Beep Boop"
-    });
-  }
-});*/
-
 module.exports = router;

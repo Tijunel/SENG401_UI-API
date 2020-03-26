@@ -1,9 +1,9 @@
 const redis = require('redis');
 const asyncRedis = require("async-redis");
-
 const PORT = 6379
-const HOST = 'localhost';
+const HOST = 'localhost'; //Change when deploying
 
+//Synchronous Client
 const client = redis.createClient({
     port: PORT,
     host: HOST
@@ -17,6 +17,7 @@ client.on('error', (err) => {
     console.log('Redis client could NOT connect: \n' + err);
 });
 
+//Asynchronous Client
 const asyncClient = asyncRedis.createClient({
     port: PORT,
     host: HOST
