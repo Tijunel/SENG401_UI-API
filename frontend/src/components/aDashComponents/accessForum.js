@@ -33,7 +33,6 @@ export default class AccessForum extends React.Component {
                 return res.json()
             })
             .then(res => {
-                console.log(res.topics)
                 this.generateTopics(res.topics);
                 this.setState({ showTopics: true });
             })

@@ -39,7 +39,6 @@ forum.post("/postForum", withCompanyAuth, async (req, res) => {
 
 forum.post('/postTopic', withAuth, async (req, res) => {
     try {
-        console.log(req.body)
         let args = JSON.stringify({
             forumID: req.body.forumID,
             name: req.body.topicName,
