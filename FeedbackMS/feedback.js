@@ -1,5 +1,4 @@
 var firebase = require("firebase/app");
-var firebaseDatabase = require("firebase/database");
 const express = require("express");
 const router = express.Router();
 const config = {
@@ -16,22 +15,19 @@ router.post("/submitFeedback", async (req, res) => {
 		var forumID = req.body.forumID;
 		var forumName = req.body.forumName;
 		var message = req.body.message;
-
 		var forumRef = firebase
 			.database()
 			.ref("feedback")
 			.child("companies")
 			.child(companyID)
-			.child(forumID)
-		var messageRef = forumRef.child("messages")
-		messageRef.push(message)
-		var nameRef = forumRef.child("name")
-		nameRef.set(forumName)
-		res.sendStatus(200)
+			.child(forumID);
+		var messageRef = forumRef.child("messages");
+		messageRef.push(message);
+		var nameRef = forumRef.child("name");
+		nameRef.set(forumName);
+		res.sendStatus(200);
 	} catch (e) {
-		res.send({
-			message: "Error Beep Boop"
-		});
+		res.status(500).send("Error submitting feedback!").end();
 	}
 });
 
@@ -42,26 +38,23 @@ router.post("/getFeedback", async (req, res) => {
 			.database()
 			.ref("feedback")
 			.child("companies")
-			.child(companyID)
-
-		var allMessages = []
+			.child(companyID);
+		var allMessages = [];
 		await companyRef.once('value').then(snapshot => {
 			var i = 0;
 			snapshot.forEach((child) => {
-				let forumName = child.val().name
-				allMessages.push({ forumName: forumName, messages: [] })
-				var messages = child.val().messages
+				let forumName = child.val().name;
+				allMessages.push({ forumName: forumName, messages: [] });
+				var messages = child.val().messages;
 				for (message in messages) {
-					allMessages[i].messages.push(messages[message])
+					allMessages[i].messages.push(messages[message]);
 				}
 				i++;
 			});
 		});
-		res.json(allMessages)
+		res.status(200).json(allMessages).end();
 	} catch (e) {
-		res.send({
-			message: "Error Beep Boop"
-		});
+		res.status(500).send("Error fetching feedback!").end();
 	}
 });
 

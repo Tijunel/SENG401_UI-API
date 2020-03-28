@@ -17,18 +17,16 @@ export default class AccessPage extends React.Component {
         if (this.accessForm.current.value === '') return; //Show error
         fetch('/api/access/auth', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 accessCode: this.accessForm.current.value
             })
         })
             .then(res => res.json())
             .then(res => {
-                sessionStorage.setItem('forumName', res.name)
-                sessionStorage.setItem('forumID', res.forumID)
-                this.setState({ redirect: true })
+                sessionStorage.setItem('forumName', res.name);
+                sessionStorage.setItem('forumID', res.forumID);
+                this.setState({ redirect: true });
             })
             .catch(err => {
                 console.log(err) //Handle error with modal

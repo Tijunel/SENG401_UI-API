@@ -2,9 +2,8 @@ const express = require("express");
 const feedback = express.Router();
 const http = require("http");
 const IP = require("../config/connections");
-const withAccessAuth = require('../middleware/auth')[0];
-const withCompanyAuth = require('../middleware/auth')[1];
-const { feedbackServiceIP, feedbackServicePort } = require('../config/connections')
+const withAccessAuth = require("../middleware/auth")[0];
+const withCompanyAuth = require("../middleware/auth")[1];
 
 feedback.post("/getFeedback", withCompanyAuth, async (req, res) => {
     try {
@@ -12,27 +11,29 @@ feedback.post("/getFeedback", withCompanyAuth, async (req, res) => {
             companyID: req.user.companyID
         });
         let options = {
-            host: feedbackServiceIP,
-            port: feedbackServicePort,
-            path: '/feedback/getFeedback',
-            method: 'POST',
+            host: IP.feedbackServiceIP,
+            port: IP.feedbackServicePort,
+            path: "/feedback/getFeedback",
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
-                'Content-Length': data.length
+                "Content-Type": "application/json",
+                "Content-Length": data.length
             }
         };
         let newReq = http.request(options, (newRes) => {
-            newRes.on('data', (data) => {
-                res.json(JSON.parse(data));
+            if(newRes.statusCode !== 200) {
+                res.status(400).send("Bad Request!").end();
+            } 
+            newRes.on("data", (data) => {
+                res.json(JSON.parse(data)).end();
             });
+        }).on("error", error => {
+            res.status(500).send("Error fetching feedback!").end();
         });
-        newReq.on('error', error => {
-            console.error(error)
-        });
-        newReq.write(data)
-        newReq.end()
+        newReq.write(data);
+        newReq.end();
     } catch (e) {
-        res.status(401).send("Error fetching feedback.")
+        res.status(500).send("Error fetching feedback!").end();
     }
 });
 
@@ -45,27 +46,29 @@ feedback.post("/submitFeedback", withAccessAuth, async (req, res) => {
             message: req.body.message
         })
         let options = {
-            host: feedbackServiceIP,
-            port: feedbackServicePort,
-            path: '/feedback/submitFeedback',
-            method: 'POST',
+            host: IP.feedbackServiceIP,
+            port: IP.feedbackServicePort,
+            path: "/feedback/submitFeedback",
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
-                'Content-Length': data.length
+                "Content-Type": "application/json",
+                "Content-Length": data.length
             }
         };
         let newReq = http.request(options, (newRes) => {
-            newRes.on('data', (data) => {
-                res.json(data);
+            if(newRes.statusCode !== 200) {
+                res.status(400).send("Error").end();
+            }
+            newRes.on("data", (data) => {
+                res.json(JSON.parse(data)).end();
             });
-        })
-        newReq.on('error', function (e) {
-            console.error(e);
+        }).on("error", function (e) {
+            res.status(500).send("Error posting feedback!").end();
         });
-        newReq.write(data)
-        newReq.end()
+        newReq.write(data);
+        newReq.end();
     } catch (e) {
-        res.status(401).send("Error posting feedback.")
+        res.status(401).send("Error posting feedback!").end();
     }
 });
 

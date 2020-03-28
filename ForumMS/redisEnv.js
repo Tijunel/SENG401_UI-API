@@ -1,7 +1,7 @@
-const redis = require('redis');
+const redis = require("redis");
 const asyncRedis = require("async-redis");
-const PORT = 6379
-const HOST = 'localhost'; //Change when deploying
+const PORT = 6379;
+const HOST = "localhost"; //Change when deploying
 
 //Synchronous Client
 const client = redis.createClient({
@@ -9,12 +9,12 @@ const client = redis.createClient({
     host: HOST
 });
 
-client.on('connect', () => {
-    console.log('Command-Side (Player) Redis client connected');
+client.on("connect", () => {
+    console.log("Command-Side (Player) Redis client connected");
 });
 
-client.on('error', (err) => {
-    console.log('Redis client could NOT connect: \n' + err);
+client.on("error", (err) => {
+    console.log("Redis client could NOT connect: \n" + err);
 });
 
 //Asynchronous Client
@@ -23,12 +23,12 @@ const asyncClient = asyncRedis.createClient({
     host: HOST
 });
 
-asyncClient.on('connect', () => {
-    console.log('Command-Side (Player) Redis client connected');
+asyncClient.on("connect", () => {
+    console.log("Command-Side (Player) Redis client connected");
 });
 
-asyncClient.on('error', (err) => {
-    console.log('Redis client could NOT connect: \n' + err);
+asyncClient.on("error", (err) => {
+    console.log("Redis client could NOT connect: \n" + err);
 });
 
 module.exports = [client, asyncClient];

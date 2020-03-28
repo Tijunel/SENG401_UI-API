@@ -4,14 +4,14 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const user = express.Router();
 const User = require("../model/User");
-const withCompanyAuth = require('../middleware/auth')[1];
+const withCompanyAuth = require("../middleware/auth")[1];
 
 user.post("/signup", async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         return res.status(400).json({
             errors: errors.array()
-        });
+        }).end();
     }
     const {
         username,
@@ -20,27 +20,23 @@ user.post("/signup", async (req, res) => {
     } = req.body;
     try {
         let user = await User.findOne({ email });
-        if (user) return res.status(400).json({ msg: "User Already Exists" }).end();
-
+        if (user) return res.status(400).send("User Already Exists").end();
         user = new User({
             username,
             email,
             password
         });
-
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(password, salt);
         await user.save();
-
         const payload = {
             user: {
                 companyID: user.id
             }
         };
-
-        jwt.sign(payload, "CompanySecret", { expiresIn: '30m' }, (err, token) => {
+        jwt.sign(payload, "CompanySecret", { expiresIn: "30m" }, (err, token) => {
             if (err) throw err;
-            res.cookie('token', token, { httpOnly: true })
+            res.cookie("token", token, { httpOnly: true });
             res.status(200).json({
                 name: user.username,
                 email: user.email
@@ -70,25 +66,25 @@ user.post("/login", async (req, res) => {
                 companyID: user.id
             }
         };
-        jwt.sign(payload, "CompanySecret", { expiresIn: '30m' }, (err, token) => {
+        jwt.sign(payload, "CompanySecret", { expiresIn: "30m" }, (err, token) => {
             if (err) throw err;
-            res.cookie('token', token, { httpOnly: true });
+            res.cookie("token", token, { httpOnly: true });
             res.status(200).json({
                 email: user.email,
                 name: user.username
-            });
+            }).end();
         });
-    } catch (e) {
-        res.status(500).json({ message: "Server Error" });
+    } catch (err) {
+        res.status(500).json({ message: "Server Error" }).end();
     }
 });
 
 user.post("/checkCompanyToken", withCompanyAuth, (req, res) => {
-    res.sendStatus(200);
+    res.sendStatus(200).end();
 })
 
 //For logging out, if needed
-user.post('/stopSession', (req, res) => {
+user.post("/stopSession", (req, res) => {
 
 });
 
