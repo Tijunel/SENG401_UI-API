@@ -1,6 +1,9 @@
 import React from 'react';
-import { Button, Modal, Form } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import APIHelper from './apiHelper';
+import PostModal from './postModal';
+import ConfirmationModal from './confirmationModal';
+import ErrorModal from "./errorModal";
 
 export default class Comment extends React.Component {
     constructor(props) {
@@ -12,6 +15,8 @@ export default class Comment extends React.Component {
             ID: this.props.ID,
             showCommentModal: false,
             showConfirmationModal: false,
+            showErrorModal: false,
+            errorMessage: "",
             hideComment: false,
             apiHelper: APIHelper.getInstance()
         }
@@ -37,7 +42,10 @@ export default class Comment extends React.Component {
         if (!res.error) {
             this.addReply(this.messageForm.current.value, res.ID);
         } else {
-            //Show error
+            this.setState({
+                showErrorModal: true,
+                errorMessage: "Could not save your reply. Try again later."
+            });
         }
         this.showCommentModal();
     }
@@ -47,12 +55,17 @@ export default class Comment extends React.Component {
         if (res) {
             this.setState({ hideComment: true });
         } else {
-            //Show error
+            this.setState({
+                showErrorModal: true,
+                showConfirmationModal: false,
+                errorMessage: "Could not delete the comment. Try again later."
+            });
         }
     }
 
     showCommentModal = () => { this.setState({ showCommentModal: !this.state.showCommentModal }); }
     showConfirmationModal = () => { this.setState({ showConfirmationModal: !this.state.showConfirmationModal }); }
+    showErrorModal = () => { this.setState({showErrorModal: !this.showErrorModal}); }
 
     render = () => {
         if (!this.state.hideComment) {
@@ -73,38 +86,31 @@ export default class Comment extends React.Component {
                             <div style={{ marginTop: '10px' }}>{this.repliesUI}</div>
                         </div>
                     </div>
-                    <Modal id='newForumModal' show={this.state.showCommentModal} onHide={this.showCommentModal} centered>
-                        <Modal.Header closeButton>
-                            <Modal.Title>
-                                <b style={{ fontSize: '25px' }}>Reply</b>
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ fontSize: '17px' }}>
-                            Enter your reply below.<br /><br />
-                            <Form className="form">
-                                <Form.Group controlId="email">
-                                    <Form.Control ref={this.messageForm} className='control' placeholder='Message' as='textarea' rows='10' required style={{ height: '300px' }} />
-                                </Form.Group>
-                            </Form>
-                            <Button className='createAForumButton' onClick={this.createReply}><b>Submit</b></Button>
-                        </Modal.Body>
-                    </Modal>
-                    <Modal id='newForumModal' show={this.state.showConfirmationModal} onHide={this.showConfirmationModal} centered>
-                        <Modal.Header closeButton>
-                            <Modal.Title>
-                                <b style={{ fontSize: '25px' }}>Confirmation</b>
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ fontSize: '17px' }}>
-                            Are you sure you want to delete this comment?<br /><br />
-                            <Button className='createAForumButton' onClick={this.deleteComment}><b>Yes!</b></Button>
-                        </Modal.Body>
-                    </Modal>
+                    <PostModal
+                        showModal={this.state.showCommentModal}
+                        hideModal={this.showCommentModal}
+                        title={"Reply"}
+                        message={"Enter your reply below"}
+                        reference={this.messageForm}
+                        placeholder={"Your Reply"}
+                        create={this.createReply}
+                    />
+                    <ConfirmationModal
+                        showModal={this.state.showConfirmationModal}
+                        hideModal={this.showConfirmationModal}
+                        title={"Confirmation"}
+                        message={"Are you sure you want to delete this comment?"}
+                        delete={this.deleteComment}
+                        buttonTitle={"Yes!"}
+                    />
+                    <ErrorModal
+                        showModal={this.state.showErrorModal}
+                        hideModal={this.showErrorModal}
+                        message={this.state.errorMessage}
+                    />
                 </div>
             );
         }
-        else {
-            return (<div></div>);
-        }
+        else { return (<div></div>); }
     }
 }

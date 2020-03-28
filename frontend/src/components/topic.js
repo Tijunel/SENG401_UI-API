@@ -2,6 +2,9 @@ import React from 'react';
 import Comment from './comment';
 import { Row, Col, Button, Modal, Form } from 'react-bootstrap';
 import APIHelper from './apiHelper';
+import PostModal from './postModal';
+import ConfirmationModal from './confirmationModal';
+import ErrorModal from "./errorModal";
 
 export default class Topic extends React.Component {
     constructor(props) {
@@ -11,6 +14,8 @@ export default class Topic extends React.Component {
             showComments: false,
             showCommentModal: false,
             hideTopic: false,
+            showErrorModal: false,
+            errorMessage: "",
             apiHelper: APIHelper.getInstance()
         }
         this.commentsUI = [];
@@ -20,10 +25,13 @@ export default class Topic extends React.Component {
         this.commentsUI = [];
         if (!this.state.showComments) {
             const res = await this.state.apiHelper.getTopic(this.props.id);
-            if(!res.error) {
+            if (!res.error) {
                 this.generateRootComments(res.comments);
             } else {
-                //Show error
+                this.setState({
+                    showErrorModal: true,
+                    errorMessage: "Could not fetch comments. Please try again later."
+                });
             }
             this.setState({ showComments: true });
         } else {
@@ -50,22 +58,30 @@ export default class Topic extends React.Component {
         if (!res.error) {
             this.addRootComment(this.messageForm.current.value, res.ID);
         } else {
-            //Show error
+            this.setState({
+                showErrorModal: true,
+                errorMessage: "Could not upload comment. Please try again later."
+            });
         }
         this.showCommentModal();
     }
 
     deleteTopic = async () => {
         const res = await this.state.apiHelper.deleteEvent(this.props.id);
-        if (res) {
+        if (!res) {
             this.setState({ hideTopic: true });
         } else {
-            //Show error
+            this.setState({
+                showErrorModal: true,
+                showConfirmationModal: false,
+                errorMessage: "Could not delete topic. Please try again later."
+            });
         }
     }
 
     showCommentModal = () => { this.setState({ showCommentModal: !this.state.showCommentModal }); }
     showConfirmationModal = () => { this.setState({ showConfirmationModal: !this.state.showConfirmationModal }); }
+    showErrorModal = () => { this.setState({ showErrorModal: !this.state.showErrorModal }); }
 
     render = () => {
         if (!this.state.hideTopic) {
@@ -86,37 +102,30 @@ export default class Topic extends React.Component {
                             <div style={{ marginTop: '20px' }}>{this.commentsUI}</div>
                         </div>
                     </div>
-                    <Modal id='newForumModal' show={this.state.showCommentModal} onHide={this.showCommentModal} centered>
-                        <Modal.Header closeButton>
-                            <Modal.Title>
-                                <b style={{ fontSize: '25px' }}>Create Comment</b>
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ fontSize: '17px' }}>
-                            Enter your message below.<br /><br />
-                            <Form className="form">
-                                <Form.Group controlId="email">
-                                    <Form.Control ref={this.messageForm} className='control' placeholder='Message' as='textarea' rows='10' required style={{ height: '300px' }} />
-                                </Form.Group>
-                            </Form>
-                            <Button className='createAForumButton' onClick={this.createRootComment}><b>Submit</b></Button>
-                        </Modal.Body>
-                    </Modal>
-                    <Modal id='newForumModal' show={this.state.showConfirmationModal} onHide={this.showConfirmationModal} centered>
-                        <Modal.Header closeButton>
-                            <Modal.Title>
-                                <b style={{ fontSize: '25px' }}>Confirmation</b>
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ fontSize: '17px' }}>
-                            Are you sure you want to delete this topic?<br /><br />
-                            <Button className='createAForumButton' onClick={this.deleteTopic}><b>Yes!</b></Button>
-                        </Modal.Body>
-                    </Modal>
+                    <PostModal
+                        showModal={this.state.showCommentModal}
+                        hideModal={this.showCommentModal}
+                        title={"Create Comment"}
+                        message={"Enter your message below."}
+                        reference={this.messageForm}
+                        placeholder={"Message"}
+                        create={this.createRootComment}
+                    />
+                    <ConfirmationModal
+                        showModal={this.state.showConfirmationModal}
+                        hideModal={this.showConfirmationModal}
+                        title={"Confirmation"}
+                        message={"Are you sure you want to delete this topic?"}
+                        delete={this.deleteTopic}
+                        buttonTitle={"Yes!"}
+                    />
+                    <ErrorModal
+                        showModal={this.state.showErrorModal}
+                        hideModal={this.showErrorModal}
+                        message={this.state.errorMessage}
+                    />
                 </div>
             );
-        } else {
-            return (<div></div>);
-        }
+        } else { return (<div></div>); }
     }
 }

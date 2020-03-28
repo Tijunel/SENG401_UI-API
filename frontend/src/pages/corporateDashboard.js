@@ -28,4 +28,4 @@ class CorporateDashboard extends React.Component {
     }
 }
 
-export default WithAuthCompany(CorporateDashboard)
+export default WithAuthCompany(CorporateDashboard);

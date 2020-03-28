@@ -1,7 +1,9 @@
 import React from 'react';
 import Forum from './forum';
-import { Image, Form, Button, Modal } from 'react-bootstrap';
+import { Image, Button } from 'react-bootstrap';
 import APIHelper from '../apiHelper';
+import PostModal from '../postModal';
+import ErrorModal from '../errorModal';
 
 export default class CorporateForum extends React.Component {
     constructor(props) {
@@ -10,6 +12,8 @@ export default class CorporateForum extends React.Component {
         this.state = {
             showForum: true,
             showForumModal: false,
+            showErrorModal: false,
+            errorMessage: "",
             showIntro: true,
             apiHelper: APIHelper.getInstance()
         }
@@ -24,7 +28,10 @@ export default class CorporateForum extends React.Component {
                 this.generateForums(res.forums);
             }
         } else {
-            //Show error
+            this.setState({
+                showErrorModal: true,
+                errorMessage: 'Could not get forums. Try again later.'
+            });
         }
     }
 
@@ -50,11 +57,16 @@ export default class CorporateForum extends React.Component {
             this.addForum(res.name, res.accessCode);
             this.setState({ showIntro: false, showForumModal: false });
         } else {
-            //Show error
+            this.setState({
+                showForumModal: false,
+                showErrorModal: true,
+                errorMessage: 'Could not create forum. Try again later.'
+            });
         }
     }
 
     showForumModal = () => { this.setState({ showForumModal: !this.state.showForumModal }); }
+    showErrorModal = () => { this.setState({ showErrorModal: !this.state.showErrorModal }); }
 
     render = () => {
         return (
@@ -71,22 +83,20 @@ export default class CorporateForum extends React.Component {
                 </div>
                 <Button className='createAForumButton' onClick={this.showForumModal}><b>Create A Forum</b></Button>
                 <div style={{ marginTop: '20px' }}>{this.forumUI}</div>
-                <Modal id='newForumModal' show={this.state.showForumModal} onHide={this.showForumModal} centered>
-                    <Modal.Header closeButton>
-                        <Modal.Title>
-                            <b style={{ fontSize: '25px' }}>Create Forum</b>
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body style={{ fontSize: '17px' }}>
-                        Enter the forum's name below<br /><br />
-                        <Form className="form">
-                            <Form.Group controlId="name">
-                                <Form.Control ref={this.nameForm} className='control' placeholder='Forum Name' type='text' required />
-                            </Form.Group>
-                        </Form>
-                        <Button className='createAForumButton' onClick={this.createForum}><b>Submit</b></Button>
-                    </Modal.Body>
-                </Modal>
+                <PostModal
+                    showModal={this.state.showForumModal}
+                    hideModal={this.showForumModal}
+                    title={'Create Forum'}
+                    reference={this.nameForm}
+                    placeholder={'Forum Name'}
+                    message={"Enter the forum's name below"}
+                    create={this.createForum}
+                />
+                <ErrorModal
+                    showModal={this.state.showErrorModal}
+                    hideModal={this.showErrorModal}
+                    message={this.state.errorMessage}
+                />
             </div>
         );
     }

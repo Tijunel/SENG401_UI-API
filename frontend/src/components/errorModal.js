@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 
 export default class ErrorModal extends React.Component {
 	showModal = () => {
@@ -23,6 +23,7 @@ export default class ErrorModal extends React.Component {
 					{this.props.message}
 					<br />
 					<br />
+					<Button className='createAForumButton' onClick={this.props.hideModal}><b>Got It!</b></Button>
 				</Modal.Body>
 			</Modal>
 		);

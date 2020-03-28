@@ -5,34 +5,33 @@ const IP = require("../config/connections");
 const withAccessAuth = require("../middleware/auth")[0];
 const withCompanyAuth = require("../middleware/auth")[1];
 
-feedback.post("/getFeedback", withCompanyAuth, async (req, res) => {
+feedback.get("/getFeedback", withCompanyAuth, async (req, res) => {
     try {
-        let data = JSON.stringify({
-            companyID: req.user.companyID
-        });
         let options = {
             host: IP.feedbackServiceIP,
             port: IP.feedbackServicePort,
-            path: "/feedback/getFeedback",
-            method: "POST",
+            path: "/feedback/getFeedback/" + req.user.companyID,
+            method: "GET",
             headers: {
-                "Content-Type": "application/json",
-                "Content-Length": data.length
+                "Content-Type": "application/json"
             }
         };
-        let newReq = http.request(options, (newRes) => {
+        http.get(options, (newRes) => {
             if(newRes.statusCode !== 200) {
                 res.status(400).send("Bad Request!").end();
             } 
             newRes.on("data", (data) => {
-                res.json(JSON.parse(data)).end();
+                try {
+                    data = JSON.parse(data);
+                    res.json(data);
+                } catch (err) {
+                    res.status(500).send("Error fetching feedback!").end();
+                }
             });
         }).on("error", error => {
             res.status(500).send("Error fetching feedback!").end();
         });
-        newReq.write(data);
-        newReq.end();
-    } catch (e) {
+    } catch (err) {
         res.status(500).send("Error fetching feedback!").end();
     }
 });
@@ -59,9 +58,6 @@ feedback.post("/submitFeedback", withAccessAuth, async (req, res) => {
             if(newRes.statusCode !== 200) {
                 res.status(400).send("Error").end();
             }
-            newRes.on("data", (data) => {
-                res.json(JSON.parse(data)).end();
-            });
         }).on("error", function (e) {
             res.status(500).send("Error posting feedback!").end();
         });

@@ -1,4 +1,4 @@
-const client = require('./redisEnv')[0];
+const client = require("./redisEnv")[0];
 
 function playEvent(event) {
     let action = event.command.split(" ")[0];
@@ -9,10 +9,10 @@ function playEvent(event) {
 function createEvent(event) {
     client.rpush(event.parentID, event.ID, (err, reply) => {
         if (err) { return -1; }
-        client.set('EventContent-' + event.ID, event.content, (err, reply) => {
+        client.set("EventContent-" + event.ID, event.content, (err, reply) => {
             if (err) { return -1; }
         });
-        client.set('EventParent-' + event.ID, event.parentID, (err, reply) => {
+        client.set("EventParent-" + event.ID, event.parentID, (err, reply) => {
             if (err) { return -1; }
         });
     });
@@ -24,13 +24,13 @@ function deleteEvent(eventID) {
         for (const event of results) {
             deleteEvent(event); 
         }
-        client.get('EventParent-' + eventID, (err, result) => {
+        client.get("EventParent-" + eventID, (err, result) => {
             if(!result) { return -1; }
             client.lrem(result.toString(), 1, eventID); 
-            client.del('EventContent-' + eventID);
-            client.del('EventParent-' + eventID);
+            client.del("EventContent-" + eventID);
+            client.del("EventParent-" + eventID);
         });
     });
 }
 
-module.exports = playEvent
+module.exports = playEvent;

@@ -1,6 +1,7 @@
-var firebase = require("firebase/app");
+const firebase = require("firebase/app");
+const firebaseDatabse = require("firebase/database");
 const express = require("express");
-const router = express.Router();
+const feedback = express.Router();
 const config = {
 	apiKey: "AIzaSyB_4QWyx3NWR00xtwofQ8shIeIU6noLVFw",
 	authDomain: "aonfeedback.firebaseapp.com/",
@@ -9,8 +10,9 @@ const config = {
 
 firebase.initializeApp(config);
 
-router.post("/submitFeedback", async (req, res) => {
+feedback.post("/submitFeedback", async (req, res) => {
 	try {
+		//Check if this exists
 		var companyID = req.body.companyID;
 		var forumID = req.body.forumID;
 		var forumName = req.body.forumName;
@@ -31,9 +33,9 @@ router.post("/submitFeedback", async (req, res) => {
 	}
 });
 
-router.post("/getFeedback", async (req, res) => {
+feedback.get("/getFeedback/:id", async (req, res) => {
 	try {
-		var companyID = req.body.companyID;
+		var companyID = req.params.id;
 		var companyRef = firebase
 			.database()
 			.ref("feedback")
@@ -58,4 +60,4 @@ router.post("/getFeedback", async (req, res) => {
 	}
 });
 
-module.exports = router;
+module.exports = feedback;

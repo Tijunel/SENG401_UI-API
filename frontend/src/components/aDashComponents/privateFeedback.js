@@ -1,11 +1,16 @@
 import React from 'react';
 import { Form, Button } from 'react-bootstrap';
 import APIHelper from '../apiHelper';
+import ConfirmationModal from '../confirmationModal';
+import ErrorModal from '../errorModal';
 
 export default class AccessPrivateFeedback extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            showConfirmationModal: false, 
+            showErrorModal: false, 
+            errorMessage: "",
             apiHelper: APIHelper.getInstance()
         }
         this.feedbackForm = React.createRef();
@@ -13,15 +18,25 @@ export default class AccessPrivateFeedback extends React.Component {
 
     submitPrivateFeedback = () => {
         if (this.feedbackForm.current.value === '') {
-            return; //Show error modal
+            this.setState({
+                showErrorModal: true,
+                errorMessage: "You didn't provide any feedback. Please enter your feedback."
+            });
+            return;
         } 
         const res = this.state.apiHelper.postPrivateFeedback(this.feedbackForm.current.value, sessionStorage.getItem('forumName'));
         if (res) {
-            //Show confirmation modal
+            this.setState({showConfirmationModal: true});
         } else {
-            //Show error modal
+            this.setState({
+                showErrorModal: true,
+                errorMessage: "Your feedback could not be submitted. Try again later."
+            });
         }
     }
+
+    showConfirmationModal = () => { this.setState({ showConfirmationModal: !this.state.showConfirmationModal }); }
+    showErrorModal = () => { this.setState({showErrorModal: !this.state.showErrorModal}); }
 
     render = () => {
         return (
@@ -38,6 +53,19 @@ export default class AccessPrivateFeedback extends React.Component {
                     </Form.Group>
                 </Form>
                 <Button className='createForumButton' onClick={this.submitPrivateFeedback}><b>Submit</b></Button>
+                <ConfirmationModal
+                    showModal={this.state.showConfirmationModal}
+                    hideModal={this.showConfirmationModal}
+                    title={"Submitted"}
+                    message={"Your feedback has been submitted!"}
+                    delete={this.showConfirmationModal}
+                    buttonTitle={"Got It!"}
+                />
+                <ErrorModal
+                    showModal={this.state.showErrorModal}
+                    hideModal={this.showErrorModal}
+                    message={this.state.errorMessage}
+                />
             </div>
         );
     }

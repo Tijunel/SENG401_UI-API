@@ -1,7 +1,10 @@
 import React from 'react';
 import Topic from '../topic';
-import { Row, Col, Button, Modal, Form } from 'react-bootstrap';
+import { Row, Col, Button } from 'react-bootstrap';
 import APIHelper from '../apiHelper';
+import ConfirmationModal from '../confirmationModal';
+import PostModal from '../postModal';
+import ErrorModal from '../errorModal';
 
 export default class Forum extends React.Component {
     constructor(props) {
@@ -11,20 +14,25 @@ export default class Forum extends React.Component {
             showTopics: false,
             showTopicModal: false,
             showConfirmationModal: false,
+            showErrorModal: false,
+            errorMessage: "",
             hideForum: false,
             apiHelper: APIHelper.getInstance()
         }
         this.topicsUI = [];
     }
 
-    getTopics = async() => {
+    getTopics = async () => {
         this.topicsUI = [];
         if (!this.state.showTopics) {
             const res = await this.state.apiHelper.getForum(this.props.accessCode);
-            if(!res.error) {
+            if (!res.error) {
                 this.generateTopics(res.topics);
             } else {
-                //Show error
+                this.setState({
+                    showErrorModal: true,
+                    errorMessage: 'Could not fetch topics. Try again later.'
+                });
             }
             this.setState({ showTopics: true });
         } else {
@@ -48,12 +56,15 @@ export default class Forum extends React.Component {
         this.forceUpdate();
     }
 
-    createTopic = async() => {
+    createTopic = async () => {
         const res = await this.state.apiHelper.postTopic(this.nameForm.current.value, this.props.accessCode);
-        if(!res.error) {
+        if (!res.error) {
             this.addTopic(this.nameForm.current.value, res.ID);
         } else {
-            //Show error
+            this.setState({
+                showErrorModal: true,
+                errorMessage: 'Could not create topic. Try again later.'
+            });
         }
         this.showTopicModal();
     }
@@ -63,12 +74,16 @@ export default class Forum extends React.Component {
         if (res) {
             this.setState({ hideForum: true });
         } else {
-            //Show error
+            this.setState({
+                showErrorModal: true,
+                errorMessage: 'Could not delete forum. Try again later.'
+            });
         }
     }
 
     showTopicModal = () => { this.setState({ showTopicModal: !this.state.showTopicModal }); }
     showConfirmationModal = () => { this.setState({ showConfirmationModal: !this.state.showConfirmationModal }); }
+    showErrorModal = () => { this.setState({ showErrorModal: !this.state.showErrorModal }); }
 
     render = () => {
         if (!this.state.hideForum) {
@@ -88,39 +103,30 @@ export default class Forum extends React.Component {
                             <div style={{ marginTop: '20px' }}>{this.topicsUI}</div>
                         </div>
                     </div>
-                    <Modal id='newForumModal' show={this.state.showTopicModal} onHide={this.showTopicModal} centered>
-                        <Modal.Header closeButton>
-                            <Modal.Title>
-                                <b style={{ fontSize: '25px' }}>Create Topic</b>
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ fontSize: '17px' }}>
-                            Enter the topic's name below<br /><br />
-                            <Form className="form">
-                                <Form.Group controlId="name">
-                                    <Form.Control ref={this.nameForm} className='control' placeholder='Topic Name' type='text' required />
-                                </Form.Group>
-                            </Form>
-                            <Button className='createAForumButton' onClick={this.createTopic}><b>Submit</b></Button>
-                        </Modal.Body>
-                    </Modal>
-                    <Modal id='newForumModal' show={this.state.showConfirmationModal} onHide={this.showConfirmationModal} centered>
-                        <Modal.Header closeButton>
-                            <Modal.Title>
-                                <b style={{ fontSize: '25px' }}>Confirmation</b>
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ fontSize: '17px' }}>
-                            Are you sure you want to delete this forum?<br /><br />
-                            <Button className='createAForumButton' onClick={this.deleteForum}><b>Yes!</b></Button>
-                        </Modal.Body>
-                    </Modal>
+                    <PostModal
+                        showModal={this.state.showTopicModal}
+                        hideModal={this.showTopicModal}
+                        title={'Create Topic'}
+                        reference={this.nameForm}
+                        placeholder={'Topic Name'}
+                        message={"Enter the topic's name below"}
+                        create={this.createTopic}
+                    />
+                    <ConfirmationModal
+                        showModal={this.state.showConfirmationModal}
+                        hideModal={this.showConfirmationModal}
+                        title={'Confirmation'}
+                        message={"Are you sure you want to delete this forum?"}
+                        delete={this.deleteForum}
+                        buttonTitle={"Yes!"}
+                    />
+                    <ErrorModal
+                        showModal={this.state.showErrorModal}
+                        hideModal={this.showErrorModal}
+                        message={this.state.errorMessage}
+                    />
                 </div>
             );
-        } else {
-            return (
-                <div></div>
-            )
-        }
+        } else { return (<div></div>); }
     }
 }

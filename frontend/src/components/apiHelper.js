@@ -3,7 +3,7 @@ export default class APIHelper {
 
     getPrivateFeedback = async () => {
         const res = await fetch("/api/feedback/getFeedback", {
-            method: "POST",
+            method: "GET",
             headers: { "Content-Type": "application/json" }
         })
             .then(async res => {

@@ -1,6 +1,6 @@
 import React from "react";
 import TopNav from "../components/topNav";
-import { Image, Form, Button, Modal } from "react-bootstrap";
+import { Image, Form, Button } from "react-bootstrap";
 import { Redirect } from "react-router-dom";
 import ErrorModal from "../components/errorModal.js";
 import "../styling/signUp.css";
@@ -22,6 +22,7 @@ export default class SignUpPage extends React.Component {
 	componentDidMount = () => { this.emailForm.current.focus(); };
 
 	handleKeyPress = event => {
+		//Handle errors
 		if (event.key === "Enter") {
 			event.preventDefault();
 			if (this.emailForm.current.value === "") this.emailForm.current.focus();
@@ -35,8 +36,6 @@ export default class SignUpPage extends React.Component {
 			else this.submitInfo();
 		}
 	};
-
-	hideModal = () => {this.setState({ showModal: false });};
 
 	submitInfo = () => {
 		let email = this.emailForm.current.value === "";
@@ -83,6 +82,8 @@ export default class SignUpPage extends React.Component {
 				});
 			});
 	};
+
+	hideModal = () => { this.setState({ showModal: false }); };
 
 	render = () => {
 		if (this.state.redirect) return <Redirect to="/dashboard" />;

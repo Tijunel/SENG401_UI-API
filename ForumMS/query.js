@@ -104,7 +104,7 @@ query.get("/getForum/:id", async (req, res) => {
             }
             const topicsNum = results.length;
             if (results.length === 0) {
-                res.status(400).end();
+                res.status(200).json(forum).end();
             }
             var topicsAccumulated = 0;
             for (const topicID of results) {
