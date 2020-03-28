@@ -15,7 +15,8 @@ export default class AccessPrivateFeedback extends React.Component {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                message: this.feedbackForm.current.value
+                message: this.feedbackForm.current.value,
+                name: sessionStorage.getItem('forumName')
             })
         }) //Check status numbers
             .then(res => res.json())

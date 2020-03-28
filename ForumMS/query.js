@@ -86,7 +86,7 @@ query.get("/getForums/:id", (req, res) => {
 });
 
 query.get("/getForum/:id", async (req, res) => {
-    let ID = req.params.id
+    let ID = req.params.id;
     let forum = {
         forumName: "",
         topics: []

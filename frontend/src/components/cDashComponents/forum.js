@@ -10,8 +10,7 @@ export default class Forum extends React.Component {
             showTopics: false,
             showTopicModal: false,
             showConfirmationModal: false,
-            hideForum: false,
-            topics: []
+            hideForum: false
         }
         this.topicsUI = [];
     }
@@ -48,7 +47,7 @@ export default class Forum extends React.Component {
     generateTopics = (topics) => {
         for (const topic of topics) {
             this.topicsUI.push(
-                <Topic name={topic.name} id={topic.ID} />
+                <Topic name={topic.name} id={topic.ID} isCompany={true}/>
             );
         }
         this.forceUpdate();
@@ -56,7 +55,7 @@ export default class Forum extends React.Component {
 
     addTopic = (name, ID) => {
         this.topicsUI.push(
-            <Topic name={name} id={ID} />
+            <Topic name={name} id={ID} isCompany={true}/>
         );
         this.forceUpdate();
     }
@@ -139,7 +138,7 @@ export default class Forum extends React.Component {
                     <Modal id='newForumModal' show={this.state.showTopicModal} onHide={this.showTopicModal} centered>
                         <Modal.Header closeButton>
                             <Modal.Title>
-                                <b style={{ fontSize: '25px' }}>Create Forum</b>
+                                <b style={{ fontSize: '25px' }}>Create Topic</b>
                             </Modal.Title>
                         </Modal.Header>
                         <Modal.Body style={{ fontSize: '17px' }}>

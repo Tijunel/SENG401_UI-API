@@ -25,7 +25,7 @@ access.post("/auth", async (req, res) => {
                 data = JSON.parse(data);
                 const payload = {
                     forum: {
-                        name: data.name,
+                        forumName: data.name,
                         companyID: data.companyID,
                         forumID: data.forumID
                     }
@@ -36,7 +36,7 @@ access.post("/auth", async (req, res) => {
                     res.status(200).json({
                         name: data.name,
                         forumID: data.forumID
-                    });
+                    }).end();
                 });
             });
         });

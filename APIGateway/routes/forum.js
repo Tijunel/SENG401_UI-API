@@ -39,6 +39,7 @@ forum.post("/postForum", withCompanyAuth, async (req, res) => {
 
 forum.post('/postTopic', withAuth, async (req, res) => {
     try {
+        console.log(req.body)
         let args = JSON.stringify({
             forumID: req.body.forumID,
             name: req.body.topicName,
@@ -127,7 +128,7 @@ forum.delete('/deleteEvent', withCompanyAuth, async (req, res) => {
 });
 
 //Query Endpoints
-forum.get("/getTopic/:id", withCompanyAuth, async (req, res) => {
+forum.get("/getTopic/:id", withAuth, async (req, res) => {
     try {
         let options = {
             host: IP.forumServiceIP,
@@ -169,7 +170,7 @@ forum.get("/getForums", withCompanyAuth, async (req, res) => {
     }
 });
 
-forum.get("/getForum/:id", withCompanyAuth, async (req, res) => {
+forum.get("/getForum/:id", withAuth, async (req, res) => {
     try {
         let options = {
             host: IP.forumServiceIP,

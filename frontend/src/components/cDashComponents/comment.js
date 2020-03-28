@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Button, Modal, Form } from 'react-bootstrap';
+import { Button, Modal, Form } from 'react-bootstrap';
 
 export default class Comment extends React.Component {
     constructor(props) {
@@ -102,7 +102,7 @@ export default class Comment extends React.Component {
                         <div style={{ margin: '5px' }}>{this.state.message}</div>
                         <div style={{ textAlign: 'right' }}>
                             <Button className='clearButton' onClick={this.showCommentModal}><b>Reply</b></Button>
-                            <Button className='clearButton' onClick={this.showConfirmationModal}><b>Delete</b></Button>
+                            <Button className='clearButton' onClick={this.showConfirmationModal} style={{display: (this.props.isCompany)?'':'none'}}><b>Delete</b></Button>
                         </div>
                     </div>
                     <div style={{ display: (this.repliesUI.length > 0) ? '' : 'none', marginLeft: '10px', marginRight: '0', paddingLeft: '10px', marginBottom: '10px', borderLeft: '1px solid', borderColor: '#AAA'}}>

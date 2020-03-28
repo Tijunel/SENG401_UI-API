@@ -46,14 +46,14 @@ export default class Topic extends React.Component {
     generateRootComments = (comments) => {
         for (const comment of comments) {
             this.commentsUI.push(
-                <Comment message={comment.message} replies={comment.replies} ID={comment.id} parentID={this.props.id} depth={0} />
+                <Comment message={comment.message} replies={comment.replies} ID={comment.id} parentID={this.props.id} depth={0} isCompany={this.props.isCompany}/>
             );
         }
     }
 
     addRootComment = (message, ID) => {
         this.commentsUI.push(
-            <Comment message={message} replies={[]} ID={ID} parentID={this.props.id} depth={0} />
+            <Comment message={message} replies={[]} ID={ID} parentID={this.props.id} depth={0} isCompany={this.props.isCompany}/>
         );
     }
 
@@ -73,7 +73,7 @@ export default class Topic extends React.Component {
                     throw new Error('Error')
                 }
                 else {
-                    res =  await res.json()
+                    res = await res.json()
                     this.addRootComment(this.messageForm.current.value, res.ID);
                 }
                 this.showCommentModal()
@@ -98,7 +98,7 @@ export default class Topic extends React.Component {
                     throw new Error('Error')
                 }
                 else {
-                    this.setState({hideTopic: true});
+                    this.setState({ hideTopic: true });
                 }
             })
             .catch(err => {
@@ -115,7 +115,7 @@ export default class Topic extends React.Component {
     }
 
     render = () => {
-        if(!this.state.hideTopic) {
+        if (!this.state.hideTopic) {
             return (
                 <div>
                     <Row
@@ -123,7 +123,9 @@ export default class Topic extends React.Component {
                         onClick={this.getComments}
                     >
                         <Col style={{ textAlign: 'left' }}><b>{this.props.name}</b></Col>
-                        <Col style={{ textAlign: 'right' }}><b><Button className='clearButton' onClick={this.showConfirmationModal}><b>Delete</b></Button></b></Col>
+                        <Col style={{ textAlign: 'right' }}>
+                            <b><Button className='clearButton' onClick={this.showConfirmationModal} style={{display:(this.props.isCompany)?'':'none'}}><b>Delete</b></Button></b>
+                        </Col>
                     </Row>
                     <div style={{ display: (this.state.showComments) ? '' : 'none', marginLeft: '10px', marginRight: '0', paddingLeft: '10px', marginBottom: '50px' }}>
                         <div style={{ marginLeft: '10px', paddingLeft: '5px', paddingRight: '5px' }}>
@@ -141,23 +143,23 @@ export default class Topic extends React.Component {
                             Enter your message below.<br /><br />
                             <Form className="form">
                                 <Form.Group controlId="email">
-                                    <Form.Control ref={this.messageForm} className='control' placeholder='Message' as='textarea' rows='10' required style={{height: '300px'}}/>
+                                    <Form.Control ref={this.messageForm} className='control' placeholder='Message' as='textarea' rows='10' required style={{ height: '300px' }} />
                                 </Form.Group>
                             </Form>
                             <Button className='createAForumButton' onClick={this.createRootComment}><b>Submit</b></Button>
                         </Modal.Body>
                     </Modal>
                     <Modal id='newForumModal' show={this.state.showConfirmationModal} onHide={this.showConfirmationModal} centered>
-                            <Modal.Header closeButton>
-                                <Modal.Title>
-                                    <b style={{ fontSize: '25px' }}>Confirmation</b>
-                                </Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body style={{ fontSize: '17px' }}>
-                                Are you sure you want to delete this topic?<br /><br />
-                                <Button className='createAForumButton' onClick={this.deleteTopic}><b>Yes!</b></Button>
-                            </Modal.Body>
-                        </Modal>
+                        <Modal.Header closeButton>
+                            <Modal.Title>
+                                <b style={{ fontSize: '25px' }}>Confirmation</b>
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body style={{ fontSize: '17px' }}>
+                            Are you sure you want to delete this topic?<br /><br />
+                            <Button className='createAForumButton' onClick={this.deleteTopic}><b>Yes!</b></Button>
+                        </Modal.Body>
+                    </Modal>
                 </div>
             );
         } else {
