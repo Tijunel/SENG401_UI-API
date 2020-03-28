@@ -73,7 +73,6 @@ export default class Comment extends React.Component {
             })
         })
             .then(async res => {
-                console.log(res.status)
                 if (res.status !== 200) {
                     throw new Error('Error')
                 }
@@ -108,8 +107,8 @@ export default class Comment extends React.Component {
                             <Button className='clearButton' onClick={this.showConfirmationModal}><b>Delete</b></Button>
                         </div>
                     </div>
-                    <div style={{ display: (this.repliesUI.length > 0) ? '' : 'none', marginLeft: '10px', marginRight: '0', paddingLeft: '10px', marginBottom: '10px' }}>
-                        <div style={{ marginLeft: '10px', paddingLeft: '5px', paddingRight: '0px' }}>
+                    <div style={{ display: (this.repliesUI.length > 0) ? '' : 'none', marginLeft: '10px', marginRight: '0', paddingLeft: '10px', marginBottom: '10px', borderLeft: '1px solid', borderColor: '#AAA'}}>
+                        <div style={{ marginLeft: '10px'}}>
                             <div style={{ marginTop: '10px' }}>{this.repliesUI}</div>
                         </div>
                     </div>
