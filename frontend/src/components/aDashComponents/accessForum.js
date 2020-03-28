@@ -1,6 +1,7 @@
 import React from 'react';
 import Topic from '../cDashComponents/topic';
-import { Image, Form, Button, Modal} from 'react-bootstrap';
+import { Image, Form, Button, Modal } from 'react-bootstrap';
+import APIHelper from '../cDashComponents/apiHelper';
 
 export default class AccessForum extends React.Component {
     constructor(props) {
@@ -8,37 +9,24 @@ export default class AccessForum extends React.Component {
         this.nameForm = React.createRef();
         this.state = {
             showIntro: (localStorage.getItem('showAccessIntro') === 'true') ? true : false,
-            showTopicModal: false
+            showTopicModal: false,
+            apiHelper: APIHelper.getInstance()
         }
         this.topicsUI = [];
     }
 
-    componentWillMount = () => {
+    componentWillMount = async () => {
         if (localStorage.getItem('showAccessIntro') === null) {
             localStorage.setItem('showAccessIntro', true)
             this.setState({ showIntro: true })
         }
-        fetch('/api/forum/getForum/' + sessionStorage.getItem("forumID"), {//OQKUG4UL
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-            .then(res => {
-                console.log(res)
-                if (res.status !== 200) {
-                    this.setState({ showTopics: true });
-                    throw new Error('error');
-                }
-                return res.json()
-            })
-            .then(res => {
-                this.generateTopics(res.topics);
-                this.setState({ showTopics: true });
-            })
-            .catch(err => {
-                console.log(err)
-            });
+        const res = await this.state.apiHelper.getForum(sessionStorage.getItem("forumID"));
+        if (!res.error) {
+            this.generateTopics(res.topics);
+        } else {
+            //Show error
+        }
+        this.setState({ showTopics: true });
     }
 
     getStarted = () => {
@@ -49,7 +37,7 @@ export default class AccessForum extends React.Component {
     generateTopics = (topics) => {
         for (const topic of topics) {
             this.topicsUI.push(
-                <Topic name={topic.name} id={topic.ID} isCompany={false}/>
+                <Topic name={topic.name} id={topic.ID} isCompany={false} />
             );
         }
         this.forceUpdate();
@@ -57,35 +45,19 @@ export default class AccessForum extends React.Component {
 
     addTopic = (name, ID) => {
         this.topicsUI.push(
-            <Topic name={name} id={ID} isCompany={false}/>
+            <Topic name={name} id={ID} isCompany={false} />
         );
         this.forceUpdate();
     }
 
-    createTopic = () => {
-        fetch('/api/forum/postTopic', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                topicName: this.nameForm.current.value,
-                forumID: sessionStorage.getItem('forumID')
-            })
-        })
-            .then(async res => {
-                if (res.status !== 200) {
-                    throw new Error('Error');
-                }
-                else {
-                    res = await res.json()
-                    this.addTopic(this.nameForm.current.value, res.ID);
-                }
-                this.showTopicModal()
-            })
-            .catch(err => {
-                console.log(err)
-            });
+    createTopic = async () => {
+        const res = await this.state.apiHelper.postTopic(this.nameForm.current.value, sessionStorage.getItem('forumID'));
+        if (!res.error) {
+            this.addTopic(this.nameForm.current.value, res.ID);
+        } else {
+            //Show error
+        }
+        this.showTopicModal();
     }
 
     showTopicModal = () => {
@@ -114,29 +86,29 @@ export default class AccessForum extends React.Component {
                     </div>
                     <b style={{ fontSize: 'calc(3.8vw + 0.6rem)' }}>{sessionStorage.getItem('forumName')}</b>
                     <div>
-                    <div style={{width: '90%', margin: 'auto'}}>
-                        <div>
-                            <Button className='createAForumButton' onClick={this.showTopicModal}><b>Create A New Topic</b></Button>
-                            <div style={{ marginTop: '20px' }}>{this.topicsUI}</div>
+                        <div style={{ width: '90%', margin: 'auto' }}>
+                            <div>
+                                <Button className='createAForumButton' onClick={this.showTopicModal}><b>Create A New Topic</b></Button>
+                                <div style={{ marginTop: '20px' }}>{this.topicsUI}</div>
+                            </div>
                         </div>
+                        <Modal id='newForumModal' show={this.state.showTopicModal} onHide={this.showTopicModal} centered>
+                            <Modal.Header closeButton>
+                                <Modal.Title>
+                                    <b style={{ fontSize: '25px' }}>Create Topic</b>
+                                </Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body style={{ fontSize: '17px' }}>
+                                Enter the topic's name below<br /><br />
+                                <Form className="form">
+                                    <Form.Group controlId="name">
+                                        <Form.Control ref={this.nameForm} className='control' placeholder='Topic Name' type='text' required />
+                                    </Form.Group>
+                                </Form>
+                                <Button className='createAForumButton' onClick={this.createTopic}><b>Submit</b></Button>
+                            </Modal.Body>
+                        </Modal>
                     </div>
-                    <Modal id='newForumModal' show={this.state.showTopicModal} onHide={this.showTopicModal} centered>
-                        <Modal.Header closeButton>
-                            <Modal.Title>
-                                <b style={{ fontSize: '25px' }}>Create Topic</b>
-                            </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body style={{ fontSize: '17px' }}>
-                            Enter the topic's name below<br /><br />
-                            <Form className="form">
-                                <Form.Group controlId="name">
-                                    <Form.Control ref={this.nameForm} className='control' placeholder='Topic Name' type='text' required />
-                                </Form.Group>
-                            </Form>
-                            <Button className='createAForumButton' onClick={this.createTopic}><b>Submit</b></Button>
-                        </Modal.Body>
-                    </Modal>
-                </div>
                 </div>
             </div>
         )

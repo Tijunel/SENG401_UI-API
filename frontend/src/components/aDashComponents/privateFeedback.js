@@ -1,31 +1,24 @@
 import React from 'react';
-import { Image, Form, Button } from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
+import APIHelper from '../cDashComponents/apiHelper';
 
 export default class AccessPrivateFeedback extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            apiHelper: APIHelper.getInstance()
+        }
         this.feedbackForm = React.createRef();
     }
 
     submitPrivateFeedback = () => {
         if (this.feedbackForm.current.value === '') return; //Show error modal
-        fetch('/api/feedback/submitFeedback', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                message: this.feedbackForm.current.value,
-                name: sessionStorage.getItem('forumName')
-            })
-        }) //Check status numbers
-            .then(res => res.json())
-            .then(res => {
-                //Show confirmation or error modal
-            })
-            .catch(err => {
-                console.log(err) //Show error modal
-            });
+        const res = this.state.apiHelper.postPrivateFeedback(this.feedbackForm.current.value, sessionStorage.getItem('forumName'));
+        if (res) {
+            //Show confirmation modal
+        } else {
+            //Show error modal
+        }
     }
 
     render = () => {

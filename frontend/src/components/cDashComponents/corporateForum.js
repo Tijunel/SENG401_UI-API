@@ -1,6 +1,7 @@
 import React from 'react';
 import Forum from './forum';
 import { Image, Form, Button, Modal } from 'react-bootstrap';
+import APIHelper from './apiHelper';
 
 export default class CorporateForum extends React.Component {
     constructor(props) {
@@ -9,28 +10,22 @@ export default class CorporateForum extends React.Component {
         this.state = {
             showForum: true,
             showForumModal: false,
-            showIntro: true
+            showIntro: true,
+            apiHelper: APIHelper.getInstance()
         }
-        this.forumUI = []
+        this.forumUI = [];
     }
 
-    componentWillMount = () => {
-        fetch('/api/forum/getForums', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
+    componentWillMount = async () => {
+        const res = await this.state.apiHelper.getForums();
+        if (!res.error) {
+            if (res.forums.length > 0) {
+                this.setState({ showIntro: false })
+                this.generateForums(res.forums)
             }
-        }) //Check status numbers
-            .then(res => res.json())
-            .then(res => {
-                if (res.forums.length > 0) {
-                    this.setState({ showIntro: false })
-                    this.generateForums(res.forums)
-                }
-            })
-            .catch(err => {
-                console.log(err) //show error modal
-            });
+        } else {
+            //Show error
+        }
     }
 
     generateForums = (forums) => {
@@ -44,29 +39,19 @@ export default class CorporateForum extends React.Component {
 
     addForum = (name, accessCode) => {
         this.forumUI.push(
-            <Forum name={name} accessCode={accessCode}/>
+            <Forum name={name} accessCode={accessCode} />
         );
         this.forceUpdate();
     }
 
-    createForum = () => {
-        fetch('/api/forum/postForum', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                name: this.nameForm.current.value
-            })
-        })
-            .then(res => res.json())
-            .then(res => {
-                this.addForum(res.name, res.accessCode)
-                this.setState({ showIntro: false, showForumModal: false })
-            })
-            .catch(err => {
-                console.log(err)
-            });
+    createForum = async () => {
+        const res = await this.state.apiHelper.postForum(this.nameForm.current.value);
+        if (!res.error) {
+            this.addForum(res.name, res.accessCode)
+            this.setState({ showIntro: false, showForumModal: false })
+        } else {
+            //Show error
+        }
     }
 
     showForumModal = () => {
@@ -87,7 +72,7 @@ export default class CorporateForum extends React.Component {
                     </div>
                 </div>
                 <Button className='createAForumButton' onClick={this.showForumModal}><b>Create A Forum</b></Button>
-                <div style={{marginTop: '20px'}}>{this.forumUI}</div>
+                <div style={{ marginTop: '20px' }}>{this.forumUI}</div>
                 <Modal id='newForumModal' show={this.state.showForumModal} onHide={this.showForumModal} centered>
                     <Modal.Header closeButton>
                         <Modal.Title>

@@ -1,6 +1,7 @@
 import React from "react";
 import { Table } from "react-bootstrap";
 import ErrorModal from "../errorModal";
+import APIHelper from './apiHelper';
 
 export default class CorporatePrivateFeedback extends React.Component {
 	constructor(props) {
@@ -8,50 +9,30 @@ export default class CorporatePrivateFeedback extends React.Component {
 		this.state = {
 			feedbackExists: false,
 			showModal: false,
-			message: ""
+			message: "",
+			apiHelper: APIHelper.getInstance()
 		};
 		this.feedback = [];
 	}
 
-	hideModal = () => {
-		this.setState({ showModal: false })
-	}
-
-	componentWillMount = () => {
-		fetch("/api/feedback/getFeedback", {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json"
-			}
-		})
-			//   .then(res => {
-			//     if (res.status !== 200) {
-			//       this.setState({
-			//         showModal: true,
-			//         message: "Oops! Something went wrong!"
-			//       });
-			//       return;
-			//     }
-			//   })
-			.then(res => res.json())
-			.then(res => {
-				this.generateFeedbackUI(res);
-			})
-			.catch(err => {
-				this.setState({
-					showModal: true,
-					message: "Oops! Something went wrong!"
-				});
+	componentWillMount = async () => {
+		const res = await this.state.apiHelper.getPrivateFeedback();
+		if (!res.error) {
+			this.generateFeedbackUI(res);
+		} else {
+			this.setState({
+				showModal: true,
+				message: "Oops! Something went wrong!"
 			});
+		}
 	};
-
 
 	renderTable = (message, index) => {
 		return (
 			<tr key={index}>
 				<td>{message}</td>
 			</tr>
-		)
+		);
 	}
 
 	generateMessageTable = (messages) => {
@@ -68,7 +49,7 @@ export default class CorporatePrivateFeedback extends React.Component {
 					</tbody>
 				</Table>
 			</div>
-		)
+		);
 	}
 
 	generateFeedbackUI = (feedbackList) => {
@@ -85,6 +66,8 @@ export default class CorporatePrivateFeedback extends React.Component {
 			this.setState({ feedbackExists: true })
 		}
 	}
+
+	hideModal = () => { this.setState({ showModal: false }); }
 
 	render = () => {
 		return (

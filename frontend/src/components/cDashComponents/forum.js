@@ -1,6 +1,7 @@
 import React from 'react';
 import Topic from './topic';
 import { Row, Col, Button, Modal, Form } from 'react-bootstrap';
+import APIHelper from './apiHelper';
 
 export default class Forum extends React.Component {
     constructor(props) {
@@ -10,36 +11,23 @@ export default class Forum extends React.Component {
             showTopics: false,
             showTopicModal: false,
             showConfirmationModal: false,
-            hideForum: false
+            hideForum: false,
+            apiHelper: APIHelper.getInstance()
         }
         this.topicsUI = [];
     }
 
-    getTopics = () => {
+    getTopics = async() => {
         this.topicsUI = [];
         if (!this.state.showTopics) {
-            fetch('/api/forum/getForum/' + this.props.accessCode, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(res => {
-                    if (res.status !== 200) {
-                        this.setState({ showTopics: true });
-                        throw new Error('error');
-                    }
-                    return res.json()
-                })
-                .then(res => {
-                    this.generateTopics(res.topics);
-                    this.setState({ showTopics: true });
-                })
-                .catch(err => {
-                    console.log(err)
-                });
-        }
-        else {
+            const res = await this.state.apiHelper.getForum(this.props.accessCode);
+            if(!res.error) {
+                this.generateTopics(res.topics);
+            } else {
+                //Show error
+            }
+            this.setState({ showTopics: true });
+        } else {
             this.setState({ showTopics: false });
         }
     }
@@ -47,7 +35,7 @@ export default class Forum extends React.Component {
     generateTopics = (topics) => {
         for (const topic of topics) {
             this.topicsUI.push(
-                <Topic name={topic.name} id={topic.ID} isCompany={true}/>
+                <Topic name={topic.name} id={topic.ID} isCompany={true} />
             );
         }
         this.forceUpdate();
@@ -55,70 +43,35 @@ export default class Forum extends React.Component {
 
     addTopic = (name, ID) => {
         this.topicsUI.push(
-            <Topic name={name} id={ID} isCompany={true}/>
+            <Topic name={name} id={ID} isCompany={true} />
         );
         this.forceUpdate();
     }
 
-    createTopic = () => {
-        fetch('/api/forum/postTopic', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                topicName: this.nameForm.current.value,
-                forumID: this.props.accessCode
-            })
-        })
-            .then(async res => {
-                if (res.status !== 200) {
-                    throw new Error('Error');
-                }
-                else {
-                    res = await res.json()
-                    this.addTopic(this.nameForm.current.value, res.ID);
-                }
-                this.showTopicModal()
-            })
-            .catch(err => {
-                console.log(err)
-            });
+    createTopic = async() => {
+        const res = await this.state.apiHelper.postTopic(this.nameForm.current.value, this.props.accessCode);
+        if(!res.error) {
+            this.addTopic(this.nameForm.current.value, res.ID);
+        } else {
+            //Show error
+        }
+        this.showTopicModal();
     }
 
-    deleteForum = () => {
-        fetch('/api/forum/deleteEvent', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                ID: this.props.accessCode
-            })
-        })
-            .then(async res => {
-                if (res.status !== 200) {
-                    throw new Error('Error')
-                }
-                else {
-                    this.setState({ hideForum: true });
-                }
-            })
-            .catch(err => {
-                console.log(err)
-            });
+    deleteForum = async () => {
+        const res = await this.state.apiHelper.deleteEvent(this.props.accessCode);
+        if (res) {
+            this.setState({ hideForum: true });
+        } else {
+            //Show error
+        }
     }
 
-    showTopicModal = () => {
-        this.setState({ showTopicModal: !this.state.showTopicModal });
-    }
-
-    showConfirmationModal = () => {
-        this.setState({ showConfirmationModal: !this.state.showConfirmationModal });
-    }
+    showTopicModal = () => { this.setState({ showTopicModal: !this.state.showTopicModal }); }
+    showConfirmationModal = () => { this.setState({ showConfirmationModal: !this.state.showConfirmationModal }); }
 
     render = () => {
-        if(!this.state.hideForum) {
+        if (!this.state.hideForum) {
             return (
                 <div>
                     <Row

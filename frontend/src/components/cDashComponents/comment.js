@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Modal, Form } from 'react-bootstrap';
+import APIHelper from './apiHelper';
 
 export default class Comment extends React.Component {
     constructor(props) {
@@ -11,88 +12,50 @@ export default class Comment extends React.Component {
             ID: this.props.ID,
             showCommentModal: false,
             showConfirmationModal: false,
-            hideComment: false
+            hideComment: false,
+            apiHelper: APIHelper.getInstance()
         }
         this.repliesUI = [];
     }
 
     componentWillMount = () => {
-        this.generateReplies();
-    }
-
-    generateReplies = () => {
         for (const reply of this.props.replies) {
             this.repliesUI.push(
-                <Comment message={reply.message} replies={reply.replies} ID={reply.id} parentID={reply.parentID} depth={this.props.depth + 1} />
+                <Comment message={reply.message} replies={reply.replies} ID={reply.id} parentID={reply.parentID} isCompany={this.props.isCompany} depth={this.props.depth + 1} />
             )
         }
     }
 
     addReply = (message, ID) => {
         this.repliesUI.push(
-            <Comment message={message} replies={[]} ID={ID} parentID={this.props.ID} depth={this.props.depth + 1} />
+            <Comment message={message} replies={[]} ID={ID} parentID={this.props.ID} isCompany={this.props.isCompany} depth={this.props.depth + 1} />
         );
     }
 
-    createReply = () => {
-        fetch('api/forum/postComment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                parentID: this.props.ID,
-                message: this.messageForm.current.value
-            })
-        })
-            .then(async res => {
-                if (res.status !== 200) {
-                    throw new Error('Error')
-                }
-                else {
-                    res = await res.json()
-                    this.addReply(this.messageForm.current.value, res.ID);
-                }
-                this.showCommentModal()
-            })
-            .catch(err => {
-                console.log(err)
-            });
+    createReply = async () => {
+        const res = await this.state.apiHelper.postComment(this.props.ID, this.messageForm.current.value);
+        if (!res.error) {
+            this.addReply(this.messageForm.current.value, res.ID);
+        } else {
+            //Show error
+        }
+        this.showCommentModal();
     }
 
-    deleteComment = () => {
-        fetch('/api/forum/deleteEvent', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                ID: this.props.ID
-            })
-        })
-            .then(async res => {
-                if (res.status !== 200) {
-                    throw new Error('Error')
-                }
-                else {
-                    this.setState({hideComment: true});
-                }
-            })
-            .catch(err => {
-                console.log(err)
-            });
+    deleteComment = async () => {
+        const res = await this.state.apiHelper.deleteEvent(this.props.ID);
+        if (res) {
+            this.setState({ hideComment: true });
+        } else {
+            //Show error
+        }
     }
 
-    showCommentModal = () => {
-        this.setState({ showCommentModal: !this.state.showCommentModal });
-    }
-
-    showConfirmationModal = () => {
-        this.setState({ showConfirmationModal: !this.state.showConfirmationModal });
-    }
+    showCommentModal = () => { this.setState({ showCommentModal: !this.state.showCommentModal }); }
+    showConfirmationModal = () => { this.setState({ showConfirmationModal: !this.state.showConfirmationModal }); }
 
     render = () => {
-        if(!this.state.hideComment) {
+        if (!this.state.hideComment) {
             return (
                 <div>
                     <div
@@ -102,11 +65,11 @@ export default class Comment extends React.Component {
                         <div style={{ margin: '5px' }}>{this.state.message}</div>
                         <div style={{ textAlign: 'right' }}>
                             <Button className='clearButton' onClick={this.showCommentModal}><b>Reply</b></Button>
-                            <Button className='clearButton' onClick={this.showConfirmationModal} style={{display: (this.props.isCompany)?'':'none'}}><b>Delete</b></Button>
+                            <Button className='clearButton' onClick={this.showConfirmationModal} style={{ display: (this.props.isCompany) ? '' : 'none' }}><b>Delete</b></Button>
                         </div>
                     </div>
-                    <div style={{ display: (this.repliesUI.length > 0) ? '' : 'none', marginLeft: '10px', marginRight: '0', paddingLeft: '10px', marginBottom: '10px', borderLeft: '1px solid', borderColor: '#AAA'}}>
-                        <div style={{ marginLeft: '10px'}}>
+                    <div style={{ display: (this.repliesUI.length > 0) ? '' : 'none', marginLeft: '10px', marginRight: '0', paddingLeft: '10px', marginBottom: '10px', borderLeft: '1px solid', borderColor: '#AAA' }}>
+                        <div style={{ marginLeft: '10px' }}>
                             <div style={{ marginTop: '10px' }}>{this.repliesUI}</div>
                         </div>
                     </div>
