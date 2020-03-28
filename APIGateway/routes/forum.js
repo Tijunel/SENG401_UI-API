@@ -3,7 +3,7 @@ const forum = express.Router();
 const IP = require("../config/connections");
 const http = require("http");
 const randomize = require("randomatic");
-const withAccessAuth = require('../middleware/auth')[0];
+const withAuth = require('../middleware/auth')[2];
 const withCompanyAuth = require('../middleware/auth')[1];
 
 //Command Endpoints
@@ -33,12 +33,11 @@ forum.post("/postForum", withCompanyAuth, async (req, res) => {
             accessCode: accessCode
         }).end();
     } catch (e) {
-        console.log(e)
-        res.send({ message: "Error in Adding Forum" })
+        res.status(500).send({ message: "Error in Adding Forum" })
     }
 });
 
-forum.post('/postTopic', withCompanyAuth, async (req, res) => {
+forum.post('/postTopic', withAuth, async (req, res) => {
     try {
         let args = JSON.stringify({
             forumID: req.body.forumID,
@@ -62,11 +61,11 @@ forum.post('/postTopic', withCompanyAuth, async (req, res) => {
         newReq.write(args);
         newReq.end();
     } catch (e) {
-        res.status(401).send("Error creating topic.").end();
+        res.status(500).send("Error creating topic.").end();
     }
 });
 
-forum.post('/postComment', withCompanyAuth, async (req, res) => { //Make withAuth that checks if you have either
+forum.post('/postComment', withAuth, async (req, res) => { //Make withAuth that checks if you have either
     try {
         let args = JSON.stringify({
             parentID: req.body.parentID,
@@ -93,7 +92,7 @@ forum.post('/postComment', withCompanyAuth, async (req, res) => { //Make withAut
         newReq.write(args);
         newReq.end();
     } catch (e) {
-        res.status(401).send("Error creating comment.").end();
+        res.status(500).send("Error creating comment.").end();
     }
 });
 
@@ -113,7 +112,6 @@ forum.delete('/deleteEvent', withCompanyAuth, async (req, res) => {
             }
         }
         let newReq = http.request(options, (newRes) => {
-            console.log(newRes.statusCode)
             if(newRes.statusCode !== 200) {
                 res.status(400).send("Error").end();
             }
@@ -124,7 +122,7 @@ forum.delete('/deleteEvent', withCompanyAuth, async (req, res) => {
         newReq.write(args);
         newReq.end();
     } catch (e) {
-        res.status(401).send("Error deleting event.").end();
+        res.status(500).send("Error deleting event.").end();
     }
 });
 

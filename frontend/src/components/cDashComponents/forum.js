@@ -26,7 +26,6 @@ export default class Forum extends React.Component {
                 }
             })
                 .then(res => {
-                    console.log(res)
                     if (res.status !== 200) {
                         this.setState({ showTopics: true });
                         throw new Error('error');

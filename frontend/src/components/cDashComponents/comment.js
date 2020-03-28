@@ -29,8 +29,6 @@ export default class Comment extends React.Component {
     }
 
     addReply = (message, ID) => {
-        console.log(ID)
-        console.log(this.props.ID)
         this.repliesUI.push(
             <Comment message={message} replies={[]} ID={ID} parentID={this.props.ID} depth={this.props.depth + 1} />
         );

@@ -73,7 +73,6 @@ export default class CorporatePrivateFeedback extends React.Component {
 
 	generateFeedbackUI = (feedbackList) => {
 		for (const feedback of feedbackList) {
-			console.log(feedback)
 			this.feedback.push(
 				<div style={{ marginTop: '40px' }}>
 					<b style={{ fontSize: 'calc(1vw + 0.8rem)' }}>{feedback.forumName}</b>
@@ -103,7 +102,7 @@ export default class CorporatePrivateFeedback extends React.Component {
 						}}
 					>
 						No private feedback has been submitted yet.
-          </p>
+          			</p>
 				</div>
 				<div style={{ display: this.state.feedbackExists ? "" : "none" }}>
 					{this.feedback}

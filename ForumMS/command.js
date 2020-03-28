@@ -71,7 +71,6 @@ command.delete("/deleteEvent", (req, res) => {
         ID: req.body.ID
     };
     if (putEvent(dict) !== -1) {
-        console.log('here')
         res.status(200).send('Success!').end();
     }
     else {
