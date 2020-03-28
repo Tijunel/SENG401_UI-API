@@ -14,9 +14,7 @@ export default function WithAuthCompany(ComponentToProtect) {
         periodicallyCheckToken = () => {
             fetch('/api/user/checkCompanyToken', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'Content-Type': 'application/json' }
             })
                 .then(res => {
                     if (res.status === 200) this.setState({ loading: false });
@@ -31,9 +29,7 @@ export default function WithAuthCompany(ComponentToProtect) {
         componentDidMount = () => {
             fetch('/api/user/checkCompanyToken', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'Content-Type': 'application/json' }
             })
                 .then(res => {
                     if (res.status === 200) this.setState({ loading: false });
@@ -42,9 +38,7 @@ export default function WithAuthCompany(ComponentToProtect) {
                         throw error;
                     }
                 })
-                .catch(err => {
-                    this.setState({ loading: false, redirect: true })
-                });
+                .catch(err => { this.setState({ loading: false, redirect: true }) });
             this.timerID = setInterval(() => this.periodicallyCheckToken(), 30000);
         }
 
@@ -56,7 +50,7 @@ export default function WithAuthCompany(ComponentToProtect) {
                 <React.Fragment>
                     <ComponentToProtect />
                 </React.Fragment>
-            )
+            );
         }
     }
 }

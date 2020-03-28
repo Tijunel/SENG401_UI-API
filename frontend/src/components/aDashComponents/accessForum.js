@@ -1,7 +1,7 @@
 import React from 'react';
-import Topic from '../cDashComponents/topic';
+import Topic from '../topic';
 import { Image, Form, Button, Modal } from 'react-bootstrap';
-import APIHelper from '../cDashComponents/apiHelper';
+import APIHelper from '../apiHelper';
 
 export default class AccessForum extends React.Component {
     constructor(props) {
@@ -17,8 +17,8 @@ export default class AccessForum extends React.Component {
 
     componentWillMount = async () => {
         if (localStorage.getItem('showAccessIntro') === null) {
-            localStorage.setItem('showAccessIntro', true)
-            this.setState({ showIntro: true })
+            localStorage.setItem('showAccessIntro', true);
+            this.setState({ showIntro: true });
         }
         const res = await this.state.apiHelper.getForum(sessionStorage.getItem("forumID"));
         if (!res.error) {
@@ -30,8 +30,8 @@ export default class AccessForum extends React.Component {
     }
 
     getStarted = () => {
-        localStorage.setItem('showAccessIntro', false)
-        this.setState({ showIntro: false })
+        localStorage.setItem('showAccessIntro', false);
+        this.setState({ showIntro: false });
     }
 
     generateTopics = (topics) => {
@@ -60,9 +60,7 @@ export default class AccessForum extends React.Component {
         this.showTopicModal();
     }
 
-    showTopicModal = () => {
-        this.setState({ showTopicModal: !this.state.showTopicModal });
-    }
+    showTopicModal = () => { this.setState({ showTopicModal: !this.state.showTopicModal }); }
 
     render = () => {
         return (

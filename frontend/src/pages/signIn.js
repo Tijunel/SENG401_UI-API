@@ -14,9 +14,7 @@ export default class SignInDashboard extends React.Component {
         }
     }
 
-    componentDidMount = () => {
-        this.emailForm.current.focus();
-    }
+    componentDidMount = () => {this.emailForm.current.focus();}
 
     handleKeyPress = (event) => {
         if (event.key === 'Enter') {
@@ -28,14 +26,11 @@ export default class SignInDashboard extends React.Component {
     }
 
     submitInfo = () => {
-
         if (this.passForm.current.value === '') return; //Show error saying password is empty
         else if (this.emailForm.current.value === '') return; //Show error saying email is empty
         fetch('/api/user/login', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
                 email: this.emailForm.current.value,
                 password: this.passForm.current.value,
@@ -43,15 +38,15 @@ export default class SignInDashboard extends React.Component {
         })
             .then(res => res.json())
             .then(res => {
-                sessionStorage.setItem('name', res.name)
-                sessionStorage.setItem('email', res.email)
-                this.setState({ redirect: true })
+                sessionStorage.setItem('name', res.name);
+                sessionStorage.setItem('email', res.email);
+                this.setState({ redirect: true });
                 //else handle errors for status 500 and 401
             })
             .catch(err => {
                 //Handle error
                 console.log(err)
-            })
+            });
     }
 
     render = () => {

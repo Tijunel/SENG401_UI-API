@@ -1,6 +1,6 @@
 import React from 'react';
 import { Form, Button } from 'react-bootstrap';
-import APIHelper from '../cDashComponents/apiHelper';
+import APIHelper from '../apiHelper';
 
 export default class AccessPrivateFeedback extends React.Component {
     constructor(props) {
@@ -12,7 +12,9 @@ export default class AccessPrivateFeedback extends React.Component {
     }
 
     submitPrivateFeedback = () => {
-        if (this.feedbackForm.current.value === '') return; //Show error modal
+        if (this.feedbackForm.current.value === '') {
+            return; //Show error modal
+        } 
         const res = this.state.apiHelper.postPrivateFeedback(this.feedbackForm.current.value, sessionStorage.getItem('forumName'));
         if (res) {
             //Show confirmation modal

@@ -1,7 +1,7 @@
 import React from "react";
 import { Table } from "react-bootstrap";
 import ErrorModal from "../errorModal";
-import APIHelper from './apiHelper';
+import APIHelper from '../apiHelper';
 
 export default class CorporatePrivateFeedback extends React.Component {
 	constructor(props) {
@@ -61,9 +61,9 @@ export default class CorporatePrivateFeedback extends React.Component {
 				</div>
 			);
 		}
-		this.setState({ feedbackExists: true })
+		this.setState({ feedbackExists: true });
 		if (feedbackList.length > 0) {
-			this.setState({ feedbackExists: true })
+			this.setState({ feedbackExists: true });
 		}
 	}
 

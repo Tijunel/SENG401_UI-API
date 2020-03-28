@@ -1,7 +1,7 @@
 import React from 'react';
 import Forum from './forum';
 import { Image, Form, Button, Modal } from 'react-bootstrap';
-import APIHelper from './apiHelper';
+import APIHelper from '../apiHelper';
 
 export default class CorporateForum extends React.Component {
     constructor(props) {
@@ -20,8 +20,8 @@ export default class CorporateForum extends React.Component {
         const res = await this.state.apiHelper.getForums();
         if (!res.error) {
             if (res.forums.length > 0) {
-                this.setState({ showIntro: false })
-                this.generateForums(res.forums)
+                this.setState({ showIntro: false });
+                this.generateForums(res.forums);
             }
         } else {
             //Show error
@@ -47,16 +47,14 @@ export default class CorporateForum extends React.Component {
     createForum = async () => {
         const res = await this.state.apiHelper.postForum(this.nameForm.current.value);
         if (!res.error) {
-            this.addForum(res.name, res.accessCode)
-            this.setState({ showIntro: false, showForumModal: false })
+            this.addForum(res.name, res.accessCode);
+            this.setState({ showIntro: false, showForumModal: false });
         } else {
             //Show error
         }
     }
 
-    showForumModal = () => {
-        this.setState({ showForumModal: !this.state.showForumModal })
-    }
+    showForumModal = () => { this.setState({ showForumModal: !this.state.showForumModal }); }
 
     render = () => {
         return (

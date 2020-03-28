@@ -1,6 +1,7 @@
 import React from 'react';
 import Comment from './comment';
 import { Row, Col, Button, Modal, Form } from 'react-bootstrap';
+import APIHelper from './apiHelper';
 
 export default class Topic extends React.Component {
     constructor(props) {
@@ -9,36 +10,23 @@ export default class Topic extends React.Component {
         this.state = {
             showComments: false,
             showCommentModal: false,
-            hideTopic: false
+            hideTopic: false,
+            apiHelper: APIHelper.getInstance()
         }
         this.commentsUI = [];
     }
 
-    getComments = () => {
+    getComments = async () => {
         this.commentsUI = [];
         if (!this.state.showComments) {
-            fetch('/api/forum/getTopic/' + this.props.id, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-                .then(res => {
-                    if (res.status !== 200) {
-                        this.setState({ showComments: true });
-                        throw new Error('error');
-                    }
-                    return res.json();
-                })
-                .then(res => {
-                    this.generateRootComments(res.comments);
-                    this.setState({ showComments: true });
-                })
-                .catch(err => {
-                    console.log(err)
-                });
-        }
-        else {
+            const res = await this.state.apiHelper.getTopic(this.props.id);
+            if(!res.error) {
+                this.generateRootComments(res.comments);
+            } else {
+                //Show error
+            }
+            this.setState({ showComments: true });
+        } else {
             this.setState({ showComments: false });
         }
     }
@@ -46,73 +34,38 @@ export default class Topic extends React.Component {
     generateRootComments = (comments) => {
         for (const comment of comments) {
             this.commentsUI.push(
-                <Comment message={comment.message} replies={comment.replies} ID={comment.id} parentID={this.props.id} depth={0} isCompany={this.props.isCompany}/>
+                <Comment message={comment.message} replies={comment.replies} ID={comment.id} parentID={this.props.id} depth={0} isCompany={this.props.isCompany} />
             );
         }
     }
 
     addRootComment = (message, ID) => {
         this.commentsUI.push(
-            <Comment message={message} replies={[]} ID={ID} parentID={this.props.id} depth={0} isCompany={this.props.isCompany}/>
+            <Comment message={message} replies={[]} ID={ID} parentID={this.props.id} depth={0} isCompany={this.props.isCompany} />
         );
     }
 
-    createRootComment = () => {
-        fetch('api/forum/postComment', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                parentID: this.props.id,
-                message: this.messageForm.current.value
-            })
-        })
-            .then(async res => {
-                if (res.status !== 200) {
-                    throw new Error('Error')
-                }
-                else {
-                    res = await res.json()
-                    this.addRootComment(this.messageForm.current.value, res.ID);
-                }
-                this.showCommentModal()
-            })
-            .catch(err => {
-                console.log(err)
-            });
+    createRootComment = async () => {
+        const res = await this.state.apiHelper.postComment(this.props.id, this.messageForm.current.value);
+        if (!res.error) {
+            this.addRootComment(this.messageForm.current.value, res.ID);
+        } else {
+            //Show error
+        }
+        this.showCommentModal();
     }
 
-    deleteTopic = () => {
-        fetch('/api/forum/deleteEvent', {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                ID: this.props.id
-            })
-        })
-            .then(async res => {
-                if (res.status !== 200) {
-                    throw new Error('Error')
-                }
-                else {
-                    this.setState({ hideTopic: true });
-                }
-            })
-            .catch(err => {
-                console.log(err)
-            });
+    deleteTopic = async () => {
+        const res = await this.state.apiHelper.deleteEvent(this.props.id);
+        if (res) {
+            this.setState({ hideTopic: true });
+        } else {
+            //Show error
+        }
     }
 
-    showCommentModal = () => {
-        this.setState({ showCommentModal: !this.state.showCommentModal });
-    }
-
-    showConfirmationModal = () => {
-        this.setState({ showConfirmationModal: !this.state.showConfirmationModal });
-    }
+    showCommentModal = () => { this.setState({ showCommentModal: !this.state.showCommentModal }); }
+    showConfirmationModal = () => { this.setState({ showConfirmationModal: !this.state.showConfirmationModal }); }
 
     render = () => {
         if (!this.state.hideTopic) {
@@ -124,7 +77,7 @@ export default class Topic extends React.Component {
                     >
                         <Col style={{ textAlign: 'left' }}><b>{this.props.name}</b></Col>
                         <Col style={{ textAlign: 'right' }}>
-                            <b><Button className='clearButton' onClick={this.showConfirmationModal} style={{display:(this.props.isCompany)?'':'none'}}><b>Delete</b></Button></b>
+                            <b><Button className='clearButton' onClick={this.showConfirmationModal} style={{ display: (this.props.isCompany) ? '' : 'none' }}><b>Delete</b></Button></b>
                         </Col>
                     </Row>
                     <div style={{ display: (this.state.showComments) ? '' : 'none', marginLeft: '10px', marginRight: '0', paddingLeft: '10px', marginBottom: '50px' }}>
@@ -163,9 +116,7 @@ export default class Topic extends React.Component {
                 </div>
             );
         } else {
-            return (
-                <div></div>
-            );
+            return (<div></div>);
         }
     }
 }

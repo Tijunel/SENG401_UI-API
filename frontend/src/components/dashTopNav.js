@@ -2,10 +2,6 @@ import React from 'react';
 import { Nav, Navbar } from 'react-bootstrap';
 
 export default class DashTopNav extends React.Component {
-    constructor(props) {
-        super(props);
-    }
-
     render = () => {
         return (
             <Navbar id='topNav' fixed='top' style={{ background: '#3ABEFF', minWidth: '500px'}}>

@@ -13,13 +13,9 @@ class AccessDashboard extends React.Component {
         }
     }
 
-    goToPrivateFeedback = () => {
-        this.setState({ showForum: false });
-    }
+    goToPrivateFeedback = () => {this.setState({ showForum: false });}
 
-    goToForum = () => {
-        this.setState({ showForum: true });
-    }
+    goToForum = () => {this.setState({ showForum: true });}
 
     render = () => {
         return (

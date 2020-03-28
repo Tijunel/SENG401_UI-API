@@ -22,7 +22,7 @@ export default class Comment extends React.Component {
         for (const reply of this.props.replies) {
             this.repliesUI.push(
                 <Comment message={reply.message} replies={reply.replies} ID={reply.id} parentID={reply.parentID} isCompany={this.props.isCompany} depth={this.props.depth + 1} />
-            )
+            );
         }
     }
 
@@ -104,9 +104,7 @@ export default class Comment extends React.Component {
             );
         }
         else {
-            return (
-                <div></div>
-            )
+            return (<div></div>);
         }
     }
 }
