@@ -6,6 +6,7 @@ const asyncClient = require('./redisEnv')[1];
 getComments = async (commentID) => {
     let comment = {
         id: "",
+        parentID: "",
         message: "",
         replies: []
     }
@@ -13,16 +14,20 @@ getComments = async (commentID) => {
     var comments = asyncClient.get('EventContent-' + commentID)
         .then(async message => {
             comment.message = message;
-            await asyncClient.lrange(commentID, 0, -1).then(async results => {
-                if (results.length > 0) {
-                    for (const event of results) {
-                        await getComments(event)
-                            .then(newComment => {
-                                comment.replies.push(newComment);
-                            });
-                    }
-                }
-            });
+            await asyncClient.get('EventParent-' + commentID)
+                .then(async parentID => {
+                    comment.parentID = parentID;
+                    await asyncClient.lrange(commentID, 0, -1).then(async results => {
+                        if (results.length > 0) {
+                            for (const event of results) {
+                                await getComments(event)
+                                    .then(newComment => {
+                                        comment.replies.push(newComment);
+                                    });
+                            }
+                        }
+                    });
+                });
         })
         .then(() => { return comment; });
     return comments;
@@ -61,7 +66,7 @@ query.get("/getForums/:id", (req, res) => {
         }
         const forumsNum = results.length;
         var forumsAccumulated = 0;
-        for (forumID of results) {
+        for (const forumID of results) {
             client.get('EventContent-' + forumID, (err, result) => {
                 if (err) {
                     res.status(500).send("Error finding forums in Redis").end();
@@ -93,15 +98,18 @@ query.get("/getForum/:id", async (req, res) => {
         }
         forum.forumName = result;
         client.lrange(ID, 0, -1, (err, results) => {
-            if (err) {
+            if (err || !results) {
                 res.status(404).send("Could not find forum topics").end();
                 return;
             }
             const topicsNum = results.length;
+            if (results.length === 0) {
+                res.status(400).end();
+            }
             var topicsAccumulated = 0;
-            for (topicID of results) {
+            for (const topicID of results) {
                 client.get("EventContent-" + topicID, (err, result) => {
-                    if (err) {
+                    if (err || !results) {
                         res.status(500).send("Error finding topics in Redis").end();
                         return;
                     }
@@ -119,7 +127,7 @@ query.get("/getForum/:id", async (req, res) => {
     });
 });
 
-query.get('/auth/:id', async(req, res) => {
+query.get('/auth/:id', async (req, res) => {
     let accessCode = req.params.id;
     let info = {
         name: "",

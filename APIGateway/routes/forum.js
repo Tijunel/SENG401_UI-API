@@ -54,7 +54,11 @@ forum.post('/postTopic', withCompanyAuth, async (req, res) => {
                 'Content-Length': args.length
             }
         };
-        let newReq = http.request(options);
+        let newReq = http.request(options, (newRes) => {
+            newRes.on('data', (data) => {
+                res.json(JSON.parse(data));
+            });
+        });
         newReq.write(args);
         newReq.end();
     } catch (e) {
@@ -62,7 +66,7 @@ forum.post('/postTopic', withCompanyAuth, async (req, res) => {
     }
 });
 
-forum.post('/postComment', withAccessAuth || withCompanyAuth, async (req, res) => {
+forum.post('/postComment', withCompanyAuth, async (req, res) => { //Make withAuth that checks if you have either
     try {
         let args = JSON.stringify({
             parentID: req.body.parentID,
@@ -78,7 +82,14 @@ forum.post('/postComment', withAccessAuth || withCompanyAuth, async (req, res) =
                 'Content-Length': args.length
             }
         };
-        let newReq = http.request(options);
+        let newReq = http.request(options, (newRes) => {
+            if(newRes.statusCode !== 200) {
+                res.status(400).send("Error").end();
+            }
+            newRes.on('data', (data) => {
+                res.json(JSON.parse(data));
+            });
+        });
         newReq.write(args);
         newReq.end();
     } catch (e) {
@@ -89,7 +100,7 @@ forum.post('/postComment', withAccessAuth || withCompanyAuth, async (req, res) =
 forum.delete('/deleteEvent', withCompanyAuth, async (req, res) => {
     try {
         let args = JSON.stringify({
-            ID: req.body.id
+            ID: req.body.ID
         });
         let options = {
             host: IP.forumServiceIP,
@@ -101,7 +112,15 @@ forum.delete('/deleteEvent', withCompanyAuth, async (req, res) => {
                 'Content-Length': args.length
             }
         }
-        let newReq = http.delete(options);
+        let newReq = http.request(options, (newRes) => {
+            console.log(newRes.statusCode)
+            if(newRes.statusCode !== 200) {
+                res.status(400).send("Error").end();
+            }
+            else {
+                res.status(200).send('Success!').end();
+            }
+        });
         newReq.write(args);
         newReq.end();
     } catch (e) {
@@ -110,12 +129,12 @@ forum.delete('/deleteEvent', withCompanyAuth, async (req, res) => {
 });
 
 //Query Endpoints
-forum.get("/getTopic", withAccessAuth || withCompanyAuth, async (req, res) => {
+forum.get("/getTopic/:id", withCompanyAuth, async (req, res) => {
     try {
         let options = {
             host: IP.forumServiceIP,
             port: IP.forumServicePort,
-            path: '/query/getTopic/' + req.body.topicID,
+            path: '/query/getTopic/' + req.params.id,
             method: 'GET'
         };
         http.get(options, (newRes) => {
@@ -124,7 +143,7 @@ forum.get("/getTopic", withAccessAuth || withCompanyAuth, async (req, res) => {
             });
         });
     } catch (e) {
-        res.status(401).send("Error deleting event.").end();
+        res.status(404).send("Comments not found.").end();
     }
 });
 
@@ -148,11 +167,11 @@ forum.get("/getForums", withCompanyAuth, async (req, res) => {
             console.error(error)
         });
     } catch (e) {
-        res.status(401).send("Error deleting event.").end();
+        res.status(401).send("Error getting forums.").end();
     }
 });
 
-forum.get("/getForum", withAccessAuth || withCompanyAuth, async (req, res) => {
+forum.get("/getForum/:id", withCompanyAuth, async (req, res) => {
     try {
         let options = {
             host: IP.forumServiceIP,
@@ -160,16 +179,18 @@ forum.get("/getForum", withAccessAuth || withCompanyAuth, async (req, res) => {
             path: '/query/getForum/' + req.params.id,
             method: 'GET'
         };
-        let newReq = http.get(options, (newRes) => {
+        http.get(options, (newRes) => {
+            if(newRes.statusCode !== 200) {
+                res.status(400).send("Error").end();
+            }
             newRes.on('data', (data) => {
                 res.json(JSON.parse(data));
             });
-        });
-        newReq.on('error', error => {
-            console.error(error)
+        }).on('error', error => {
+            res.status(400).send("Error").end();
         });
     } catch (e) {
-        res.status(401).send("Error getting forum.").end();
+        res.status(400).send("Error getting forum.").end();
     }
 });
 

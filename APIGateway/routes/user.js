@@ -54,9 +54,10 @@ user.post("/signup", async (req, res) => {
 user.post("/login", async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({
+        res.status(400).json({
             errors: errors.array()
-        });
+        }).end();
+        return;
     }
     const { email, password } = req.body;
     try {
@@ -64,13 +65,11 @@ user.post("/login", async (req, res) => {
         if (!user) return res.status(400).json({ message: "User Not Exist" });
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({ message: "Incorrect Password !" });
-
         const payload = {
             user: {
                 companyID: user.id
             }
         };
-
         jwt.sign(payload, "CompanySecret", { expiresIn: '30m' }, (err, token) => {
             if (err) throw err;
             res.cookie('token', token, { httpOnly: true });

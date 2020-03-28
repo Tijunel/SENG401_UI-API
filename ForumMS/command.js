@@ -24,6 +24,7 @@ command.post("/postForum", (req, res) => {
 command.post("/postTopic", (req, res) => {
     if (!req.body.forumID || !req.body.name) {
         res.status(400).send('Invalid topic format!').end();
+        return;
     }
     const topicIDtemp = uuid.v4();
     var dictTopic = {
@@ -33,7 +34,7 @@ command.post("/postTopic", (req, res) => {
         content: req.body.name
     };
     if (putEvent(dictTopic) !== -1) {
-        res.status(200).send('Success!').end();
+        res.status(200).json({ID: topicIDtemp}).end();
     }
     else {
         res.status(500).send('Could not upload topic!').end();
@@ -43,6 +44,7 @@ command.post("/postTopic", (req, res) => {
 command.post("/postComment", (req, res) => {
     if (!req.body.parentID || !req.body.message) {
         res.status(400).send('Invalid comment format!').end();
+        return;
     }
     const commentIDtemp = uuid.v4();
     var dictComment = {
@@ -52,7 +54,7 @@ command.post("/postComment", (req, res) => {
         content: req.body.message
     };
     if (putEvent(dictComment) !== -1) {
-        res.status(200).send('Success!').end();
+        res.status(200).json({ID: commentIDtemp}).end();
     }
     else {
         res.status(500).send('Could not upload comment!').end();
@@ -62,12 +64,14 @@ command.post("/postComment", (req, res) => {
 command.delete("/deleteEvent", (req, res) => {
     if(!req.body.ID) {
         res.status(400).send('Invalid comment format!').end();
+        return;
     }
     var dict = {
         command: "delete event",
         ID: req.body.ID
     };
     if (putEvent(dict) !== -1) {
+        console.log('here')
         res.status(200).send('Success!').end();
     }
     else {

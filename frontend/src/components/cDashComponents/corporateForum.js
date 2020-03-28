@@ -1,4 +1,5 @@
 import React from 'react';
+import Forum from './forum';
 import { Image, Form, Button, Modal } from 'react-bootstrap';
 
 export default class CorporateForum extends React.Component {
@@ -8,8 +9,7 @@ export default class CorporateForum extends React.Component {
         this.state = {
             showForum: true,
             showForumModal: false,
-            showIntro: true,
-            forums: []
+            showIntro: true
         }
         this.forumUI = []
     }
@@ -27,7 +27,6 @@ export default class CorporateForum extends React.Component {
                     this.setState({ showIntro: false })
                     this.generateForums(res.forums)
                 }
-                console.log(res)
             })
             .catch(err => {
                 console.log(err) //show error modal
@@ -35,24 +34,19 @@ export default class CorporateForum extends React.Component {
     }
 
     generateForums = (forums) => {
-        this.setState({ forums: [] })
         for (const forum of forums) {
-            this.state.forums.push({ name: forum.name, accessCode: forum.accessCode })
-        }
-        for (const forum of this.state.forums) {
             this.forumUI.push(
-                <div>
-                    {forum.name}&nbsp;{forum.accessCode}
-                </div>
+                <Forum name={forum.name} accessCode={forum.accessCode} />
             );
         }
-        this.setState({});
+        this.forceUpdate();
     }
 
     addForum = (name, accessCode) => {
-        this.state.forums.push({ name: name, accessCode: accessCode })
-        this.forumUI = [];
-        this.generateForums(this.state.forums)
+        this.forumUI.push(
+            <Forum name={name} accessCode={accessCode}/>
+        );
+        this.forceUpdate();
     }
 
     createForum = () => {
@@ -67,9 +61,7 @@ export default class CorporateForum extends React.Component {
         })
             .then(res => res.json())
             .then(res => {
-                let name = res.name
-                let accessCode = res.accessCode
-                this.addForum(name, accessCode)
+                this.addForum(res.name, res.accessCode)
                 this.setState({ showIntro: false, showForumModal: false })
             })
             .catch(err => {
@@ -95,7 +87,7 @@ export default class CorporateForum extends React.Component {
                     </div>
                 </div>
                 <Button className='createAForumButton' onClick={this.showForumModal}><b>Create A Forum</b></Button>
-                <div>{this.forumUI}</div>
+                <div style={{marginTop: '20px'}}>{this.forumUI}</div>
                 <Modal id='newForumModal' show={this.state.showForumModal} onHide={this.showForumModal} centered>
                     <Modal.Header closeButton>
                         <Modal.Title>
@@ -109,7 +101,7 @@ export default class CorporateForum extends React.Component {
                                 <Form.Control ref={this.nameForm} className='control' placeholder='Forum Name' type='text' required />
                             </Form.Group>
                         </Form>
-                        <Button className='createForumButton' onClick={this.createForum}><b>Submit</b></Button>
+                        <Button className='createAForumButton' onClick={this.createForum}><b>Submit</b></Button>
                     </Modal.Body>
                 </Modal>
             </div>

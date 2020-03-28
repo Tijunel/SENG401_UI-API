@@ -19,20 +19,22 @@
 #corporateDash .createAForumButton:focus {
     box-shadow: 0 0 0 0.2rem rgba(59, 190, 255, 0.5) !important;
 }
-.createForumButton {
+.createAForumButton {
     border-radius: 2rem;
     font-style: bold;
     font-size: 20px;
     padding-right: 2.39rem;
     padding-left: 2.39rem;
+    margin-top: 20px;
     width: 100%;
     max-width: 900px;
     vertical-align: top;
     display: inline-block;
     border: 0px solid transparent;
     background-color: #3ABEFF;
+    margin-bottom: 10px;
 }
-.createForumButton:focus {
+.createAForumButton:focus {
     box-shadow: 0 0 0 0.2rem rgba(59, 190, 255, 0.5) !important;
 }
 .createForumButton:hover {
@@ -40,6 +42,26 @@
 }
 .createForumButton:active {
     background-color: #3ABEFF !important;
+}
+.clearButton {
+    font-style: bold;
+    font-size: 16px;
+    padding-right: 1rem;
+    padding-left: 1rem;
+    border: 0px solid transparent;
+    background-color: #FFF;
+    color: #3ABEFF;
+}
+.clearButton:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0) !important;
+}
+.clearButton:hover {
+    background-color: #FFF;
+    color: #3ABEFF;
+}
+.clearButton:active {
+    background-color: #FFF !important;
+    color: #3ABEFF;
 }
 .form .control{
     display: inline-block;
