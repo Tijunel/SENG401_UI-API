@@ -1,6 +1,6 @@
 import React from 'react';
 import Topic from '../topic';
-import { Image, Button } from 'react-bootstrap';
+import { Image, Button, Form } from 'react-bootstrap';
 import APIHelper from '../apiHelper';
 import PostModal from '../postModal';
 import ErrorModal from '../errorModal';
@@ -8,14 +8,17 @@ import ErrorModal from '../errorModal';
 export default class AccessForum extends React.Component {
     constructor(props) {
         super(props);
+        this.searchForm = React.createRef();
         this.nameForm = React.createRef();
         this.state = {
             showIntro: (localStorage.getItem('showAccessIntro') === 'true') ? true : false,
             showTopicModal: false,
             showErrorModal: false,
             errorMessage: "",
+            showSearch: false,
             apiHelper: APIHelper.getInstance()
         }
+        this.topicsData = [];
         this.topicsUI = [];
     }
 
@@ -26,7 +29,10 @@ export default class AccessForum extends React.Component {
         }
         const res = await this.state.apiHelper.getForum(sessionStorage.getItem("forumID"));
         if (!res.error) {
-            this.generateTopics(res.topics);
+            this.topicsData = [];
+            for (const topic of res.topics) this.topicsData.push(topic);
+            if (this.topicsData.length > 0) this.setState({ showSearch: true })
+            this.generateTopics(this.topicsData);
         } else {
             this.setState({
                 showErrorModal: true,
@@ -41,7 +47,19 @@ export default class AccessForum extends React.Component {
         this.setState({ showIntro: false });
     }
 
+    updateFields = () => {
+        const currentValue = this.searchForm.current.value.toUpperCase();
+        var tempTopicData = [];
+        for (const topic in this.topicsData) {
+            const data = this.topicsData[topic];
+            const name = (data.name).toUpperCase();
+            if (name.includes(currentValue)) tempTopicData.push(this.topicsData[topic]);
+        }
+        this.generateTopics(tempTopicData);
+    }
+
     generateTopics = (topics) => {
+        this.topicsUI = [];
         for (const topic of topics) {
             this.topicsUI.push(
                 <Topic name={topic.name} id={topic.ID} isCompany={false} />
@@ -51,10 +69,11 @@ export default class AccessForum extends React.Component {
     }
 
     addTopic = (name, ID) => {
+        this.topicsData.push({ name: name, ID: ID });
         this.topicsUI.push(
             <Topic name={name} id={ID} isCompany={false} />
         );
-        this.forceUpdate();
+        this.setState({ showSearch: true });
     }
 
     createTopic = async () => {
@@ -71,7 +90,7 @@ export default class AccessForum extends React.Component {
     }
 
     showTopicModal = () => { this.setState({ showTopicModal: !this.state.showTopicModal }); }
-    showErrorModal = () => { this.setState({ showErrorModal: !this.state.showErrorModal}); }
+    showErrorModal = () => { this.setState({ showErrorModal: !this.state.showErrorModal }); }
 
     render = () => {
         return (
@@ -98,6 +117,11 @@ export default class AccessForum extends React.Component {
                         <div style={{ width: '90%', margin: 'auto' }}>
                             <div>
                                 <Button className='createAForumButton' onClick={this.showTopicModal}><b>Create A New Topic</b></Button>
+                                <Form className="form" style={{ display: (this.state.showSearch) ? '' : 'none' }}>
+                                    <Form.Group controlId="none">
+                                        <Form.Control ref={this.searchForm} className='control' placeholder={"Search"} type='text' autoComplete="nope" required onChange={this.updateFields} style={{ width: '70%' }} />
+                                    </Form.Group>
+                                </Form>
                                 <div style={{ marginTop: '20px' }}>{this.topicsUI}</div>
                             </div>
                         </div>

@@ -28,6 +28,7 @@ export default class CorporateForum extends React.Component {
         if (!res.error) {
             if (res.forums.length > 0) {
                 this.setState({ showIntro: false });
+                this.forumData = [];
                 for (const forum of res.forums) this.forumData.push(forum);
                 if (this.forumData.length > 0) this.setState({ showSearch: true });
                 this.generateForums(this.forumData);
@@ -45,9 +46,7 @@ export default class CorporateForum extends React.Component {
         for (const forum in this.forumData) {
             const data = this.forumData[forum];
             const aCode = (data.accessCode)
-            if (aCode !== accessCode) {
-                tempForumData.push(this.forumData[forum]);
-            }
+            if (aCode !== accessCode) tempForumData.push(this.forumData[forum]);
         }
         if(tempForumData.length === 0) this.setState({ showSearch: false, showIntro: true});
         this.forumData = tempForumData;
@@ -71,16 +70,16 @@ export default class CorporateForum extends React.Component {
         this.forumUI = [];
         for (const forum of forums) {
             this.forumUI.push(
-                <Forum name={forum.name} accessCode={forum.accessCode} deleteFromForumData={this.deleteFromForumData}/>
+                <Forum name={forum.name} accessCode={forum.accessCode} deleteFromForumData={this.deleteFromForumData} key={forum.accessCode}/>
             );
         }
-        this.forceUpdate();
+        this.setState({});
     }
 
     addForum = (name, accessCode) => {
         this.forumData.push({ name: name, accessCode: accessCode });
         this.forumUI.push(
-            <Forum name={name} accessCode={accessCode} deleteFromForumData={this.deleteFromForumData}/>
+            <Forum name={name} accessCode={accessCode} deleteFromForumData={this.deleteFromForumData} key={accessCode}/>
         );
         this.setState({ showSearch: true });
     }

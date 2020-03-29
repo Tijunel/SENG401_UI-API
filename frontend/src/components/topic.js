@@ -88,14 +88,10 @@ export default class Topic extends React.Component {
         if (!this.state.hideTopic) {
             return (
                 <div>
-                    <Row
-                        style={{ width: '100%', textAlign: 'center', margin: 'auto', borderWidth: '1px', borderColor: '#AAA', borderStyle: 'solid', fontSize: '20px', cursor: 'pointer', marginBottom: '10px' }}
-                        onClick={this.getComments}
-                    >
+                    <Row style={{ width: '100%', textAlign: 'center', margin: 'auto', borderWidth: '1px', borderColor: '#AAA', borderStyle: 'solid', fontSize: '20px', marginBottom: '10px' }}>
                         <Col style={{ textAlign: 'left' }}><b>{this.props.name}</b></Col>
-                        <Col style={{ textAlign: 'right' }}>
-                            <b><Button className='clearButton' onClick={this.showConfirmationModal} style={{ display: (this.props.isCompany) ? '' : 'none' }}><b>Delete</b></Button></b>
-                        </Col>
+                        <Col xs={1} style={{ textAlign: 'right' }}><Button className='clearButton' onClick={this.showConfirmationModal} style={{ display: (this.props.isCompany) ? '' : 'none' }}><b>Delete</b></Button></Col>
+                        <Col xs={1} style={{ textAlign: 'right' }}><b><Button className='clearButton' onClick={this.getComments}><b>Expand</b></Button></b></Col>
                     </Row>
                     <div style={{ display: (this.state.showComments) ? '' : 'none', marginLeft: '10px', marginRight: '0', paddingLeft: '10px', marginBottom: '50px' }}>
                         <div style={{ marginLeft: '10px', paddingLeft: '5px', paddingRight: '5px' }}>

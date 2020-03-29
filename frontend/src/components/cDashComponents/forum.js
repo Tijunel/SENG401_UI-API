@@ -29,14 +29,9 @@ export default class Forum extends React.Component {
         var tempTopicData = [];
         for (const topic in this.topicsData) {
             const data = this.topicsData[topic];
-            const ID = (data.ID)
-            console.log(topicID)
-            if (ID !== topicID) {
-                tempTopicData.push(this.topicsData[topic]);
-            }
+            if (data.ID !== topicID) tempTopicData.push(this.topicsData[topic]);
         }
-        console.log(tempTopicData)
-        if(tempTopicData.length === 0) this.setState({ showSearch: false });
+        if (tempTopicData.length === 0) this.setState({ showSearch: false });
         this.topicsData = tempTopicData;
         this.generateTopics(this.topicsData);
     }
@@ -46,6 +41,7 @@ export default class Forum extends React.Component {
         if (!this.state.showTopics) {
             const res = await this.state.apiHelper.getForum(this.props.accessCode);
             if (!res.error) {
+                this.topicsData = [];
                 for (const topic of res.topics) this.topicsData.push(topic);
                 if (this.topicsData.length > 0) this.setState({ showSearch: true })
                 this.generateTopics(this.topicsData);
@@ -76,16 +72,16 @@ export default class Forum extends React.Component {
         this.topicsUI = [];
         for (const topic of topics) {
             this.topicsUI.push(
-                <Topic name={topic.name} id={topic.ID} isCompany={true} deleteFromTopicData={this.deleteFromTopicData}/>
+                <Topic name={topic.name} id={topic.ID} isCompany={true} deleteFromTopicData={this.deleteFromTopicData} key={topic.ID}/>
             );
         }
-        this.forceUpdate();
+        this.setState({});
     }
 
     addTopic = (name, ID) => {
-        this.topicsData.push({ name: name, ID: ID});
+        this.topicsData.push({ name: name, ID: ID });
         this.topicsUI.push(
-            <Topic name={name} id={ID} isCompany={true} deleteFromTopicData={this.deleteFromTopicData}/>
+            <Topic name={name} id={ID} isCompany={true} deleteFromTopicData={this.deleteFromTopicData} key={ID}/>
         );
         this.setState({ showSearch: true });
     }
@@ -125,19 +121,19 @@ export default class Forum extends React.Component {
             return (
                 <div>
                     <Row
-                        style={{ width: '90%', textAlign: 'center', margin: 'auto', borderWidth: '1px', borderColor: '#AAA', borderStyle: 'solid', fontSize: '20px', cursor: 'pointer', marginBottom: '10px' }}
-                        onClick={this.getTopics}
+                        style={{ width: '90%', textAlign: 'center', margin: 'auto', borderWidth: '1px', borderColor: '#AAA', borderStyle: 'solid', fontSize: '20px', marginBottom: '10px' }}
                     >
-                        <Col style={{ textAlign: 'left', width: '40%' }}><b>{this.props.name}</b></Col>
-                        <Col style={{ textAlign: 'right', width: '40%' }}><b>Access Code: {this.props.accessCode}</b></Col>
-                        <Col xs={1} style={{ textAlign: 'right', width: '1%' }}><b><Button className='clearButton' onClick={this.showConfirmationModal}><b>Delete</b></Button></b></Col>
+                        <Col style={{ textAlign: 'left' }}><b>{this.props.name}</b></Col>
+                        <Col style={{ textAlign: 'right' }}><b>Access Code: {this.props.accessCode}</b></Col>
+                        <Col xs={1} style={{ textAlign: 'right' }}><b><Button className='clearButton' onClick={this.showConfirmationModal}><b>Delete</b></Button></b></Col>
+                        <Col xs={1} style={{ textAlign: 'right' }}><b><Button className='clearButton' onClick={this.getTopics}><b>Expand</b></Button></b></Col>
                     </Row>
                     <div style={{ display: (this.state.showTopics) ? '' : 'none', width: '90%', margin: 'auto', paddingLeft: '50px', marginBottom: '50px' }}>
                         <div style={{ marginLeft: '50px', paddingLeft: '5px' }}>
                             <Button className='createAForumButton' onClick={this.showTopicModal}><b>Create A New Topic</b></Button>
                             <Form className="form" style={{ display: (this.state.showSearch) ? '' : 'none' }}>
                                 <Form.Group controlId="none">
-                                    <Form.Control ref={this.searchForm} className='control' placeholder={"Search"} type='text' autoComplete="nope" required onChange={this.updateFields} style={{width: '50%'}}/>
+                                    <Form.Control ref={this.searchForm} className='control' placeholder={"Search"} type='text' autoComplete="nope" required onChange={this.updateFields} style={{ width: '50%' }} />
                                 </Form.Group>
                             </Form>
                             <div style={{ marginTop: '20px' }}>{this.topicsUI}</div>
