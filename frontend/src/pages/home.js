@@ -42,7 +42,7 @@ export default class HomePage extends React.Component {
                 <Jumbotron style={{ width: '100%', backgroundColor: '#FFF', borderRadius: '0', textAlign: 'center', marginTop: '-100px' }}>
                     <b style={{ fontSize: 'calc(3.8vw + 0.6rem)' }}><br />Want to give us feedback?<br /></b>
                     <p style={{ fontSize: 'calc(0.6vw + 0.8rem)', width: '100%', margin: 'auto', marginTop: 'calc(1vw + 33.33px)', textAlign: 'center', lineHeight: '1.2', maxWidth: '900px' }}>
-                        Enter the access code WOO1XQ11 <a href='/access'>here</a>.
+                        Enter the access code 1ZSHG2JB <a href='/access'>here</a>.
                     </p>
                 </Jumbotron>
             </div>

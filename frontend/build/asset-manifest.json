@@ -1,0 +1,31 @@
+{
+  "files": {
+    "main.css": "/static/css/main.952213b9.chunk.css",
+    "main.js": "/static/js/main.b2565a1d.chunk.js",
+    "main.js.map": "/static/js/main.b2565a1d.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.3a02ae19.js",
+    "runtime-main.js.map": "/static/js/runtime-main.3a02ae19.js.map",
+    "static/css/2.47e06e2e.chunk.css": "/static/css/2.47e06e2e.chunk.css",
+    "static/js/2.31a4f8cc.chunk.js": "/static/js/2.31a4f8cc.chunk.js",
+    "static/js/2.31a4f8cc.chunk.js.map": "/static/js/2.31a4f8cc.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.4ecea4649aa9963b28e1aab4e272628a.js": "/precache-manifest.4ecea4649aa9963b28e1aab4e272628a.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/2.47e06e2e.chunk.css.map": "/static/css/2.47e06e2e.chunk.css.map",
+    "static/css/main.952213b9.chunk.css.map": "/static/css/main.952213b9.chunk.css.map",
+    "static/js/2.31a4f8cc.chunk.js.LICENSE.txt": "/static/js/2.31a4f8cc.chunk.js.LICENSE.txt",
+    "static/media/CaptureImage.svg": "/static/media/CaptureImage.39c2ead2.svg",
+    "static/media/question.svg": "/static/media/question.b7c3a851.svg",
+    "static/media/security.svg": "/static/media/security.64810998.svg",
+    "static/media/signIn.svg": "/static/media/signIn.f4731b88.svg",
+    "static/media/signUp.svg": "/static/media/signUp.249076ab.svg",
+    "static/media/welcome.svg": "/static/media/welcome.6f58be36.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.3a02ae19.js",
+    "static/css/2.47e06e2e.chunk.css",
+    "static/js/2.31a4f8cc.chunk.js",
+    "static/css/main.952213b9.chunk.css",
+    "static/js/main.b2565a1d.chunk.js"
+  ]
+}

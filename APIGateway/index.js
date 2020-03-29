@@ -35,6 +35,14 @@ app.use("/api/forum", forum);
 app.use("/api/feedback", feedback);
 
 //Define web routes
+app.use(express.static(path.join(__dirname, '../frontend/build')));
+app.get("/", (req, res) => {res.sendFile(path.join(__dirname, '..', 'frontend', 'build', 'index.html'));});
+app.get("/home", (req, res) => {res.sendFile(path.join(__dirname, '..', 'frontend', 'build', 'index.html'));});
+app.get("/access", (req, res) => {res.sendFile(path.join(__dirname, '..', 'frontend', 'build', 'index.html'));});
+app.get("/signIn", (req, res) => {res.sendFile(path.join(__dirname, '..', 'frontend', 'build', 'index.html'));});
+app.get("/signUp", (req, res) => {res.sendFile(path.join(__dirname, '..', 'frontend', 'build', 'index.html'));});
+app.get("/accessDash", (req, res) => {res.sendFile(path.join(__dirname, '..', 'frontend', 'build', 'index.html'));});
+app.get("/dashboard", (req, res) => {res.sendFile(path.join(__dirname, '..', 'frontend', 'build', 'index.html'));});
 
 //Start Server
 app.listen(PORT, () => {
