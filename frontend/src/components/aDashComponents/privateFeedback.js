@@ -16,7 +16,7 @@ export default class AccessPrivateFeedback extends React.Component {
         this.feedbackForm = React.createRef();
     }
 
-    submitPrivateFeedback = () => {
+    submitPrivateFeedback = async () => {
         if (this.feedbackForm.current.value === '') {
             this.setState({
                 showErrorModal: true,
@@ -24,7 +24,7 @@ export default class AccessPrivateFeedback extends React.Component {
             });
             return;
         } 
-        const res = this.state.apiHelper.postPrivateFeedback(this.feedbackForm.current.value, sessionStorage.getItem('forumName'));
+        const res = await this.state.apiHelper.postPrivateFeedback(this.feedbackForm.current.value, sessionStorage.getItem('forumName'));
         if (res) {
             this.setState({showConfirmationModal: true});
         } else {
