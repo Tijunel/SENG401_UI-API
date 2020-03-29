@@ -27,7 +27,7 @@ feedback.post("/submitFeedback", async (req, res) => {
 		messageRef.push(message);
 		var nameRef = forumRef.child("name");
 		nameRef.set(forumName);
-		res.sendStatus(200);
+		res.status(200).end();
 	} catch (e) {
 		res.status(500).send("Error submitting feedback!").end();
 	}

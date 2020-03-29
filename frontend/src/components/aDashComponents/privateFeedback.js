@@ -25,9 +25,12 @@ export default class AccessPrivateFeedback extends React.Component {
             return;
         } 
         const res = await this.state.apiHelper.postPrivateFeedback(this.feedbackForm.current.value, sessionStorage.getItem('forumName'));
+        console.log(res)
         if (res) {
+            console.log('here')
             this.setState({showConfirmationModal: true});
         } else {
+            console.log('yo')
             this.setState({
                 showErrorModal: true,
                 errorMessage: "Your feedback could not be submitted. Try again later."

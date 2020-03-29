@@ -60,9 +60,12 @@ feedback.post("/submitFeedback", withAccessAuth, async (req, res) => {
             }
         };
         let newReq = http.request(options, (newRes) => {
+            console.log(newRes.statusCode)
             if(newRes.statusCode !== 200) {
                 res.status(400).send("Error").end();
                 return;
+            } else {
+                res.status(200).end();
             }
         }).on("error", function (e) {
             res.status(500).send("Error posting feedback!").end();

@@ -18,7 +18,7 @@ export default class APIHelper {
         return res;
     }
 
-    postPrivateFeedback = async(message, forumName) => {
+    postPrivateFeedback = async (message, forumName) => {
         const res = await fetch('/api/feedback/submitFeedback', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -27,15 +27,16 @@ export default class APIHelper {
                 name: forumName
             })
         })
-        .then(async res => {
-            if (res.status !== 200) { return false; } 
-            else { return true; }
-        })
-        .catch(err => { return false; });
+            .then(async res => {
+                console.log(res.status)
+                if (res.status !== 200) { return false; }
+                else { return true; }
+            })
+            .catch(err => { return false; });
         return res;
     }
 
-    getTopic = async(ID) => {
+    getTopic = async (ID) => {
         const res = await fetch('/api/forum/getTopic/' + ID, {
             method: 'GET',
             headers: { 'Content-Type': 'application/json' }
