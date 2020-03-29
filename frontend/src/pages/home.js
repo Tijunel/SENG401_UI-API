@@ -3,6 +3,7 @@ import TopNav from '../components/topNav';
 import { Jumbotron, Row, Col, Image } from 'react-bootstrap';
 import '../styling/home.css';
 
+
 export default class HomePage extends React.Component {
     render = () => {
         return (
