@@ -26,14 +26,14 @@ export default class Comment extends React.Component {
     componentWillMount = () => {
         for (const reply of this.props.replies) {
             this.repliesUI.push(
-                <Comment message={reply.message} replies={reply.replies} ID={reply.id} parentID={reply.parentID} isCompany={this.props.isCompany} depth={this.props.depth + 1} />
+                <Comment message={reply.message} replies={reply.replies} ID={reply.id} parentID={reply.parentID} isCompany={this.props.isCompany} depth={this.props.depth + 1} key={reply.id}/>
             );
         }
     }
 
     addReply = (message, ID) => {
         this.repliesUI.push(
-            <Comment message={message} replies={[]} ID={ID} parentID={this.props.ID} isCompany={this.props.isCompany} depth={this.props.depth + 1} />
+            <Comment message={message} replies={[]} ID={ID} parentID={this.props.ID} isCompany={this.props.isCompany} depth={this.props.depth + 1} key={ID}/>
         );
     }
 

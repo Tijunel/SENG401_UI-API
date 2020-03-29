@@ -2,6 +2,7 @@ import React from 'react';
 import TopNav from '../components/topNav';
 import { Image, Form, Button } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
+import ErrorModal from '../components/errorModal';
 import '../styling/access.css';
 
 export default class AccessPage extends React.Component {
@@ -9,12 +10,20 @@ export default class AccessPage extends React.Component {
         super(props);
         this.accessForm = React.createRef();
         this.state = {
-            redirect: false
+            redirect: false,
+            showErrorModal: false, 
+            errorMessage: ""
         }
     }
 
     submitAccessCode = () => {
-        if (this.accessForm.current.value === '') return; //Show error
+        if (this.accessForm.current.value === '') {
+            this.setState({
+                showErrorModal: true, 
+                errorMessage: "Oops! Looks like you forget to enter your access code!"
+            });
+            return;
+        } 
         fetch('/api/access/auth', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -22,16 +31,31 @@ export default class AccessPage extends React.Component {
                 accessCode: this.accessForm.current.value
             })
         })
-            .then(res => res.json())
+            .then(async res => {
+                if(res.status !== 200) {
+                    this.setState({
+                        showErrorModal: true, 
+                        errorMessage: "Oops! Something went wrong!"
+                    });
+                } else {
+                    res = await res.json();
+                    return res;
+                }
+            })
             .then(res => {
                 sessionStorage.setItem('forumName', res.name);
                 sessionStorage.setItem('forumID', res.forumID);
                 this.setState({ redirect: true });
             })
             .catch(err => {
-                console.log(err) //Handle error with modal
+                this.setState({
+                    showErrorModal: true, 
+                    errorMessage: "Oops! Something went wrong!"
+                });
             });
     }
+
+    showErrorModal = () => { this.setState({showErrorModal: !this.state.showErrorModal}); }
 
     render = () => {
         if (this.state.redirect) return <Redirect to='/AccessDash' />
@@ -48,6 +72,11 @@ export default class AccessPage extends React.Component {
                     </Form.Group>
                 </Form>
                 <Button className='submitButton' onClick={this.submitAccessCode} ><b>Submit</b></Button>
+                <ErrorModal
+                    showModal={this.state.showErrorModal}
+                    hideModal={this.showErrorModal}
+                    message={this.state.errorMessage}
+                />
             </div>
         );
     }

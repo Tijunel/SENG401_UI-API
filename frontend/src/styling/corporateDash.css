@@ -1,6 +1,21 @@
 #corporateDash {
     text-align: center;
 }
+#corporateDash .createAForumButton {
+    border-radius: 2rem;
+    font-style: bold;
+    font-size: 20px;
+    padding-right: 2.39rem;
+    padding-left: 2.39rem;
+    margin-top: 20px;
+    width: 50%;
+    max-width: 900px;
+    vertical-align: top;
+    display: inline-block;
+    border: 0px solid transparent;
+    background-color: #3ABEFF;
+    margin-bottom: 10px;
+}
 .createAForumButton {
     border-radius: 2rem;
     font-style: bold;

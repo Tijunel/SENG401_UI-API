@@ -41,7 +41,7 @@ query.get("/getTopic/:id", (req, res) => {
     }
     client.get("EventContent-" + ID, (err, result) => {
         if (err || !result) {
-            res.status(404).send("Could not find topic name.").end();
+            res.sendStatus(500).end();
             return;
         }
         topic.topicName = result;
@@ -61,7 +61,7 @@ query.get("/getForums/:id", (req, res) => {
     }
     client.lrange(ID, 0, -1, (err, results) => {
         if (err || !results) {
-            res.status(404).send("Could not find company.").end();
+            res.sendStatus(500).end();
             return;
         }
         const forumsNum = results.length;
@@ -69,7 +69,7 @@ query.get("/getForums/:id", (req, res) => {
         for (const forumID of results) {
             client.get("EventContent-" + forumID, (err, result) => {
                 if (err) {
-                    res.status(500).send("Error finding forums in Redis").end();
+                    res.sendStatus(500).end();
                     return;
                 }
                 forums.forums.push({
@@ -93,13 +93,13 @@ query.get("/getForum/:id", async (req, res) => {
     }
     client.get("EventContent-" + ID, (err, result) => {
         if (err || !result) {
-            res.status(404).send("Could not find forum name.").end();
+            res.sendStatus(500).end();
             return;
         }
         forum.forumName = result;
         client.lrange(ID, 0, -1, (err, results) => {
             if (err || !results) {
-                res.status(404).send("Could not find forum topics").end();
+                res.sendStatus(500).end();
                 return;
             }
             const topicsNum = results.length;
@@ -110,7 +110,7 @@ query.get("/getForum/:id", async (req, res) => {
             for (const topicID of results) {
                 client.get("EventContent-" + topicID, (err, result) => {
                     if (err || !results) {
-                        res.status(500).send("Error finding topics in Redis").end();
+                        res.sendStatus(500).end();
                         return;
                     }
                     forum.topics.push({
@@ -136,14 +136,14 @@ query.get("/auth/:id", async (req, res) => {
     }
     client.get("EventContent-" + accessCode, (err, result) => {
         if (err || !result) {
-            res.status(404).send("Could not find forum.").end();
+            res.sendStatus(404).end();
             return;
         }
         info.forumID = accessCode;
         info.name = result;
         client.get("EventParent-" + accessCode, (err, parent) => {
             if (err) {
-                res.status(500).send("Could not find parent of forum.").end();
+                res.sendStatus(500).end();
                 return;
             }
             info.companyID = parent;

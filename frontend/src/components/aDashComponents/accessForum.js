@@ -10,6 +10,7 @@ export default class AccessForum extends React.Component {
         super(props);
         this.searchForm = React.createRef();
         this.nameForm = React.createRef();
+        this.postModal = React.createRef();
         this.state = {
             showIntro: (localStorage.getItem('showAccessIntro') === 'true') ? true : false,
             showTopicModal: false,
@@ -77,6 +78,10 @@ export default class AccessForum extends React.Component {
     }
 
     createTopic = async () => {
+        if(this.nameForm.current.value === "") {
+            this.postModal.current.notifyEmptyText("Oops! Please provide a name for the topic.");
+            return;
+        }   
         const res = await this.state.apiHelper.postTopic(this.nameForm.current.value, sessionStorage.getItem('forumID'));
         if (!res.error) {
             this.addTopic(this.nameForm.current.value, res.ID);
@@ -133,6 +138,7 @@ export default class AccessForum extends React.Component {
                             reference={this.nameForm}
                             placeholder={"Topic Name"}
                             create={this.createTopic}
+                            ref={this.postModal}
                         />
                         <ErrorModal
                             showModal={this.state.showErrorModal}

@@ -19,6 +19,7 @@ feedback.get("/getFeedback", withCompanyAuth, async (req, res) => {
         http.get(options, (newRes) => {
             if(newRes.statusCode !== 200) {
                 res.status(400).send("Bad Request!").end();
+                return;
             } 
             newRes.on("data", (data) => {
                 try {
@@ -37,6 +38,10 @@ feedback.get("/getFeedback", withCompanyAuth, async (req, res) => {
 });
 
 feedback.post("/submitFeedback", withAccessAuth, async (req, res) => {
+    if(!req.body.message) {
+        res.status(400).send("Bad Request!").end();
+        return;
+    } 
     try {
         let data = JSON.stringify({
             companyID: req.forum.companyID,
@@ -57,6 +62,7 @@ feedback.post("/submitFeedback", withAccessAuth, async (req, res) => {
         let newReq = http.request(options, (newRes) => {
             if(newRes.statusCode !== 200) {
                 res.status(400).send("Error").end();
+                return;
             }
         }).on("error", function (e) {
             res.status(500).send("Error posting feedback!").end();

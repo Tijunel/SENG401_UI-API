@@ -7,6 +7,10 @@ const IP = require("../config/connections");
 const withAccessAuth = require("../middleware/auth")[0];
 
 access.post("/auth", async (req, res) => {
+    if(!req.body.accessCode) {
+        res.status(400).send("Bad Request!").end();
+        return;
+    } 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         res.status(400).send("Bad Request!").end();
@@ -22,9 +26,14 @@ access.post("/auth", async (req, res) => {
             http.get(options, (newRes) => {
                 if (newRes.statusCode !== 200) {
                     res.status(400).send("Error").end();
+                    return;
                 }
                 newRes.on("data", (data) => {
-                    data = JSON.parse(data);
+                    try {
+                        data = JSON.parse(data);
+                    } catch (err) {
+                        res.status(500).send("Error fetching feedback!").end();
+                    }
                     const payload = {
                         forum: {
                             forumName: data.name,
@@ -41,9 +50,11 @@ access.post("/auth", async (req, res) => {
                         }).end();
                     });
                 });
+            }).on("error", error => {
+                res.status(500).send("Error fetching feedback!").end();
             });
         } catch (err) {
-            res.status(500).json({ message: "Server Error" }).end();
+            res.status(500).send("Error fetching feedback!").end();
         }
     }
 });

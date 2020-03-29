@@ -8,6 +8,10 @@ const withCompanyAuth = require("../middleware/auth")[1];
 
 //Command Endpoints
 forum.post("/postForum", withCompanyAuth, async (req, res) => {
+    if(!req.body.name) {
+        res.status(400).send("Bad Request!").end();
+        return;
+    } 
     try {
         let accessCode = randomize("A0", 8)
         let args = JSON.stringify({
@@ -45,6 +49,10 @@ forum.post("/postForum", withCompanyAuth, async (req, res) => {
 });
 
 forum.post("/postTopic", withAuth, async (req, res) => {
+    if(!req.body.topicName || !req.body.forumID) {
+        res.status(400).send("Bad Request!").end();
+        return;
+    } 
     try {
         let args = JSON.stringify({
             forumID: req.body.forumID,
@@ -63,6 +71,7 @@ forum.post("/postTopic", withAuth, async (req, res) => {
         let newReq = http.request(options, (newRes) => {
             if(newRes.statusCode !== 200) {
                 res.status(400).send("Error").end();
+                return;
             }
             newRes.on("data", (data) => {
                 try {
@@ -82,6 +91,10 @@ forum.post("/postTopic", withAuth, async (req, res) => {
 });
 
 forum.post("/postComment", withAuth, async (req, res) => { 
+    if(!req.body.message || !req.body.parentID) {
+        res.status(400).send("Bad Request!").end();
+        return;
+    } 
     try {
         let args = JSON.stringify({
             parentID: req.body.parentID,
@@ -100,6 +113,7 @@ forum.post("/postComment", withAuth, async (req, res) => {
         let newReq = http.request(options, (newRes) => {
             if(newRes.statusCode !== 200) {
                 res.status(400).send("Error").end();
+                return;
             }
             newRes.on("data", (data) => {
                 try {
@@ -119,6 +133,10 @@ forum.post("/postComment", withAuth, async (req, res) => {
 });
 
 forum.delete("/deleteEvent", withCompanyAuth, async (req, res) => {
+    if(!req.body.ID) {
+        res.status(400).send("Bad Request!").end();
+        return;
+    } 
     try {
         let args = JSON.stringify({
             ID: req.body.ID
@@ -161,6 +179,7 @@ forum.get("/getTopic/:id", withAuth, async (req, res) => {
         http.get(options, (newRes) => {
             if(newRes.statusCode !== 200) {
                 res.status(400).send("Error").end();
+                return;
             }
             newRes.on("data", (data) => {
                 try {
@@ -191,6 +210,7 @@ forum.get("/getForums", withCompanyAuth, async (req, res) => {
         http.get(options, (newRes) => {
             if(newRes.statusCode !== 200) {
                 res.status(400).send("Error").end();
+                return;
             }
             newRes.on("data", (data) => {
                 try {
@@ -218,6 +238,7 @@ forum.get("/getForum/:id", withAuth, async (req, res) => {
         http.get(options, (newRes) => {
             if(newRes.statusCode !== 200) {
                 res.status(400).send("Error").end();
+                return;
             }
             newRes.on("data", (data) => {
                 try {

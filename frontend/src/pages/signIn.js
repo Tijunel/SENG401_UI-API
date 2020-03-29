@@ -2,6 +2,7 @@ import React from 'react';
 import TopNav from '../components/topNav';
 import { Image, Form, Button } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
+import ErrorModal from '../components/errorModal';
 import '../styling/signIn.css';
 
 export default class SignInDashboard extends React.Component {
@@ -10,7 +11,9 @@ export default class SignInDashboard extends React.Component {
         this.emailForm = React.createRef();
         this.passForm = React.createRef();
         this.state = {
-            redirect: false
+            redirect: false,
+            showErrorModal: false, 
+            errorMessage: ""
         }
     }
 
@@ -26,8 +29,20 @@ export default class SignInDashboard extends React.Component {
     }
 
     submitInfo = () => {
-        if (this.passForm.current.value === '') return; //Show error saying password is empty
-        else if (this.emailForm.current.value === '') return; //Show error saying email is empty
+        if (this.passForm.current.value === '') {
+            this.setState({
+                showErrorModal: true,
+                errorMessage: "Oops! Looks like you forgot to enter your password!"
+            });
+            return;
+        } 
+        else if (this.emailForm.current.value === '') {
+            this.setState({
+                showErrorModal: true,
+                errorMessage: "Oops! Looks like you forgot to enter your email!"
+            });
+            return;
+        } 
         fetch('/api/user/login', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -36,18 +51,31 @@ export default class SignInDashboard extends React.Component {
                 password: this.passForm.current.value,
             })
         })
-            .then(res => res.json())
+            .then(async res => {
+                if(res.status !== 200) {
+                    this.setState({
+                        showErrorModal: true,
+                        errorMessage: "Oops! Something went wrong!"
+                    });
+                } else {
+                    res = await res.json();
+                    return res;
+                }
+            })
             .then(res => {
                 sessionStorage.setItem('name', res.name);
                 sessionStorage.setItem('email', res.email);
                 this.setState({ redirect: true });
-                //else handle errors for status 500 and 401
             })
             .catch(err => {
-                //Handle error
-                console.log(err)
+                this.setState({
+                    showErrorModal: true,
+                    errorMessage: "Oops! Something went wrong!"
+                });
             });
     }
+
+    showErrorModal = () => { this.setState({showErrorModal: !this.state.showErrorModal}); }
 
     render = () => {
         if (this.state.redirect) return <Redirect to='/dashboard' />
@@ -69,6 +97,11 @@ export default class SignInDashboard extends React.Component {
                     </Form.Group>
                 </Form>
                 <Button className='submitButton' onClick={this.submitInfo}><b>Submit</b></Button>
+                <ErrorModal
+                    showModal={this.state.showErrorModal}
+                    hideModal={this.showErrorModal}
+                    message={this.state.errorMessage}
+                />
             </div>
         )
     }

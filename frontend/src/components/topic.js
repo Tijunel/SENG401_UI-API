@@ -1,6 +1,6 @@
 import React from 'react';
 import Comment from './comment';
-import { Row, Col, Button, Modal, Form } from 'react-bootstrap';
+import { Row, Col, Button } from 'react-bootstrap';
 import APIHelper from './apiHelper';
 import PostModal from './postModal';
 import ConfirmationModal from './confirmationModal';
@@ -10,6 +10,7 @@ export default class Topic extends React.Component {
     constructor(props) {
         super(props);
         this.messageForm = React.createRef();
+        this.postModal = React.createRef();
         this.state = {
             showComments: false,
             showCommentModal: false,
@@ -34,26 +35,28 @@ export default class Topic extends React.Component {
                 });
             }
             this.setState({ showComments: true });
-        } else {
-            this.setState({ showComments: false });
-        }
+        } else this.setState({ showComments: false });
     }
 
     generateRootComments = (comments) => {
         for (const comment of comments) {
             this.commentsUI.push(
-                <Comment message={comment.message} replies={comment.replies} ID={comment.id} parentID={this.props.id} depth={0} isCompany={this.props.isCompany} />
+                <Comment message={comment.message} replies={comment.replies} ID={comment.id} parentID={this.props.id} depth={0} isCompany={this.props.isCompany} key={comment.id} />
             );
         }
     }
 
     addRootComment = (message, ID) => {
         this.commentsUI.push(
-            <Comment message={message} replies={[]} ID={ID} parentID={this.props.id} depth={0} isCompany={this.props.isCompany} />
+            <Comment message={message} replies={[]} ID={ID} parentID={this.props.id} depth={0} isCompany={this.props.isCompany} key={ID} />
         );
     }
 
     createRootComment = async () => {
+        if (this.messageForm.current.value === "") {
+            this.postModal.current.notifyEmptyText("Oops! Please write out your comment.");
+            return;
+        }
         const res = await this.state.apiHelper.postComment(this.props.id, this.messageForm.current.value);
         if (!res.error) {
             this.addRootComment(this.messageForm.current.value, res.ID);
@@ -91,10 +94,10 @@ export default class Topic extends React.Component {
                     <Row style={{ width: '100%', textAlign: 'center', margin: 'auto', borderWidth: '1px', borderColor: '#AAA', borderStyle: 'solid', fontSize: '20px', marginBottom: '10px' }}>
                         <Col style={{ textAlign: 'left' }}><b>{this.props.name}</b></Col>
                         <Col xs={1} style={{ textAlign: 'right' }}><Button className='clearButton' onClick={this.showConfirmationModal} style={{ display: (this.props.isCompany) ? '' : 'none' }}><b>Delete</b></Button></Col>
-                        <Col xs={1} style={{ textAlign: 'right' }}><b><Button className='clearButton' onClick={this.getComments}><b>Expand</b></Button></b></Col>
+                        <Col xs={1} style={{ textAlign: 'right' }}><b><Button className='clearButton' onClick={this.getComments}><b>{(this.state.showComments) ? 'Close' : 'Expand'}</b></Button></b></Col>
                     </Row>
                     <div style={{ display: (this.state.showComments) ? '' : 'none', marginLeft: '10px', marginRight: '0', paddingLeft: '10px', marginBottom: '50px' }}>
-                        <div style={{ marginLeft: '10px', paddingLeft: '5px', paddingRight: '5px' }}>
+                        <div style={{ marginLeft: '10px' }}>
                             <Button className='createAForumButton' onClick={this.showCommentModal}><b>Create A New Comment</b></Button>
                             <div style={{ marginTop: '20px' }}>{this.commentsUI}</div>
                         </div>
@@ -107,6 +110,7 @@ export default class Topic extends React.Component {
                         reference={this.messageForm}
                         placeholder={"Message"}
                         create={this.createRootComment}
+                        ref={this.postModal}
                     />
                     <ConfirmationModal
                         showModal={this.state.showConfirmationModal}

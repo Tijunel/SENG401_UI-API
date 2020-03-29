@@ -22,17 +22,12 @@ export default class SignUpPage extends React.Component {
 	componentDidMount = () => { this.emailForm.current.focus(); };
 
 	handleKeyPress = event => {
-		//Handle errors
 		if (event.key === "Enter") {
 			event.preventDefault();
 			if (this.emailForm.current.value === "") this.emailForm.current.focus();
 			else if (this.nameForm.current.value === "") this.nameForm.current.focus();
 			else if (this.passForm.current.value === "") this.passForm.current.focus();
 			else if (this.rePassForm.current.value === "") this.rePassForm.current.focus();
-			else if (this.rePassForm.current.value !== this.passForm.current.value) {
-				//Show error saying passwords don't match
-				return;
-			}
 			else this.submitInfo();
 		}
 	};
@@ -50,6 +45,11 @@ export default class SignUpPage extends React.Component {
 			this.setState({ showModal: true, message: "Both passwords must match." });
 			return;
 		}
+		let re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+		if(!re.test(this.emailForm.current.value)) {
+			this.setState({ showModal: true, message: "Oops! Please enter a valid email." });
+			return;
+		}
 		fetch("/api/user/signup", {
 			method: "POST",
 			headers: {
@@ -61,14 +61,16 @@ export default class SignUpPage extends React.Component {
 				username: this.nameForm.current.value
 			})
 		})
-			.then(res => {
+			.then(async res => {
 				if (res.status !== 200) {
 					this.setState({
 						showModal: true,
 						message: "Oops! Something went wrong."
 					});
+				} else {
+					res = await res.json();
+					return res;
 				}
-				return res.json();
 			})
 			.then(res => {
 				sessionStorage.setItem("name", res.name);

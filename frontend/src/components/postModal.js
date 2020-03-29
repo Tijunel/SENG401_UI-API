@@ -4,7 +4,11 @@ import { Modal, Form, Button } from "react-bootstrap";
 export default class PostModal extends React.Component {
     showModal = () => {
         this.props.hideModal();
-    };
+    }
+
+    notifyEmptyText = (message) => {
+        this.props.reference.current.placeholder = message;
+    }
 
     render = () => {
         return (
@@ -17,8 +21,8 @@ export default class PostModal extends React.Component {
                 <Modal.Body style={{ fontSize: '17px' }}>
                     {this.props.message}<br /><br />
                     <Form className="form">
-                        <Form.Group controlId="name">
-                            <Form.Control ref={this.props.reference} className='control' placeholder={this.props.placeholder} type='text' required />
+                        <Form.Group controlId="none">
+                            <Form.Control ref={this.props.reference} className='control' placeholder={this.props.placeholder} as='textarea' rows='10' required style={{height: '300px'}} autoComplete="nope"/>
                         </Form.Group>
                     </Form>
                     <Button className='createAForumButton' onClick={this.props.create}><b>Submit</b></Button>

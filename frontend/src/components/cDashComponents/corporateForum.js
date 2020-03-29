@@ -10,6 +10,7 @@ export default class CorporateForum extends React.Component {
         super(props);
         this.nameForm = React.createRef();
         this.searchForm = React.createRef();
+        this.postModal = React.createRef();
         this.state = {
             showForum: true,
             showForumModal: false,
@@ -85,6 +86,10 @@ export default class CorporateForum extends React.Component {
     }
 
     createForum = async () => {
+        if(this.nameForm.current.value === "") {
+            this.postModal.current.notifyEmptyText('Oops! Please provide a name for the forum.');
+            return;
+        } 
         const res = await this.state.apiHelper.postForum(this.nameForm.current.value);
         if (!res.error) {
             this.addForum(res.name, res.accessCode);
@@ -129,6 +134,7 @@ export default class CorporateForum extends React.Component {
                     placeholder={'Forum Name'}
                     message={"Enter the forum's name below"}
                     create={this.createForum}
+                    ref={this.postModal}
                 />
                 <ErrorModal
                     showModal={this.state.showErrorModal}

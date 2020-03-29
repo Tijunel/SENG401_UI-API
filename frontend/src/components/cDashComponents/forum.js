@@ -11,6 +11,7 @@ export default class Forum extends React.Component {
         super(props);
         this.searchForm = React.createRef();
         this.nameForm = React.createRef();
+        this.postModal = React.createRef();
         this.state = {
             showTopics: false,
             showTopicModal: false,
@@ -87,6 +88,10 @@ export default class Forum extends React.Component {
     }
 
     createTopic = async () => {
+        if(this.nameForm.current.value === "") {
+            this.postModal.current.notifyEmptyText("Oops! Please provide a name for the topic.");
+            return;
+        }
         const res = await this.state.apiHelper.postTopic(this.nameForm.current.value, this.props.accessCode);
         if (!res.error) {
             this.addTopic(this.nameForm.current.value, res.ID);
@@ -120,13 +125,11 @@ export default class Forum extends React.Component {
         if (!this.state.hideForum) {
             return (
                 <div>
-                    <Row
-                        style={{ width: '90%', textAlign: 'center', margin: 'auto', borderWidth: '1px', borderColor: '#AAA', borderStyle: 'solid', fontSize: '20px', marginBottom: '10px' }}
-                    >
+                    <Row style={{ width: '90%', textAlign: 'center', margin: 'auto', borderWidth: '1px', borderColor: '#AAA', borderStyle: 'solid', fontSize: '20px', marginBottom: '10px' }}>
                         <Col style={{ textAlign: 'left' }}><b>{this.props.name}</b></Col>
                         <Col style={{ textAlign: 'right' }}><b>Access Code: {this.props.accessCode}</b></Col>
                         <Col xs={1} style={{ textAlign: 'right' }}><b><Button className='clearButton' onClick={this.showConfirmationModal}><b>Delete</b></Button></b></Col>
-                        <Col xs={1} style={{ textAlign: 'right' }}><b><Button className='clearButton' onClick={this.getTopics}><b>Expand</b></Button></b></Col>
+            <Col xs={1} style={{ textAlign: 'right' }}><b><Button className='clearButton' onClick={this.getTopics}><b>{(this.state.showTopics)?'Close':'Expand'}</b></Button></b></Col>
                     </Row>
                     <div style={{ display: (this.state.showTopics) ? '' : 'none', width: '90%', margin: 'auto', paddingLeft: '50px', marginBottom: '50px' }}>
                         <div style={{ marginLeft: '50px', paddingLeft: '5px' }}>
@@ -147,6 +150,7 @@ export default class Forum extends React.Component {
                         placeholder={'Topic Name'}
                         message={"Enter the topic's name below"}
                         create={this.createTopic}
+                        ref={this.postModal}
                     />
                     <ConfirmationModal
                         showModal={this.state.showConfirmationModal}
