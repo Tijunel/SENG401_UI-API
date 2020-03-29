@@ -38,6 +38,13 @@ export default class Comment extends React.Component {
     }
 
     createReply = async () => {
+        if(this.props.depth + 1 > 7) {
+            this.setState({
+                showErrorModal: true,
+                errorMessage: "Max reply depth reached."
+            });
+            return;
+        }
         const res = await this.state.apiHelper.postComment(this.props.ID, this.messageForm.current.value);
         if (!res.error) {
             this.addReply(this.messageForm.current.value, res.ID);

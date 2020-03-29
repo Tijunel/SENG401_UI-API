@@ -1,6 +1,6 @@
 import React from 'react';
 import Forum from './forum';
-import { Image, Button } from 'react-bootstrap';
+import { Image, Button, Form } from 'react-bootstrap';
 import APIHelper from '../apiHelper';
 import PostModal from '../postModal';
 import ErrorModal from '../errorModal';
@@ -9,14 +9,17 @@ export default class CorporateForum extends React.Component {
     constructor(props) {
         super(props);
         this.nameForm = React.createRef();
+        this.searchForm = React.createRef();
         this.state = {
             showForum: true,
             showForumModal: false,
             showErrorModal: false,
             errorMessage: "",
             showIntro: true,
+            showSearch: false,
             apiHelper: APIHelper.getInstance()
         }
+        this.forumData = [];
         this.forumUI = [];
     }
 
@@ -25,7 +28,9 @@ export default class CorporateForum extends React.Component {
         if (!res.error) {
             if (res.forums.length > 0) {
                 this.setState({ showIntro: false });
-                this.generateForums(res.forums);
+                for (const forum of res.forums) this.forumData.push(forum);
+                if (this.forumData.length > 0) this.setState({ showSearch: true });
+                this.generateForums(this.forumData);
             }
         } else {
             this.setState({
@@ -35,20 +40,49 @@ export default class CorporateForum extends React.Component {
         }
     }
 
+    deleteFromForumData = (accessCode) => {
+        var tempForumData = [];
+        for (const forum in this.forumData) {
+            const data = this.forumData[forum];
+            const aCode = (data.accessCode)
+            if (aCode !== accessCode) {
+                tempForumData.push(this.forumData[forum]);
+            }
+        }
+        if(tempForumData.length === 0) this.setState({ showSearch: false, showIntro: true});
+        this.forumData = tempForumData;
+        this.generateForums(this.forumData);
+    }
+
+    updateFields = () => {
+        const currentValue = this.searchForm.current.value.toUpperCase();
+        var tempForumData = [];
+        for (const forum in this.forumData) {
+            const data = this.forumData[forum];
+            const name = (data.name).toUpperCase();
+            if (name.includes(currentValue)) {
+                tempForumData.push(this.forumData[forum]);
+            }
+        }
+        this.generateForums(tempForumData)
+    }
+
     generateForums = (forums) => {
+        this.forumUI = [];
         for (const forum of forums) {
             this.forumUI.push(
-                <Forum name={forum.name} accessCode={forum.accessCode} />
+                <Forum name={forum.name} accessCode={forum.accessCode} deleteFromForumData={this.deleteFromForumData}/>
             );
         }
         this.forceUpdate();
     }
 
     addForum = (name, accessCode) => {
+        this.forumData.push({ name: name, accessCode: accessCode });
         this.forumUI.push(
-            <Forum name={name} accessCode={accessCode} />
+            <Forum name={name} accessCode={accessCode} deleteFromForumData={this.deleteFromForumData}/>
         );
-        this.forceUpdate();
+        this.setState({ showSearch: true });
     }
 
     createForum = async () => {
@@ -82,6 +116,11 @@ export default class CorporateForum extends React.Component {
                     </div>
                 </div>
                 <Button className='createAForumButton' onClick={this.showForumModal}><b>Create A Forum</b></Button>
+                <Form className="form" style={{ display: (this.state.showSearch) ? '' : 'none' }}>
+                    <Form.Group controlId="none">
+                        <Form.Control ref={this.searchForm} className='control' placeholder={"Search"} type='text' autoComplete="nope" required onChange={this.updateFields} style={{width: '50%'}}/>
+                    </Form.Group>
+                </Form>
                 <div style={{ marginTop: '20px' }}>{this.forumUI}</div>
                 <PostModal
                     showModal={this.state.showForumModal}

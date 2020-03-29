@@ -1,6 +1,6 @@
 import React from 'react';
 import Topic from '../topic';
-import { Row, Col, Button } from 'react-bootstrap';
+import { Row, Col, Button, Form } from 'react-bootstrap';
 import APIHelper from '../apiHelper';
 import ConfirmationModal from '../confirmationModal';
 import PostModal from '../postModal';
@@ -9,6 +9,7 @@ import ErrorModal from '../errorModal';
 export default class Forum extends React.Component {
     constructor(props) {
         super(props);
+        this.searchForm = React.createRef();
         this.nameForm = React.createRef();
         this.state = {
             showTopics: false,
@@ -17,9 +18,27 @@ export default class Forum extends React.Component {
             showErrorModal: false,
             errorMessage: "",
             hideForum: false,
+            showSearch: false,
             apiHelper: APIHelper.getInstance()
         }
+        this.topicsData = [];
         this.topicsUI = [];
+    }
+
+    deleteFromTopicData = (topicID) => {
+        var tempTopicData = [];
+        for (const topic in this.topicsData) {
+            const data = this.topicsData[topic];
+            const ID = (data.ID)
+            console.log(topicID)
+            if (ID !== topicID) {
+                tempTopicData.push(this.topicsData[topic]);
+            }
+        }
+        console.log(tempTopicData)
+        if(tempTopicData.length === 0) this.setState({ showSearch: false });
+        this.topicsData = tempTopicData;
+        this.generateTopics(this.topicsData);
     }
 
     getTopics = async () => {
@@ -27,7 +46,9 @@ export default class Forum extends React.Component {
         if (!this.state.showTopics) {
             const res = await this.state.apiHelper.getForum(this.props.accessCode);
             if (!res.error) {
-                this.generateTopics(res.topics);
+                for (const topic of res.topics) this.topicsData.push(topic);
+                if (this.topicsData.length > 0) this.setState({ showSearch: true })
+                this.generateTopics(this.topicsData);
             } else {
                 this.setState({
                     showErrorModal: true,
@@ -35,25 +56,38 @@ export default class Forum extends React.Component {
                 });
             }
             this.setState({ showTopics: true });
-        } else {
-            this.setState({ showTopics: false });
+        } else this.setState({ showTopics: false });
+    }
+
+    updateFields = () => {
+        const currentValue = this.searchForm.current.value.toUpperCase();
+        var tempTopicData = [];
+        for (const topic in this.topicsData) {
+            const data = this.topicsData[topic];
+            const name = (data.name).toUpperCase();
+            if (name.includes(currentValue)) {
+                tempTopicData.push(this.topicsData[topic]);
+            }
         }
+        this.generateTopics(tempTopicData);
     }
 
     generateTopics = (topics) => {
+        this.topicsUI = [];
         for (const topic of topics) {
             this.topicsUI.push(
-                <Topic name={topic.name} id={topic.ID} isCompany={true} />
+                <Topic name={topic.name} id={topic.ID} isCompany={true} deleteFromTopicData={this.deleteFromTopicData}/>
             );
         }
         this.forceUpdate();
     }
 
     addTopic = (name, ID) => {
+        this.topicsData.push({ name: name, ID: ID});
         this.topicsUI.push(
-            <Topic name={name} id={ID} isCompany={true} />
+            <Topic name={name} id={ID} isCompany={true} deleteFromTopicData={this.deleteFromTopicData}/>
         );
-        this.forceUpdate();
+        this.setState({ showSearch: true });
     }
 
     createTopic = async () => {
@@ -72,6 +106,7 @@ export default class Forum extends React.Component {
     deleteForum = async () => {
         const res = await this.state.apiHelper.deleteEvent(this.props.accessCode);
         if (res) {
+            this.props.deleteFromForumData(this.props.accessCode);
             this.setState({ hideForum: true });
         } else {
             this.setState({
@@ -100,6 +135,11 @@ export default class Forum extends React.Component {
                     <div style={{ display: (this.state.showTopics) ? '' : 'none', width: '90%', margin: 'auto', paddingLeft: '50px', marginBottom: '50px' }}>
                         <div style={{ marginLeft: '50px', paddingLeft: '5px' }}>
                             <Button className='createAForumButton' onClick={this.showTopicModal}><b>Create A New Topic</b></Button>
+                            <Form className="form" style={{ display: (this.state.showSearch) ? '' : 'none' }}>
+                                <Form.Group controlId="none">
+                                    <Form.Control ref={this.searchForm} className='control' placeholder={"Search"} type='text' autoComplete="nope" required onChange={this.updateFields} style={{width: '50%'}}/>
+                                </Form.Group>
+                            </Form>
                             <div style={{ marginTop: '20px' }}>{this.topicsUI}</div>
                         </div>
                     </div>

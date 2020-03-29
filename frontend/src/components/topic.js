@@ -68,7 +68,8 @@ export default class Topic extends React.Component {
 
     deleteTopic = async () => {
         const res = await this.state.apiHelper.deleteEvent(this.props.id);
-        if (!res) {
+        if (res) {
+            this.props.deleteFromTopicData(this.props.id);
             this.setState({ hideTopic: true });
         } else {
             this.setState({
