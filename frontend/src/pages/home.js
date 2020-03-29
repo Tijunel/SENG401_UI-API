@@ -12,7 +12,7 @@ export default class HomePage extends React.Component {
                     <Image src={require('../assets/CaptureImage.svg')} style={{ width: '100vw', minWidth: '150px', maxWidth: '1000px' }} />
                     <b style={{ fontSize: 'calc(3.8vw + 0.6rem)' }}><br />Anonymous Feedback, Done Right.<br /></b>
                     <p style={{ fontSize: 'calc(0.6vw + 0.8rem)', width: '100%', margin: 'auto', marginTop: 'calc(1vw + 33.33px)', textAlign: 'left', lineHeight: '1.2', maxWidth: '900px' }}>
-                        Aon Feedback is dedicated to providing a safe platform for corporate organizations to receive real, genuine feedback from employees. We ensure the anonymity to take the stigma and fear out of
+                        Aon Feedback is dedicated to providing a safe platform for corporate organizations to receive real, genuine feedback from employees. We ensure the anonymity of employees to take the stigma and fear out of
                         providing feedback. We will never store information about employees, only their thoughts for improvement.
                     </p>
                 </Jumbotron>
@@ -38,6 +38,12 @@ export default class HomePage extends React.Component {
                             </p>
                         </Col>
                     </Row>
+                </Jumbotron>
+                <Jumbotron style={{ width: '100%', backgroundColor: '#FFF', borderRadius: '0', textAlign: 'center', marginTop: '-100px' }}>
+                    <b style={{ fontSize: 'calc(3.8vw + 0.6rem)' }}><br />Want to give us feedback?<br /></b>
+                    <p style={{ fontSize: 'calc(0.6vw + 0.8rem)', width: '100%', margin: 'auto', marginTop: 'calc(1vw + 33.33px)', textAlign: 'center', lineHeight: '1.2', maxWidth: '900px' }}>
+                        Enter the access code WOO1XQ11 <a href='/access'>here</a>.
+                    </p>
                 </Jumbotron>
             </div>
         );

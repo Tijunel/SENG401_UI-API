@@ -36,3 +36,22 @@
 #access .submitButton:focus {
     box-shadow: 0 0 0 0.2rem rgba(59, 190, 255, 0.5) !important;
 }
+
+#access #image {
+    width: 50vw;
+    min-width: 150px;
+    max-width: 500px;
+    text-align: center;
+    margin-top: 100px;
+}
+
+#access #text {
+    font-size: calc(0.6vw + 1rem);
+    width: 100%;
+    margin: auto;
+    margin-top: calc(1vw + 33.33px);
+    text-align: left;
+    line-height: 1.2;
+    max-width: 700px;
+    margin-bottom: 40px;
+}
