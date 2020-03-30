@@ -1,7 +1,7 @@
 const redis = require("redis");
 const asyncRedis = require("async-redis");
 const PORT = 6379;
-const HOST = "localhost"; //Change when deploying
+const HOST = "aon-feedback-redis.xypzmb.ng.0001.use2.cache.amazonaws.com"; //Change when deploying
 
 //Synchronous Client
 const client = redis.createClient({
