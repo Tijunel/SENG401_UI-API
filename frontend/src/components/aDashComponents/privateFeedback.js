@@ -25,12 +25,9 @@ export default class AccessPrivateFeedback extends React.Component {
             return;
         } 
         const res = await this.state.apiHelper.postPrivateFeedback(this.feedbackForm.current.value, sessionStorage.getItem('forumName'));
-        console.log(res)
         if (res) {
-            console.log('here')
             this.setState({showConfirmationModal: true});
         } else {
-            console.log('yo')
             this.setState({
                 showErrorModal: true,
                 errorMessage: "Your feedback could not be submitted. Try again later."
@@ -47,7 +44,7 @@ export default class AccessPrivateFeedback extends React.Component {
                 <b style={{ fontSize: 'calc(3.8vw + 0.6rem)' }}><br />Submit Your Private Feedback<br /></b>
                 <div>
                     <p style={{ fontSize: 'calc(0.6vw + 0.8rem)', width: '50%', margin: 'auto', marginTop: 'calc(1vw + 33.33px)', textAlign: 'left', lineHeight: '1.2', maxWidth: '900px', marginBottom: '40px' }}>
-                        This feedback won't be seen by anyone except priveleged members of your organization. Before submitting, ensure that this is the feedback you want to provide, as you won't be able to see it again.
+                        This feedback won't be seen by anyone except privileged members of your organization. Before submitting, ensure that this is the feedback you want to provide, as you won't be able to see it again.
                         </p>
                 </div>
                 <Form className="feedback">

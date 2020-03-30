@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const user = express.Router();
 const User = require("../model/User");
 const withCompanyAuth = require("../middleware/auth")[1];
+const withAuth = require("../middleware/auth")[2];
 
 user.post("/signup", async (req, res) => {
     const errors = validationResult(req);
@@ -83,9 +84,11 @@ user.post("/checkCompanyToken", withCompanyAuth, (req, res) => {
     res.sendStatus(200).end();
 })
 
-//For logging out, if needed
-user.post("/stopSession", (req, res) => {
-
+user.post("/stopSession", withAuth, (req, res) => {
+    const payload = {};
+    const token = jwt.sign(payload, "x", {expiresIn: '1'});
+    res.cookie('token', token, { httpOnly: true });
+    res.status(200).end();
 });
 
 module.exports = user;

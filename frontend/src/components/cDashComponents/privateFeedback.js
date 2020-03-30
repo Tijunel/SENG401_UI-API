@@ -18,7 +18,9 @@ export default class CorporatePrivateFeedback extends React.Component {
 	componentWillMount = async () => {
 		const res = await this.state.apiHelper.getPrivateFeedback();
 		if (!res.error) {
-			this.generateFeedbackUI(res);
+			if(res.length !== 0) {
+				this.generateFeedbackUI(res);
+			}
 		} else {
 			this.setState({
 				showModal: true,
